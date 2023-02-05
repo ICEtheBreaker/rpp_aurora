@@ -7,6 +7,7 @@ let b = 7
  * @param {number} b 
  * @returns sum
  */
+
 let sum = (a,b) => a + b
 
 let div = document.createElement('div')
