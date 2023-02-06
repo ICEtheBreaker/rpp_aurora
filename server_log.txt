@@ -1,0 +1,10 @@
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-RC4, (C)2005-2015 SA-MP Team
+
+[21:26:25] Error: Your password must be changed from the default password, please change it.
