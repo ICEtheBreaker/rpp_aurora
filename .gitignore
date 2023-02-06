@@ -1,50 +1,32 @@
-#
-# Package only files
-#
+# Prerequisites
+*.d
 
-# Compiled Bytecode, precompiled output and assembly
-*.amx
-*.lst
-*.asm
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-# Vendor directory for dependencies
-dependencies/
+# Precompiled Headers
+*.gch
+*.pch
 
-# Dependency versions lockfile
-pawn.lock
-
-
-#
-# Server/gamemode related files
-#
-
-# compiled settings file
-# keep `samp.json` file on version control
-# but make sure the `rcon_password` field is set externally
-# you can use the environment variable `SAMP_RCON_PASSWORD` to do this.
-server.cfg
-
-# Plugins directory
-plugins/
-
-# binaries
-*.exe
-*.dll
+# Compiled Dynamic libraries
 *.so
-announce
-samp03svr
-samp-npc
+*.dylib
+*.dll
 
-# logs
-logs/
-server_log.txt
-crashinfo.txt
+# Fortran module files
+*.mod
+*.smod
 
-# Ban list
-samp.ban
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
-#
-# Common files
-#
-
-*.sublime-workspace
+# Executables
+*.exe
+*.out
+*.app
