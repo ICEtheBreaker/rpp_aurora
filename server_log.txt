@@ -1,0 +1,157 @@
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-RC4, (C)2005-2015 SA-MP Team
+
+[21:26:25] Error: Your password must be changed from the default password, please change it.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-RC4, (C)2005-2015 SA-MP Team
+
+[21:34:46] 
+[21:34:46] Server Plugins
+[21:34:46] --------------
+[21:34:46]  Loaded 0 plugins.
+
+[21:34:46] I couldn't load any gamemode scripts. Please verify your server.cfg
+[21:34:46] It needs a gamemode0 line at the very least.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-RC4, (C)2005-2015 SA-MP Team
+
+[21:35:04] 
+[21:35:04] Server Plugins
+[21:35:04] --------------
+[21:35:04]  Loaded 0 plugins.
+
+[21:35:04] 
+[21:35:04] Filterscripts
+[21:35:04] ---------------
+[21:35:04]   Loading filterscript 'gl_actions.amx'...
+[21:35:04]   Loading filterscript 'gl_realtime.amx'...
+[21:35:04]   Loading filterscript 'gl_property.amx'...
+[21:35:04] 
+-----------------------------------
+[21:35:04] Grand Larceny Property Filterscript		
+[21:35:04] -----------------------------------
+
+[21:35:04]   Loading filterscript 'gl_mapicon.amx'...
+[21:35:04]   Loading filterscript 'ls_elevator.amx'...
+[21:35:04]   Loading filterscript 'attachments.amx'...
+[21:35:04]   Loading filterscript 'skinchanger.amx'...
+[21:35:04] 
+--Admin Player Skin Changer Loaded
+
+[21:35:04]   Loading filterscript 'vspawner.amx'...
+[21:35:04] 
+--Admin Vehicle Spawner Loaded
+
+[21:35:04]   Loading filterscript 'test_cmds.amx'...
+[21:35:04]   Loading filterscript 'ls_mall.amx'...
+[21:35:04]   Loading filterscript 'ls_beachside.amx'...
+[21:35:04] 
+
+[21:35:04]   |---------------------------------------------------
+[21:35:04]   |--- LS BeachSide Filterscript
+[21:35:04]   |--  Script v1.02
+[21:35:04]   |--  10th February 2015
+[21:35:04]   |---------------------------------------------------
+[21:35:04]   |--  LS BeachSide Building Elevator created
+[21:35:04]   |---------------------------------------------------
+[21:35:04]   Loaded 11 filterscripts.
+
+[21:35:04] AllowAdminTeleport() : function is deprecated. Please see OnPlayerClickMap()
+[21:35:04] Reading File: blank
+[21:35:04] Reading File: properties/houses.txt
+[21:35:04] Reading File: properties/businesses.txt
+[21:35:04] Reading File: properties/banks.txt
+[21:35:04] Reading File: properties/police.txt
+[21:35:04] 
+----------------------------------
+[21:35:04]   Bare Script
+
+[21:35:04] ----------------------------------
+
+[21:35:04] Number of vehicle models: 0
+Console input: stop
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-RC4, (C)2005-2015 SA-MP Team
+
+[23:51:56] 
+[23:51:56] Server Plugins
+[23:51:56] --------------
+[23:51:56]  Loaded 0 plugins.
+
+[23:51:56] 
+[23:51:56] Filterscripts
+[23:51:56] ---------------
+[23:51:56]   Loading filterscript 'gl_actions.amx'...
+[23:51:56]   Loading filterscript 'gl_realtime.amx'...
+[23:51:56]   Loading filterscript 'gl_property.amx'...
+[23:51:56] 
+-----------------------------------
+[23:51:56] Grand Larceny Property Filterscript		
+[23:51:56] -----------------------------------
+
+[23:51:56]   Loading filterscript 'gl_mapicon.amx'...
+[23:51:56]   Loading filterscript 'ls_elevator.amx'...
+[23:51:56]   Loading filterscript 'attachments.amx'...
+[23:51:56]   Loading filterscript 'skinchanger.amx'...
+[23:51:56] 
+--Admin Player Skin Changer Loaded
+
+[23:51:56]   Loading filterscript 'vspawner.amx'...
+[23:51:56] 
+--Admin Vehicle Spawner Loaded
+
+[23:51:56]   Loading filterscript 'test_cmds.amx'...
+[23:51:56]   Loading filterscript 'ls_mall.amx'...
+[23:51:56]   Loading filterscript 'ls_beachside.amx'...
+[23:51:56] 
+
+[23:51:56]   |---------------------------------------------------
+[23:51:56]   |--- LS BeachSide Filterscript
+[23:51:56]   |--  Script v1.02
+[23:51:56]   |--  10th February 2015
+[23:51:56]   |---------------------------------------------------
+[23:51:56]   |--  LS BeachSide Building Elevator created
+[23:51:56]   |---------------------------------------------------
+[23:51:56]   Loaded 11 filterscripts.
+
+[23:51:56] AllowAdminTeleport() : function is deprecated. Please see OnPlayerClickMap()
+[23:51:56] Reading File: blank
+[23:51:56] Reading File: properties/houses.txt
+[23:51:56] Reading File: properties/businesses.txt
+[23:51:56] Reading File: properties/banks.txt
+[23:51:56] Reading File: properties/police.txt
+[23:51:56] 
+----------------------------------
+[23:51:56]   Bare Script
+
+[23:51:56] ----------------------------------
+
+[23:51:56] Number of vehicle models: 0
+Console input: exit
+[13:15:00] --- Server Shutting Down.
+[13:15:00]   |--  LS BeachSide Building Elevator destroyed
+[13:15:00]   |---------------------------------------------------
