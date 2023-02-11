@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+logs/errors.log
+server_log.txt
+logs/warnings.log
+logs/
