@@ -49,14 +49,7 @@ enum {
 
 public OnGameModeInit()
 {
-	connects = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB); // хостинг отсутствует, поэтому используем локальное подключение
-	if(mysql_errno() == 0) {
-		printf("Подключение к MySQL = успешно."); // логи можно поменять
-	} 
-	else {
-		printf("Подключение к MySQL не удалось. Код ошибки: "#mysql_error"");	
-	} 
-
+	ConnectSQL();
 	SetGameModeText(""#mode_name""); 
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
@@ -277,9 +270,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			for(new d; d < 10; d++) PlayerInfo[playerid][pSalt][d] = random(79) + 47;
 			PlayerInfo[playerid][pSalt][10] = 0;
 			SHA256_PassHash(inputtext,PlayerInfo[playerid][pSalt],PlayerInfo[playerid][pPassword],65);
-			printf("Password hashed: %s", PlayerInfo[playerid][pPassword]);
 			SetPVarString(playerid,"PlayerPassword",inputtext);
-			printf("Пароль принят");
 		}
 	}
 	return 1;
@@ -311,3 +302,19 @@ function OnPlayerJoin(playerid) //отдельная функция для регистрации. объявляется
 }
 function OnPlayerKick(playerid) return Kick(playerid);
 stock KickEx(playerid) return SetTimerEx("OnPlayerKick",50,false,"d",playerid);
+
+stock ConnectSQL()
+{
+	connects = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
+    switch(mysql_errno()) {
+		case 0: print("Подключение к SQL = успешно.");
+		case 1044: print("Подключение к SQL = неудачно. [Указано неправильное имя пользователя]");
+        case 1045: print("Подключение к SQL = неудачно. [Указан неправильный пароль]");
+        case 1049: print("Подключение к SQL = неудачно. [Указана неизвестная база данных]");
+        case 2003: print("Подключение к SQL = неудачно. [Доступ к базе данных был отклонён сервером.]");
+        case 2005: print("Подключение к SQL = неудачно. [Указан неправильный адрес]");
+		default: print("Подключение к SQL = неудачно. Проверьте logs/errors.log");
+	}
+	mysql_log(ERROR | WARNING);
+	mysql_set_charset("cp1251");
+}
