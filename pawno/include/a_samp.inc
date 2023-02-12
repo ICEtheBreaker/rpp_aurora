@@ -65,8 +65,8 @@ native SendDeathMessage(killer, killee, weapon);
 native SendDeathMessageToPlayer(playerid, killer, killee, weapon);
 native GameTextForAll(const string[],time,style);
 native GameTextForPlayer(playerid,const string[],time,style);
-native SetTimer(funcname[], interval, repeating);
-native SetTimerEx(funcname[], interval, repeating, const format[], {Float,_}:...);
+native SetTimer(const funcname[], interval, repeating);
+native SetTimerEx(const funcname[], interval, repeating, const format[], {Float,_}:...);
 native KillTimer(timerid);
 native GetTickCount();
 native GetMaxPlayers();
@@ -242,7 +242,7 @@ native UpdatePlayer3DTextLabelText(playerid, PlayerText3D:id, color, text[]);
 #define DIALOG_STYLE_TABLIST			4
 #define DIALOG_STYLE_TABLIST_HEADERS	5
 
-native ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]);
+native ShowPlayerDialog(const playerid, const dialogid, const style, const caption[], const info[], const button1[], const button2[]);
 
 // --------------------------------------------------
 // Defines

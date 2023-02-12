@@ -1,4 +1,5 @@
 main () {}
+#pragma tabsize 0
 
 #include <a_samp> // надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
 #include <a_mysql>
@@ -10,24 +11,26 @@ main () {}
 #include <dc_cmd>
 #include <Pawn.Regex>
 
-#include "../../defines/name"
-#include "../../defines/db_conn"
-#include "../../defines/colors"
+#include "../../defines/name" // макрос касаемый названия проекта и прочего
+#include "../../defines/db_conn" // подключение к бд (конфиг)
+#include "../../defines/colors" // цвета
+
+#include "../../defines/systems/capture_natives/natives" // перехват нативок
+#include "../../defines/macroses" // прочие макросы
 
 // дефайны
 
-#define function%0(%1)	forward%0(%1); public%0(%1) 
+#define function%0(%1)	forward%0(%1); public%0(%1)
+#define pi 				PlayerInfo
+#define f%0%1			format(%0,sizeof(%0), %1
 
-#define MYSQL_HOST			"127.0.0.1"
-#define MYSQL_USER			"root"
-#define MYSQL_DB			"DATABASE_NAME"
-#define MYSQL_PASS			""
+#undef MAX_PLAYERS
+#define MAX_PLAYERS (2)
 
 // после инклудов желательно начать регистрировать переменные
 //  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
 
-new MySQL:connects;
-new query_string[256];
+new query_string[256]; // ??? в дальнейшем убрать вследствие оптимизации стека
 
 enum pInfo {
 	pID,
@@ -39,8 +42,12 @@ enum pInfo {
 	pSex, // SEX????
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
+new 
+	bool: playerLoggedStatus[MAX_PLAYERS];
+
 enum {
-	dNull = 0, dLogin,dReg1,dReg2,dReg3,dReg4,
+	dNull = 0, 
+	dLogin = 1, dReg1 = 2,dReg2 = 3,dReg3 = 4,dReg4 = 5,
 }
 
 
@@ -59,17 +66,23 @@ public OnGameModeInit()
 
 public OnGameModeExit()
 {
+	mysql_close(db);
 	return 1;
 }
 
 public OnPlayerRequestClass(playerid, classid)
 {
-	SetTimerEx("OnPlayerJoin",350,false,"d",playerid);
 	return 1;
 }
 
 public OnPlayerConnect(playerid)
 {
+	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
+
+	SendClientMessage(playerid, -1, !"Добро пожаловать на помойку!");
+	PlayerPlaySound(playerid, 162, 0, 0, 0);
+	
+	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid);
 	return 1;
 }
 
@@ -80,6 +93,10 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
+	if(playerLoggedStatus[playerid] == false)
+		return KickEx(playerid);
+
+	SetCameraBehindPlayer(playerid);
 	return 1;
 }
 
@@ -235,42 +252,45 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
-	switch(dialogid) 
+	switch(dialogid)
 	{
 		case dReg1: 
 		{
-			if(!response)
-			{
-				SendClientMessage(playerid, 0xFF0000FF,!"Вы отказались от регистрации.");
-				KickEx(playerid);
-				return false;
+			if (response == 0)
+				return KickEx(playerid);
+
+			if(!(6 <= strlen(inputtext) <= 22)) {
+				SendClientMessage(playerid, -1, "Длина пароля должна состоять от 6 до 22 символов");
+
+				return ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
+					"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
+				
 			}
-			if(strlen(inputtext) < 6 || strlen(inputtext) > 24)
+
+			for (new i = 0; i < strlen(inputtext); i ++) 
 			{
-				SendClientMessage(playerid, 0xFF0000FF,!"Пароль должен состоять из 6-ти символов и не должен быть больше 24-х");
-				query_string[0] = 0;
-				format(query_string,sizeof(query_string),"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {ffa500}%s\n\n{FFFFFF}Данный псевдоним незарегистрирован на данном проекте\nПридумайте и введите свой пароль в поле ниже.",PlayerInfo[playerid][pNames]); // сообщение о входе на сервер, можно заменить :)
-				ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT,"{FFA500}Регистрация",query_string,"Далее","Отмена");
-				return false;
-			}
-			/*for(new i = 1; i < strlen(inputtext); --i) функция не работает
-			{
-				switch(inputtext[i])
-				{
-					case 'А'..'Я','а'..'я','-','=','!',',','.','@','#','$','%': //тут кириллица
-					{
-						SendClientMessage(playerid, 0xFF0000FF,!"Пароль должен состоять из латинских букв и не содержать запретных символов!");
-						query_string[0] = 0;
-						format(query_string,sizeof(query_string),"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {ffa500}%s\n\n{FFFFFF}Данный псевдоним незарегистрирован на данном проекте\nПридумайте и введите свой пароль в поле ниже.",PlayerInfo[playerid][pNames]); // сообщение о входе на сервер, можно заменить :)
-						ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT,"{FFA500}Регистрация",query_string,"Далее","Отмена");
-						return true;
+				switch (inputtext[i]) {
+					case 'a'..'z', 'A'..'Z', '0'..'9':
+						continue;
+
+					default: {
+						SendClientMessage(playerid, -1, "Пароль должен состоять из кириллицы и не содержать в себе цифр!");
+
+						return ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
+							"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
+
 					}
 				}
-			}*/
-			for(new d; d < 10; d++) PlayerInfo[playerid][pSalt][d] = random(79) + 47;
-			PlayerInfo[playerid][pSalt][10] = 0;
-			SHA256_PassHash(inputtext,PlayerInfo[playerid][pSalt],PlayerInfo[playerid][pPassword],65);
-			SetPVarString(playerid,"PlayerPassword",inputtext);
+			}
+			PlayerInfo[playerid][pPassword][0] = EOS;
+			strins(PlayerInfo[playerid][pPassword], inputtext, 0);
+		}
+		case dReg2: {
+			if(response == 0)
+				return KickEx(playerid);
+
+			format(query_string, sizeof query_string, "SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = MD5('%s')",PlayerInfo[playerid][pNames], inputtext);
+			mysql_tquery(db, query_string, "@_mysqlUploadPlayerAccount", "i", playerid);
 		}
 	}
 	return 1;
@@ -281,40 +301,57 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	return 1;
 }
 
-function OnPlayerJoin(playerid) //отдельная функция для регистрации. объявляется при выборе скина в паблике OnPlayerRequestClass. если аккаунт уже зарегистрирован, то его пустит по авто-входу, поскольку диалога с авторизацией еще нету
-{
-	GetPlayerName(playerid, PlayerInfo[playerid][pNames],MAX_PLAYER_NAME);
-	query_string[0] = 0;
-	mysql_format(connects,query_string,sizeof(query_string),"SELECT `password` , `salt` FROM `accounts` WHERE `names` = '%s' LIMIT 1",PlayerInfo[playerid][pNames]);
-	new Cache:result = mysql_query(connects,query_string,true);
-	new rows = cache_num_rows();
-	if(rows)
-	{
-		cache_get_value_name(0,"password",PlayerInfo[playerid][pPassword]);
-		cache_get_value_name(0,"salt",PlayerInfo[playerid][pSalt]);
+function @_mysqlPlayerAccountGet(playerid) {
+	format(query_string, sizeof query_string, "SELECT * FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
+	mysql_tquery(db, query_string, "@_mysqlGetPlayerAccount", "i", playerid);
+}
+
+function @_mysqlGetPlayerAccount(playerid) {
+	SetPlayerColor(playerid, 0xFF);
+
+	if(cache_num_rows() == 0) {
+		ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
+		"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
 	}
 	else {
-		format(query_string,sizeof(query_string),"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {ffa500}%s\n\n{FFFFFF}Данный псевдоним незарегистрирован на данном проекте\nПридумайте и введите свой пароль в поле ниже.",PlayerInfo[playerid][pNames]); // сообщение о входе на сервер, можно заменить :)
-		ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT,"{FFA500}Регистрация",query_string,"Далее","Отмена");
+		ShowPlayerDialog(playerid, dReg2, DIALOG_STYLE_INPUT, "{FFA500}Авторизация", 
+		"{FFFFFF}Хуй хуй хуй хуй хуй!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
 	}
-	cache_delete(result);
-	return true;
 }
+@_mysqlUploadPlayerAccount(playerid);
+@_mysqlUploadPlayerAccount(playerid)
+{
+		if(cache_num_rows() == 0)
+		{
+			SendClientMessage(playerid, 0xFF0000FF, "Введён неправильный пароль.");
+
+			return ShowPlayerDialog(playerid, dReg2, DIALOG_STYLE_INPUT, "{FFA500}Авторизация", 
+					"{FFFFFF}Хуй хуй хуй хуй хуй!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
+
+		}
+
+		playerLoggedStatus[playerid] = true;
+		SetPlayerColor(playerid, 0xFFFFFF33);
+
+		cache_get_value_name(0, "id", PlayerInfo[playerid][pID]);
+		
+		SetCameraBehindPlayer(playerid);
+		SpawnPlayer(playerid);
+
+		return 1;
+}
+
 function OnPlayerKick(playerid) return Kick(playerid);
 stock KickEx(playerid) return SetTimerEx("OnPlayerKick",50,false,"d",playerid);
 
 stock ConnectSQL()
 {
-	connects = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
-    switch(mysql_errno()) {
-		case 0: print("Подключение к SQL = успешно.");
-		case 1044: print("Подключение к SQL = неудачно. [Указано неправильное имя пользователя]");
-        case 1045: print("Подключение к SQL = неудачно. [Указан неправильный пароль]");
-        case 1049: print("Подключение к SQL = неудачно. [Указана неизвестная база данных]");
-        case 2003: print("Подключение к SQL = неудачно. [Доступ к базе данных был отклонён сервером.]");
-        case 2005: print("Подключение к SQL = неудачно. [Указан неправильный адрес]");
-		default: print("Подключение к SQL = неудачно. Проверьте logs/errors.log");
+	db = mysql_connect(m_host, m_user, m_db, m_pass);
+    if(mysql_errno() == 1) {
+		print("[mysql] couldn't connect to database!");
+	}
+	else {
+		print("[mysql] database connected successfully");
 	}
 	mysql_log(ERROR | WARNING);
-	mysql_set_charset("cp1251");
 }
