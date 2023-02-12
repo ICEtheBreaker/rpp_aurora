@@ -79,7 +79,7 @@ public OnPlayerConnect(playerid)
 {
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 
-	SendClientMessage(playerid, -1, !"Добро пожаловать на помойку!");
+	SendClientMessage(playerid, format_white, !"Добро пожаловать на "color_white""name_proj"!");
 	PlayerPlaySound(playerid, 162, 0, 0, 0);
 	
 	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid);
@@ -250,6 +250,16 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 	return 1;
 }
 
+CMD:plvh(pl) {
+	new Float: X,
+		Float: Y,
+		Float: Z; 
+	GetPlayerPos(pl, X, Y, Z);
+	new veh = CreateVehicle(451, X, Y, Z, 0.0, 0, 2, 0);
+	OnVehicleSpawn(veh);
+	return PutPlayerInVehicle(pl, veh, 0);
+}
+
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	switch(dialogid)
@@ -260,10 +270,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				return KickEx(playerid);
 
 			if(!(6 <= strlen(inputtext) <= 22)) {
-				SendClientMessage(playerid, -1, "Длина пароля должна состоять от 6 до 22 символов");
+				SendClientMessage(playerid, format_white, "Длина пароля должна состоять от 6 до 22 символов");
 
 				return ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
-					"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
+					""color_white""name_proj"\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
 				
 			}
 
@@ -274,10 +284,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						continue;
 
 					default: {
-						SendClientMessage(playerid, -1, "Пароль должен состоять из кириллицы и не содержать в себе цифр!");
+						SendClientMessage(playerid, format_white, "Пароль должен состоять из кириллицы и не содержать в себе цифр!");
 
 						return ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
-							"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
+							""color_white""name_proj"\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
 
 					}
 				}
@@ -289,6 +299,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response == 0)
 				return KickEx(playerid);
 
+			query_string[0] = EOS;
 			format(query_string, sizeof query_string, "SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = MD5('%s')",PlayerInfo[playerid][pNames], inputtext);
 			mysql_tquery(db, query_string, "@_mysqlUploadPlayerAccount", "i", playerid);
 		}
@@ -302,6 +313,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 }
 
 function @_mysqlPlayerAccountGet(playerid) {
+	query_string[0] = EOS;
 	format(query_string, sizeof query_string, "SELECT * FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
 	mysql_tquery(db, query_string, "@_mysqlGetPlayerAccount", "i", playerid);
 }
@@ -311,11 +323,11 @@ function @_mysqlGetPlayerAccount(playerid) {
 
 	if(cache_num_rows() == 0) {
 		ShowPlayerDialog(playerid, dReg1, DIALOG_STYLE_INPUT, "{FFA500}Регистрация", 
-		"{FFFFFF}Хуй хуй хуй хуй хуй\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
+		""color_white""name_proj"\nВаш псевдоним: {FFA500}%s\n\nИмя не найдено в базе данных\nПридумайте и введите пароль в поле ниже:","Далее","Отмена");
 	}
 	else {
 		ShowPlayerDialog(playerid, dReg2, DIALOG_STYLE_INPUT, "{FFA500}Авторизация", 
-		"{FFFFFF}Хуй хуй хуй хуй хуй!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
+		""color_white""name_proj"!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
 	}
 }
 @_mysqlUploadPlayerAccount(playerid);
@@ -326,7 +338,7 @@ function @_mysqlGetPlayerAccount(playerid) {
 			SendClientMessage(playerid, 0xFF0000FF, "Введён неправильный пароль.");
 
 			return ShowPlayerDialog(playerid, dReg2, DIALOG_STYLE_INPUT, "{FFA500}Авторизация", 
-					"{FFFFFF}Хуй хуй хуй хуй хуй!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
+					""color_white""name_proj"!\nВаш псевдоним: {FFA500}%s\n\nИмя найдено в базе данных\nВведите свой пароль в поле ниже:","Далее","Отмена");
 
 		}
 
