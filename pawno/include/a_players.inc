@@ -156,8 +156,8 @@ native PlayerTextDrawSetPreviewRot(playerid, PlayerText:text, Float:fRotX, Float
 native PlayerTextDrawSetPreviewVehCol(playerid, PlayerText:text, color1, color2);
 
 // Per-player variable system (PVars)
-native SetPVarInt(playerid, varname[], int_value);
-native GetPVarInt(playerid, varname[]);
+native SetPVarInt(playerid, const varname[], int_value);
+native GetPVarInt(playerid, const varname[]);
 native SetPVarString(playerid, varname[], string_value[]);
 native GetPVarString(playerid, varname[], string_return[], len);
 native SetPVarFloat(playerid, varname[], Float:float_value);
