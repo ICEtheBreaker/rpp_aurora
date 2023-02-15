@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 14 2023 г., 13:30
+-- Время создания: Фев 15 2023 г., 20:04
 -- Версия сервера: 5.6.51
 -- Версия PHP: 7.4.30
 
@@ -32,8 +32,11 @@ CREATE TABLE `accounts` (
   `names` varchar(24) NOT NULL,
   `password` varchar(64) NOT NULL,
   `salt` varchar(11) NOT NULL,
+  `ip` varchar(16) NOT NULL,
+  `lastIP` varchar(16) NOT NULL,
   `email` varchar(64) NOT NULL,
   `sex` int(2) NOT NULL,
+  `admin` int(1) NOT NULL,
   `currentskin` int(3) NOT NULL,
   `money` int(11) NOT NULL,
   `level` int(4) NOT NULL,
@@ -44,8 +47,22 @@ CREATE TABLE `accounts` (
 -- Дамп данных таблицы `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `email`, `sex`, `currentskin`, `money`, `level`, `exp`) VALUES
-(6, 'xueglot', '1BA7A11851B48561C0C008FEF379D1FA51BC3B445987C5EA162B541A319414C4', '', 'dimamironov1337228@gmail.com', 0, 0, 250, 1, 0);
+INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `ip`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`, `exp`) VALUES
+(27, 'zxczxzx', 'BDDE7FD55E32908952BD7E8B02A9B8A50A8C887475A6F0A392F311803C323A61', 'gNn_WK7QcD', '\r6.127.37.174', '\r6.127.37.174', 'c', 0, 0, 0, 0, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `admin`
+--
+
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
+  `name` varchar(24) NOT NULL,
+  `securitycode` int(4) NOT NULL,
+  `level` int(1) NOT NULL,
+  `last_connect` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
 -- Индексы сохранённых таблиц
@@ -58,6 +75,12 @@ ALTER TABLE `accounts`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Индексы таблицы `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -65,7 +88,13 @@ ALTER TABLE `accounts`
 -- AUTO_INCREMENT для таблицы `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT для таблицы `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
