@@ -22,11 +22,9 @@ stock IsValidEmail(const email[])
 	new bool:Good;
 	for(new i; i < strlen(email); i++)
 	{
-	    if(email[i] == '@')
-		{
+	    if(email[i] == '@') {
 		    if(!Good) Good = true;
-		    else
-			{
+		    else{
 				Good = false;
 		    	break;
 			}
