@@ -7,7 +7,7 @@ stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[
     #define _ALS_ShowPlayerDialogEx
 #endif
 #define ShowPlayerDialogEx ex_ShowPlayerDialog
-  
+
 stock ValidChar(mailchar)
 {
 	if((mailchar >= 'A' && mailchar <= 'Z') || (mailchar >= 'a' && mailchar <= 'z')
@@ -22,10 +22,13 @@ stock IsValidEmail(const email[])
 	new bool:Good;
 	for(new i; i < strlen(email); i++)
 	{
-	    if(email[i] == '@') {
+	    if(email[i] == '@')
+		{
 		    if(!Good) Good = true;
-		    else {
-				Good = false & break;
+		    else
+			{
+				Good = false;
+		    	break;
 			}
 		}
 	    if(!ValidChar(email[i])) Succes = false;
