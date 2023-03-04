@@ -384,7 +384,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			if(response) {
 				PlayerInfo[playerid][pSex] = listitem;
-				CreateAccount(playerid);
+				return OnPlayerRequestClass();
 
 			}
 		}
