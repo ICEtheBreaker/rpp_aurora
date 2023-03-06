@@ -14,8 +14,6 @@
 # Compiled Dynamic libraries
 *.dylib
 
-# Compiled Binary Mod
-*.amx
 
 # Fortran module files
 *.mod
@@ -30,6 +28,7 @@
 # Executables
 *.out
 *.app
+*.amx
 logs/errors.log
 server_log.txt
 logs/warnings.log
