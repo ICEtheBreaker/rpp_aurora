@@ -467,7 +467,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 
 stock ShowLoginDialog(playerid)
 {
-	sstring[0] = EOS;
+	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
 		{FFFFFF}Введите свой пароль\n\
