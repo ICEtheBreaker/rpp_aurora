@@ -1,15 +1,15 @@
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
-* text eol=crlf
+*.pwn       text eol=crlf
 
-*.inc linguist-language=Pawn
-*.pwn linguist-language=Pawn
-*.sql linguist-language=SQL
-*.json linguist-language=JSON
-*.dll linguist-language=C++
-*.so linguist-language=C++
-*.md linguist-language=Markdown
+*.inc       linguist-language=Pawn
+*.pwn       linguist-language=Pawn
+*.sql       linguist-language=SQL
+*.json      linguist-language=JSON
+*.dll       linguist-language=C++
+*.so        linguist-language=C++
+*.md        linguist-language=Markdown
 
 ###############################################################################
 # Set default behavior for command prompt diff.
