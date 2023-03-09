@@ -41,21 +41,21 @@ main () {}
 // после инклудов желательно начать регистрировать переменные
 //  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
 
-new query_string[256]; // ??? в дальнейшем убрать вследствие оптимизации стека
+new query_string[356]; // ??? в дальнейшем убрать вследствие оптимизации стека
 
 enum pInfo {
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
 	pPassword[64+1], // пароль может состоять из 64 символов, при необходимости можно изменить значение
-	pSalt[11],
 	pIP[16],
+	pRegData[13],
+	pLastIP[16],
 	pEmail[64],
 	pAdmin,
 	pSex,
 	pSkin,
 	pMoney,
 	pLevel,
-	pExp,
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
 enum {
@@ -73,7 +73,7 @@ enum {
 new 
 	bool: playerLoggedStatus[MAX_PLAYERS];
 
-new sstring[256]; // позже нужно будет убрать и переделать в угоду стека
+new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
 
 
 enum {
@@ -118,7 +118,7 @@ public OnPlayerConnect(playerid)
 
 	if(IsLoginInvalid(GetName(playerid))) {
 		SEND_CM(playerid, format_red, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
-		KickEx(playerid);
+		Kick(playerid);
 	}
 	SEND_CM(playerid, format_black, !"Добро пожаловать на "color_white""name_proj"!");
 	return 1;
@@ -132,9 +132,12 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
-	if(playerLoggedStatus[playerid] == false)
-		return KickEx(playerid);
+	if(playerLoggedStatus[playerid] == false) {
+		SEND_CM(playerid, -1, "Вы не авторизовались!");
+		return Kick(playerid);
+	}
 
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SetCameraBehindPlayer(playerid);
 	return 1;
 }
@@ -318,7 +321,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if (!response) {
 				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				KickEx(playerid);
+				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				return Kick(playerid);
 			}
 
 			if(!(6 <= strlen(inputtext) <= 22)) {
@@ -345,9 +349,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 				}
 			}
-			for(new d; d < 11; d++) PlayerInfo[playerid][pSalt][d] = random(79) + 47;
-			PlayerInfo[playerid][pSalt][10] = 0;
-			SHA256_PassHash(inputtext,PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pPassword], 65);
+			strmid(PlayerInfo[playerid][pPassword], inputtext, 0, strlen(inputtext), 32);
 
 			if(response) {
 				sstring[0] = 0;
@@ -359,9 +361,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response){
 				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				KickEx(playerid);
+				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				return Kick(playerid);
 			}
-			if(response) {
+			else {
 				if(!IsValidEmail(inputtext)) {
 					SEND_CM(playerid, format_red, !"Неккоректный адрес электронной почты.");
 					ShowPlayerDialog(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
@@ -380,27 +383,34 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response) {
 				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				KickEx(playerid);
+				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				return Kick(playerid);
 			}
-			if(response) {
-				PlayerInfo[playerid][pSex] = listitem;
-				return OnPlayerRequestClass();
-
+			else {
+				switch(listitem) {
+					case 0: PlayerInfo[playerid][pSex] = 1; // 1 - мужской
+					case 1: PlayerInfo[playerid][pSex] = 2; // 2 - женский
+				}
 			}
+			CreateAccount(playerid);
 		}
 		case dReg4:
 		{
-			if(!response) {
-				SEND_CM(playerid, format_red, !"Вы отказались от авторизации.");
-				KickEx(playerid);
+			if(response) {
+				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
+					query_string[0] = EOS;
+					format(query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword]);
+					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
+				}
+				else {
+					return @_IncorrectPassword(playerid);
+				}
 			}
-	
-			if(!strcmp(PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt])) {
-
-				format(query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword]);
-				mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
+			else {
+				SEND_CM(playerid, -1, "Вы отказались от авторизации."); 
+				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				return Kick(playerid);
 			}
-			else return @_mysqlUploadPlayerAccount(playerid);
 			query_string[0] = EOS;
 		}
 	}
@@ -415,7 +425,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_mysqlPlayerAccountGet(playerid);
 @_mysqlPlayerAccountGet(playerid) {
 	query_string[0] = EOS;
-	format(query_string, sizeof query_string, "SELECT 'password' , 'salt' FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
+	format(query_string, sizeof query_string, "SELECT 'password' FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
 	mysql_tquery(db, query_string, "@_mysqlGetPlayerAccount", "i", playerid);
 }
 
@@ -423,25 +433,17 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_mysqlGetPlayerAccount(playerid) {
 	SetPlayerColor(playerid, 0xFF);
 
-	if(cache_num_rows() == 0) {
-		sstring[0] = EOS;
-		format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\nДля продолжения, введите пароль в поле ниже.\nОн будет необходим для дальнейшей авторизации на сервере.", pi[playerid][pNames]);
-		ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
+	if(cache_num_rows() != 0) {
+		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);		
+		ShowLoginDialog(playerid);
 	}
 	else {
-		sstring[0] = EOS;
-		format(sstring, sizeof(sstring),"\
-			{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
-			{FFFFFF}Введите свой пароль\n\
-			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-		ShowPlayerDialog(playerid, dReg4, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");		
-		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);		\
-		cache_get_value_name(0, "salt", PlayerInfo[playerid][pSalt], 11);		
+		ShowRegDialog(playerid);
 	}
 	return 1;		
 }
-@_mysqlUploadPlayerAccount(playerid);
-@_mysqlUploadPlayerAccount(playerid)
+@_IncorrectPassword(playerid);
+@_IncorrectPassword(playerid)
 {
 		if(cache_num_rows() == 0) {
 		 	new ssstring[80];
@@ -452,53 +454,86 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 			SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") +1);
 			ssstring[0] = EOS;
 		} 
-		if(GetPVarInt(playerid, "BadAttempt") >= 3) return SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.") & Kick(playerid);
-		LoginPlayer(playerid);
+		else return LoginPlayer(playerid);
+
+		if(GetPVarInt(playerid, "BadAttempt") >= 3) {
+			SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.");
+			SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+			return Kick(playerid);
+		}
 		return 1; 
 }
+
+stock ShowLoginDialog(playerid)
+{
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring),"\
+		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
+		{FFFFFF}Введите свой пароль\n\
+		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
+	ShowPlayerDialog(playerid, dReg4, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");	
+}
+stock ShowRegDialog(playerid)
+{
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
+		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
+		Для продолжения, введите пароль в поле ниже.\n\
+		Он будет необходим для дальнейшей авторизации на сервере.\n\
+		\t\t{FFFFFF}Примечание для ввода пароля:\n\
+		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
+		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
+	ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
+	return 1;
+}
+
 stock CreateAccount(playerid)
 {
-	new IP[16];
 	sstring[0] = EOS;
 	query_string[0] = EOS;
 	PlayerInfo[playerid][pMoney] = BONUS_MONEY;
 	PlayerInfo[playerid][pLevel] = START_LEVEL;
-	PlayerInfo[playerid][pIP] = GetPlayerIp(playerid, IP, 16);
-	mysql_format(db, query_string, 350,"INSERT INTO `accounts` (`names`,`password`,`salt`,`ip`,`lastIP`, `email`,`sex`,`admin`,`currentskin`,`money`,`level`) VALUES ('%s','%s','%e','%s', '%s', '%s',%d,%d,%d,%i,%i)", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], PlayerInfo[playerid][pIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
+	PlayerInfo[playerid][pSkin] = DEFAULT_SKIN;
+
+	new Year, Month, Day;
+	getdate(Year, Month, Day);
+	new date[13];
+	format(date, sizeof(date), "%02d.%02d.%d", Day, Month, Year);
+
+	mysql_format(db, query_string, sizeof(query_string),"INSERT INTO `accounts` (`names`, `password`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`) VALUES ('%s','%s','%s','%s','%s','%s',%d,%d,%d,%d,%d)", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
 	mysql_tquery(db, query_string);
 	printf("(%s) %s", strlen(query_string), query_string);
 
 	playerLoggedStatus[playerid] = true;
-	SetCameraBehindPlayer(playerid);
 	SpawnPlayer(playerid);
 	return 1;
 }
 stock LoginPlayer(playerid) {
-	new IP[16];
+
+	new getIP[16];
 	cache_get_value_name_int(0, "email", PlayerInfo[playerid][pEmail]);
 	cache_get_value_name_int(0, "sex", PlayerInfo[playerid][pSex]);
 	cache_get_value_name_int(0, "admin", PlayerInfo[playerid][pAdmin]);
 	cache_get_value_name_int(0, "currentskin", PlayerInfo[playerid][pSkin]);
 	cache_get_value_name_int(0, "money", PlayerInfo[playerid][pMoney]);
 	cache_get_value_name_int(0, "level", PlayerInfo[playerid][pLevel]);
-	cache_get_value_name_int(0, "exp", PlayerInfo[playerid][pExp]);
-
-	playerLoggedStatus[playerid] = true;
 
 	SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
 	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	PlayerInfo[playerid][pIP] = GetPlayerIp(playerid, IP, 16);
-	IP[0] = EOS;
+
+	PlayerInfo[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
 
 	if(PlayerInfo[playerid][pAdmin] > 0) return SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
+	
+	playerLoggedStatus[playerid] = true;
 	return 1;
 }
 stock SavePlayer(playerid) {
 	if(playerLoggedStatus[playerid] == false) return 0;
 
 	query_string[0] = EOS;
-	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `ip` = '%s', `lastIP` = '%s', `email` = '%s', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `exp` = %d", PlayerInfo[playerid][pIP], PlayerInfo[playerid][pIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pExp]);
+	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `regIP` = '%s', `lastIP` = '%s', `email` = '%s', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d", PlayerInfo[playerid][pIP], PlayerInfo[playerid][pIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
 	mysql_tquery(db, query_string);
 	return 1;
 }
@@ -515,9 +550,9 @@ stock SavePlayer(playerid) {
 		{
 			query_string[0] = EOS;
 			if(GetPlayerID(name) != INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = 0;
-			mysql_format(db, query_string, sizeof(query_string), "DELETE FROM `admin` WHERE name = '%s'", name);
+			mysql_format(db, query_string, sizeof(query_string), "DELETE FROM `admin` WHERE names = '%s'", name);
 			mysql_tquery(db, query_string, "", "");
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE name = '%s'", name);
+			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE names = '%s'", name);
 			mysql_tquery(db, query_string, "", "");
 			sstring[0] = EOS;
 			format(sstring, sizeof(sstring),"Администратор %s был снят с должности.", name);
@@ -527,9 +562,9 @@ stock SavePlayer(playerid) {
 		{
 			if(GetPlayerID(name) !=INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = level;
 			query_string[0] = EOS;
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = %d WHERE name '%s' LIMIT 1", level, name);
+			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = %d WHERE names '%s' LIMIT 1", level, name);
 			mysql_tquery(db, query_string, "", "");
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE name = '%s'", level, name);
+			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%s'", level, name);
 			mysql_tquery(db, query_string, "", "");
 			sstring[0] = EOS;
 			format(sstring, sizeof(sstring), "Администратор %s теперь имеет %i уровень доступа.", name, level);
@@ -542,7 +577,7 @@ stock SavePlayer(playerid) {
 		if(!level) return SEND_CM(playerid, format_white, "Игрок не администратор");
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%s', %d, CURDATE()", name, level);
 		mysql_tquery(db, query_string, "", "");
-		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE name = '%s'", level, name);
+		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%s'", level, name);
 		mysql_tquery(db, query_string, "", "");
 		sstring[0] = EOS;
 		format(sstring, sizeof(sstring),"%s добавлен в базу данных как администратор. Уровень доступа: %i", name, level);
@@ -550,7 +585,7 @@ stock SavePlayer(playerid) {
 		if(GetPlayerID(name) != INVALID_PLAYER_ID) {
 			PlayerInfo[GetPlayerID(name)][pAdmin] = level;
 			query_string[0] = EOS;
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin %d WHERE name = '%s'", PlayerInfo[playerid][pAdmin], name);
+			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin %d WHERE names = '%s'", PlayerInfo[playerid][pAdmin], name);
 			mysql_tquery(db, query_string, "", "");
 		}
 	}
@@ -579,9 +614,6 @@ stock IsLoginInvalid(const text[]) // проверка ника при входе на сервер, если со
 	return 0;
 }
 
-function OnPlayerKick(playerid) return Kick(playerid);
-stock KickEx(playerid) return SetTimerEx("OnPlayerKick",50,false,"d",playerid);
-
 stock CheckExceptionName(const string[])
 {
 	static const NameList[][] =
@@ -597,11 +629,7 @@ stock CheckExceptionName(const string[])
 	}
 	return 0;
 }
-stock GetString(const param1[],const param2[])
-{
-	return !strcmp(param1, param2, false);
-}
-
+stock GetString(const param1[],const param2[]) return !strcmp(param1, param2, false);
 stock GetPlayerID(const string[])
 {
     new testname[MAX_PLAYER_NAME];
@@ -619,10 +647,10 @@ stock ConnectSQL()
 {
 	db = mysql_connect(m_host, m_user, m_pass, m_db);
     if(mysql_errno() == 0)  {
-		print("[mysql] database connected successfully");
+		print("[mysql] НЕХУЯ ЗАРАБОТАЛО УАСЯ");
 	}
 	else {
-		print("[mysql] couldn't connect to database!");
+		print("[mysql] НЕ РАБОТАИТ БЛЕАДЬ");
 	}
 	mysql_log(ERROR | WARNING);
 }
