@@ -78,7 +78,7 @@ new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
 
 enum {
 	dNull = 0, 
-	dLogin = 1, dReg1 = 2,dReg2 = 3,dReg3 = 4,dReg4 = 5,
+	dLogin = 1, dReg1 = 2,dReg2 = 3,dReg3 = 4,d_Log = 5,
 }
 
 
@@ -394,7 +394,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			CreateAccount(playerid);
 		}
-		case dReg4:
+		case d_Log:
 		{
 			if(response) {
 				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
@@ -450,7 +450,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 			format(ssstring,sizeof(ssstring),"\
 				{FF0000}Вы ввели неверный пароль!\n\
 				{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
-			ShowPlayerDialog(playerid, dReg4, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
+			ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
 			SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") +1);
 			ssstring[0] = EOS;
 		} 
@@ -471,7 +471,7 @@ stock ShowLoginDialog(playerid)
 		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-	ShowPlayerDialog(playerid, dReg4, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");	
+	ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");	
 }
 stock ShowRegDialog(playerid)
 {
