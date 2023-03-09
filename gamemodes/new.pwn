@@ -298,7 +298,7 @@ CMD:plvh(pl) {
 		Float: Y,
 		Float: Z; 
 	GetPlayerPos(pl, X, Y, Z);
-	new veh = CreateVehicle(451, X, Y, Z, 0.0, 0, 2, 0);
+	new veh = CreateVehicle(422, X, Y, Z, 0.0, 0, 2, 0);
 	OnVehicleSpawn(veh);
 	return PutPlayerInVehicle(pl, veh, 0);
 }
