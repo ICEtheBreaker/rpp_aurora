@@ -9,7 +9,7 @@ software for Microsoft Windows (r).
 SA-MP CLIENT AND SERVER SOFTWARE LICENSE AGREEMENT AND ATTRIBUTIONS
 
 
----- LICENSE TERMS ----
+# LICENSE TERMS
 
 (a) You must have a valid license to use Grand Theft Auto: San Andreas (r) PC
 in order for this license to be valid.
@@ -51,13 +51,13 @@ Take-Two Interactive Software Inc.
 ------------------------------------------------------------------------------------
 
 
----- ATTRIBUTIONS ----
+# ATTRIBUTIONS
 
 - This software makes use of the RakNet networking library (c) 2003 Kevin Jenkins
 - This software makes use of the Pawn language (c) ITB CompuPhase, 1997-2005
 - This software makes use of the ttmath library (c) 2006-2009, Tomasz Sowa
 
-*** ttmath LIBRARY LICENSE ***
+# LIBRARY LICENSE
 
  Copyright (c) 2006-2009, Tomasz Sowa
   All rights reserved.
