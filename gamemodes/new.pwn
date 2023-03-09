@@ -412,7 +412,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
 			}
-			query_string[0] = EOS;
+			query_string[0] = 0;
 		}
 	}
 	return 1;
