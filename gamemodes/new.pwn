@@ -343,7 +343,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					default: {
 						SEND_CM(playerid, format_white, !"Пароль не должен состоять из кириллицы и других запретных символов!");
 
-						sstring[0] = EOS;
+						sstring[0] = 0;
 						format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\nДля продолжения, введите пароль в поле ниже.\nОн будет необходим для дальнейшей авторизации на сервере.", pi[playerid][pNames]);
 						ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");			
 
