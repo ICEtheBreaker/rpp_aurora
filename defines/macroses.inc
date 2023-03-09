@@ -6,3 +6,4 @@
 
 #define BONUS_MONEY						250
 #define START_LEVEL						1
+#define DEFAULT_SKIN                    102
