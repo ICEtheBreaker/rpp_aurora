@@ -95,6 +95,7 @@ public OnGameModeInit()
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
 	// printf("Loaded success "#mode_name"");
+	printf("s");
 	return 1;
 }
 
