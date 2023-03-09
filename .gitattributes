@@ -9,7 +9,8 @@
 *.inc linguist-language=C++
 *.pwn linguist-language=Pawn
 *.sql linguist-language=SQL
-*.json linguist-language=JavaScript 
+*.json linguist-language=JSON
+ 
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
