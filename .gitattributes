@@ -1,10 +1,7 @@
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
-* text=auto
-
-* working-tree-encoding=cp1251
-* eol=crlf
+* text eol=crlf
 
 *.inc linguist-language=Pawn
 *.pwn linguist-language=Pawn
