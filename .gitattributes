@@ -6,7 +6,7 @@
 *.inc       linguist-language=Pawn
 *.pwn       linguist-language=Pawn
 *.sql       linguist-language=SQL
-*.json      linguist-language=JSON
+*.json      linguist-language=JavaScript
 *.dll       linguist-language=C++
 *.so        linguist-language=C++
 *.md        linguist-language=Markdown
