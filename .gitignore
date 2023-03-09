@@ -7,6 +7,9 @@
 *.o
 *.obj
 
+# Compiled Bytecode, precompiled output and assembly
+*.amx
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -28,7 +31,6 @@
 # Executables
 *.out
 *.app
-*.amx
 logs/errors.log
 server_log.txt
 logs/warnings.log

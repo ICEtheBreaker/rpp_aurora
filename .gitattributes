@@ -3,6 +3,13 @@
 ###############################################################################
 * text=auto
 
+* working-tree-encoding=cp1251
+* eol=crlf
+
+*.inc linguist-language=C++
+*.pwn linguist-language=Pawn
+*.sql linguist-language=SQL
+*.json linguist-language=JavaScript 
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
@@ -62,5 +69,3 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-working-tree-encoding=cp1251
-eol=crlf
