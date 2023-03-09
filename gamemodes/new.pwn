@@ -476,7 +476,7 @@ stock ShowLoginDialog(playerid)
 }
 stock ShowRegDialog(playerid)
 {
-	sstring[0] = EOS;
+	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
 		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
