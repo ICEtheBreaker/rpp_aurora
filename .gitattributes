@@ -6,11 +6,14 @@
 * working-tree-encoding=cp1251
 * eol=crlf
 
-*.inc linguist-language=C++
+*.inc linguist-language=Pawn
 *.pwn linguist-language=Pawn
 *.sql linguist-language=SQL
 *.json linguist-language=JSON
- 
+*.dll linguist-language=C++
+*.so linguist-language=C++
+*.md linguist-language=Markdown
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
