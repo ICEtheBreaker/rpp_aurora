@@ -399,7 +399,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(response) {
 				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
-					query_string[0] = EOS;
+					query_string[0] = 0;
 					format(query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
 				}
