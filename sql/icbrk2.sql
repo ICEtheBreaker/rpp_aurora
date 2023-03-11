@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 15 2023 г., 20:04
--- Версия сервера: 5.6.51
+-- Время создания: Мар 11 2023 г., 16:08
+-- Версия сервера: 5.7.39-log
 -- Версия PHP: 7.4.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,27 +28,26 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `accounts` (
-  `id` int(11) NOT NULL,
+  `id` int(8) NOT NULL,
   `names` varchar(24) NOT NULL,
   `password` varchar(64) NOT NULL,
-  `salt` varchar(11) NOT NULL,
-  `ip` varchar(16) NOT NULL,
+  `regIP` varchar(16) NOT NULL,
+  `regData` varchar(12) NOT NULL,
   `lastIP` varchar(16) NOT NULL,
   `email` varchar(64) NOT NULL,
   `sex` int(2) NOT NULL,
   `admin` int(1) NOT NULL,
   `currentskin` int(3) NOT NULL,
   `money` int(11) NOT NULL,
-  `level` int(4) NOT NULL,
-  `exp` int(2) NOT NULL
+  `level` int(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
 -- Дамп данных таблицы `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `ip`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`, `exp`) VALUES
-(27, 'zxczxzx', 'BDDE7FD55E32908952BD7E8B02A9B8A50A8C887475A6F0A392F311803C323A61', 'gNn_WK7QcD', '\r6.127.37.174', '\r6.127.37.174', 'c', 0, 0, 0, 0, 0, 0);
+INSERT INTO `accounts` (`id`, `names`, `password`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`) VALUES
+(37, 'jopaxui', 'jopaxui', '26.87.224.43', '09.03.2023', '26.87.224.43', 'dimamironov1337228@gmail.com', 2, 0, 102, 250, 1);
 
 -- --------------------------------------------------------
 
@@ -88,7 +87,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT для таблицы `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT для таблицы `admin`
