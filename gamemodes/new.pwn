@@ -23,7 +23,7 @@ main () {}
 #define function%0(%1)	forward%0(%1); public%0(%1)
 #define pi 				PlayerInfo
 #define f%0%1			format(%0,sizeof(%0), %1
-#define IsAdmin(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
+#define IsAdmin(%0) 	if(PlayerInfo[playerid][pAdmin] < %0) return 1
 
 //вписан в мод
 #define NAME_FULL_ACCESS_1				""
@@ -37,7 +37,6 @@ main () {}
 
 #define GetName(%0)						pi[%0][pNames]
 
-
 // после инклудов желательно начать регистрировать переменные
 //  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
 
@@ -46,7 +45,7 @@ new query_string[356]; // ??? в дальнейшем убрать вследствие оптимизации стека
 enum pInfo {
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
-	pPassword[64+1], // пароль может состоять из 64 символов, при необходимости можно изменить значение
+	pPassword[64], // пароль может состоять из 64 символов, при необходимости можно изменить значение
 	pIP[16],
 	pRegData[13],
 	pLastIP[16],
@@ -81,7 +80,6 @@ enum {
 	dLogin = 1, dReg1 = 2,dReg2 = 3,dReg3 = 4,d_Log = 5,
 }
 
-
 /* 	потом уберу. надо определиться с дизайном проекта (дабы была единая цветограмма). 
 	перво наперво поработать с системой сохранения и безопасности пользователя. */
 
@@ -94,8 +92,6 @@ public OnGameModeInit()
 	SetGameModeText(""#mode_name""); 
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
-	// printf("Loaded success "#mode_name"");
-	printf("s");
 	return 1;
 }
 
@@ -131,13 +127,10 @@ public OnPlayerDisconnect(playerid, reason)
 	return 1;
 }
 
-public OnPlayerSpawn(playerid)
-{
-	if(playerLoggedStatus[playerid] == false) {
-		SEND_CM(playerid, -1, "Вы не авторизовались!");
-		return Kick(playerid);
+public OnPlayerSpawn(playerid) {
+	if(!playerLoggedStatus[playerid]) {
+		return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
 	}
-
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SetCameraBehindPlayer(playerid);
 	return 1;
@@ -395,10 +388,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			CreateAccount(playerid);
 		}
-		case d_Log:
-		{
+		case d_Log: {
 			if(response) {
-				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
+				if(!strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
 					query_string[0] = 0;
 					format(query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", pi[playerid][pNames], pi[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
@@ -406,8 +398,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				else {
 					return @_IncorrectPassword(playerid);
 				}
-			}
-			else {
+			} else {
 				SEND_CM(playerid, -1, "Вы отказались от авторизации."); 
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
@@ -443,6 +434,44 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	}
 	return 1;		
 }
+// так не всегда работает хз почвему
+
+// а чё @ он встроено работает чи как 
+/*это типа каллбэка
+
+	но ок но каллбек с постфиксом же
+	public forward а лучше щас повыводить значения которые он на входах и выходах получает и узнать причину
+	с incorrectpassword все ок при вводе неверного пароля он показывает что он неверный
+	но во всех случаях даже если вводить правильный он все равно неверный
+
+	а ебать хуйня ща
+	читал где-то не помню где уже ахах
+
+	ща смотрю на этот диалог из комментариев и думаю будущие игроки которые будут смотреть этот код ахуеют)
+	но он уберется бо это пиздец а не кодаахха
+
+	тебе мой код не нравится? 
+	не не я сейчас за коммы
+
+	а ок короче я прочитал на форумах про эту хуйню 
+	сначала тут с хэшем было я переделал без хэша все равно хуйня
+
+	чето с этой строкой короче
+
+	вообщем момент 
+	ты же сравниваешь пароль с паролем?
+
+	там идет сравнение данных из переменной pPassword с вводимым значением
+
+	ну вот теперь смотри что у тебя получается
+	if(0 когда = 1) какой будет резульатт?
+
+	я уже писал if(!strcmp )
+	та же хуйня была
+
+	ща
+*/ 
+
 @_IncorrectPassword(playerid);
 @_IncorrectPassword(playerid)
 {
@@ -510,7 +539,6 @@ stock CreateAccount(playerid)
 	return 1;
 }
 stock LoginPlayer(playerid) {
-
 	new getIP[16];
 	cache_get_value_name_int(0, "email", PlayerInfo[playerid][pEmail]);
 	cache_get_value_name_int(0, "sex", PlayerInfo[playerid][pSex]);
@@ -624,25 +652,22 @@ stock CheckExceptionName(const string[])
 		NAME_FULL_ACCESS_3,
 	 	NAME_FULL_ACCESS_4
 	};
-	for(new i = 0; i < sizeof(NameList); i++)
+	for(new i = sizeof(NameList); i--; )
 	{
 		if(GetString(string, NameList[i])) return 1;
 	}
 	return 0;
 }
 stock GetString(const param1[],const param2[]) return !strcmp(param1, param2, false);
-stock GetPlayerID(const string[])
-{
+stock GetPlayerID(const string[]) {
     new testname[MAX_PLAYER_NAME];
-	for(new i = 0; i < MAX_PLAYERS; i++)
-	{
+	for(new i = MAX_PLAYERS; i--; ) {
 		if(!IsPlayerConnected(i)) continue;
 		GetPlayerName(i, testname, sizeof(testname));
-		if(strcmp(testname, string, true, strlen(string)) == 0) return i;
+		if(!strcmp(testname, string, true)) return i;
 	}
 	return INVALID_PLAYER_ID;
 }
-
 
 stock ConnectSQL()
 {
@@ -653,5 +678,6 @@ stock ConnectSQL()
 	else {
 		print("[mysql] НЕ РАБОТАИТ БЛЕАДЬ");
 	}
-	mysql_log(ERROR | WARNING);
+	// mysql_log(ERROR | WARNING);
+	mysql_log(DEBUG);
 }
