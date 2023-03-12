@@ -533,7 +533,7 @@ stock SavePlayer(playerid) {
 
 @MakeAdmin(playerid, const name[], level);
 @MakeAdmin(playerid, const name[], level) {
-	if(cache_num_rows() = 0) {
+	if(cache_num_rows() == 0) {
 		if(!level) {
 			query_string[0] = EOS;
 			if(GetPlayerID(name) != INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = 0;
