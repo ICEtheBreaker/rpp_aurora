@@ -532,15 +532,9 @@ stock SavePlayer(playerid) {
 }
 
 @MakeAdmin(playerid, const name[], level);
-@MakeAdmin(playerid, const name[], level)
-{
-	new rows;
-	cache_get_row_count(rows);
-
-	if(rows)
-	{
-		if(!level)
-		{
+@MakeAdmin(playerid, const name[], level) {
+	if(cache_num_rows() = 0) {
+		if(!level) {
 			query_string[0] = EOS;
 			if(GetPlayerID(name) != INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = 0;
 			mysql_format(db, query_string, sizeof(query_string), "DELETE FROM `admin` WHERE names = '%s'", name);
@@ -551,8 +545,7 @@ stock SavePlayer(playerid) {
 			format(sstring, sizeof(sstring),"Администратор %s был снят с должности.", name);
 			SEND_CM(playerid, format_red, sstring);
 		}
-		else
-		{
+		else {
 			if(GetPlayerID(name) !=INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = level;
 			query_string[0] = EOS;
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = %d WHERE names '%s' LIMIT 1", level, name);
@@ -564,8 +557,7 @@ stock SavePlayer(playerid) {
 			SEND_CM(playerid, format_white, sstring);
 		}
 	}
-	else
-	{
+	else {
 		query_string[0] = EOS;
 		if(!level) return SEND_CM(playerid, format_white, "Игрок не администратор");
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%s', %d, CURDATE()", name, level);
@@ -585,8 +577,7 @@ stock SavePlayer(playerid) {
 	return 1;
 }
 
-stock IsLoginInvalid(const text[]) // проверка ника при входе на сервер, если содержит запрещенные символы будет кикать
-{
+stock IsLoginInvalid(const text[]) {
 	if(strfind(text, "none", false) != -1) return 1;
 	if(strfind(text, "'", true) != -1) return 1;
 	if(strfind(text, "/", true) != -1) return 1;
@@ -607,17 +598,14 @@ stock IsLoginInvalid(const text[]) // проверка ника при входе на сервер, если со
 	return 0;
 }
 
-stock CheckExceptionName(const string[])
-{
-	static const NameList[][] =
-	{
+stock CheckExceptionName(const string[]) {
+	static const NameList[][] = {
 		NAME_FULL_ACCESS_1,
 		NAME_FULL_ACCESS_2,
 		NAME_FULL_ACCESS_3,
 	 	NAME_FULL_ACCESS_4
 	};
-	for(new i = sizeof(NameList); i--; )
-	{
+	for(new i = sizeof(NameList); i--; ) {
 		if(GetString(string, NameList[i])) return 1;
 	}
 	return 0;
