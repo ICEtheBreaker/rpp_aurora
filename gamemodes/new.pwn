@@ -485,9 +485,9 @@ stock CreateAccount(playerid)
 {
 	sstring[0] = EOS;
 	query_string[0] = EOS;
-	PlayerInfo[playerid][pMoney] = BONUS_MONEY;
-	PlayerInfo[playerid][pLevel] = START_LEVEL;
-	PlayerInfo[playerid][pSkin] = DEFAULT_SKIN;
+	PlayerInfo[playerid][pMoney] 		= BONUS_MONEY;
+	PlayerInfo[playerid][pLevel] 		= START_LEVEL;
+	PlayerInfo[playerid][pSkin] 	    = DEFAULT_SKIN;
 
 	new Year, Month, Day;
 	getdate(Year, Month, Day);
