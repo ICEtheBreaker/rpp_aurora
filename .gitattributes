@@ -19,6 +19,14 @@
 # Note: This is only used by command line
 ###############################################################################
 #*.cs     diff=csharp
+#*.sql    diff=SQL
+#*.json   diff=JavaScript
+#*.dll    diff=C++
+#*.md     diff=Markdown
+#*.so     diff=C++
+#*.inc    diff=Pawn
+#*.pwn    diff=Pawn
+#*.json   diff=JSON
 
 ###############################################################################
 # Set the merge driver for project and solution files
