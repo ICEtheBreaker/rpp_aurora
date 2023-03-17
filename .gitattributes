@@ -36,3 +36,4 @@
 *.sqlite linguist-language=SQL
 *.sql linguist-language=SQL
 *.exe linguist-language=C++
+*.cfg linguist-language=TypeScript
