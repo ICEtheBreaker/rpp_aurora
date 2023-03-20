@@ -483,7 +483,7 @@ stock ShowRegDialog(playerid)
 
 stock CreateAccount(playerid)
 {
-	sstring[0] = EOS;
+	sstring[0] = 0;
 	query_string[0] = EOS;
 	PlayerInfo[playerid][pMoney] 		= BONUS_MONEY;
 	PlayerInfo[playerid][pLevel] 		= START_LEVEL;
