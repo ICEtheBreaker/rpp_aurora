@@ -488,8 +488,8 @@ stock ShowRegDialog(playerid)
 
 stock CreateAccount(playerid)
 {
-	sstring[0] = EOS;
-	query_string[0] = EOS;
+	sstring[0] = 0;
+	query_string[0] = 0;
 	PlayerInfo[playerid][pMoney] = BONUS_MONEY;
 	PlayerInfo[playerid][pLevel] = START_LEVEL;
 	PlayerInfo[playerid][pSkin] = DEFAULT_SKIN;
