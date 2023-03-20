@@ -525,7 +525,7 @@ stock LoginPlayer(playerid) {
 stock SavePlayer(playerid) {
 	if(playerLoggedStatus[playerid] == false) return 0;
 
-	query_string[0] = EOS;
+	query_string[0] = 0;
 	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `regIP` = '%s', `lastIP` = '%s', `email` = '%s', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d", PlayerInfo[playerid][pIP], PlayerInfo[playerid][pIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
 	mysql_tquery(db, query_string);
 	return 1;
