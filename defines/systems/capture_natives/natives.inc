@@ -1,3 +1,9 @@
+/////////////////////////////////////////////////////
+//
+// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+//
+////////////////////////////////////////////////////
+
 stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]) {
     return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
 }

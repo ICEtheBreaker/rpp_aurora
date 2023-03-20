@@ -1,3 +1,9 @@
+/////////////////////////////////////////////////////
+//
+// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+//
+////////////////////////////////////////////////////
+
 #define name_proj "CRMP"
 #define map_proj "Russia"
 #define version "0.0.1"
