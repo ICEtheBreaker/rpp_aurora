@@ -78,7 +78,7 @@ new
 	bool: playerLoggedStatus[MAX_PLAYERS];
 
 new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
-
+new PlayerAFK[MAX_PLAYERS];
 
 enum {
 	dNull = 0, 
@@ -97,6 +97,10 @@ public OnGameModeInit()
 	SetGameModeText(""#mode_name""); 
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
+
+	//? timers
+
+	SetTimer("AFKSystemUpdates", 1000, true);
 	return 1;
 }
 
@@ -129,13 +133,12 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	SavePlayer(playerid);
+	PlayerAFK[playerid] = -2;
 	return 1;
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus[playerid]) {
-		return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
-	}
+	if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SetCameraBehindPlayer(playerid);
 	return 1;
@@ -158,7 +161,20 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-	return 1;
+    if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизованы!"), Kick(playerid);
+	
+	sstring[0] = EOS;
+	if(strlen(text) < 64) {
+		format(sstring, sizeof(sstring), "%s[%d] говорит: %s", PlayerInfo[playerid][pNames], playerid, text);
+		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+	 	SetPlayerChatBubble(playerid, text, format_white, 20, 7500);
+
+		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) return ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
+	} else {
+		SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
+	}
+	//* %s [%d] говорит: %s
+	return 0;
 }
 
 public OnPlayerCommandText(playerid, cmdtext[])
@@ -268,6 +284,7 @@ public OnRconLoginAttempt(ip[], password[], success)
 
 public OnPlayerUpdate(playerid)
 {
+	PlayerAFK[playerid] = 0;
 	return 1;
 }
 
@@ -291,6 +308,8 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 	return 1;
 }
 
+
+//! пофиксить бесконечный спавн машин
 CMD:plvh(pl) {
 	new Float: X,
 		Float: Y,
@@ -310,6 +329,16 @@ CMD:makeadmin(playerid, params[]) {
 	format(query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%s'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
 	return true;
+}
+
+//? /me /todo /do /try /n /s /b /ame
+CMD:me(playerid, const params[]) {
+	if(sscanf(params, "s[118]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
+	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
+	return 1;
 }
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
@@ -440,6 +469,8 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	return 1;		
 }
 
+@StopAnimation(playerid);
+@StopAnimation(playerid) return ApplyAnimation(playerid, "PED", "facanger", 4.1, 0, 1, 1, 1, 1);
 
 @_IncorrectPassword(playerid);
 @_IncorrectPassword(playerid)
