@@ -62,7 +62,8 @@ enum pInfo {
 	pLevel,
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
-enum {
+
+enum  {
     ADM_NONE = 0,
     ADM_HELPER = 1,
     ADM_MODER = 2,
@@ -75,14 +76,16 @@ enum {
 	ADM_DEV = 9
 }
 new 
-	bool: playerLoggedStatus[MAX_PLAYERS];
+	bool: playerLoggedStatus[MAX_PLAYERS]; 
+
 
 new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
 new PlayerAFK[MAX_PLAYERS];
 
 enum {
 	dNull = 0, 
-	dLogin = 1, dReg1 = 2,dReg2 = 3,dReg3 = 4,d_Log = 5,
+	dLogin = 1, dReg1 = 2, dReg2 = 3, dReg3 = 4, d_Log = 5,
+	dMM = 6, 
 }
 
 /* 	потом уберу. надо определиться с дизайном проекта (дабы была единая цветограмма). 
@@ -132,7 +135,8 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	SavePlayer(playerid);
+	if(!playerLoggedStatus[playerid]) return 1; 
+	else SavePlayer(playerid);
 	PlayerAFK[playerid] = -2;
 	return 1;
 }
@@ -170,16 +174,8 @@ public OnPlayerText(playerid, text[])
 	 	SetPlayerChatBubble(playerid, text, format_white, 20, 7500);
 
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) return ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else {
-		SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
-	}
-	//* %s [%d] говорит: %s
-	return 0;
-}
-
-public OnPlayerCommandText(playerid, cmdtext[])
-{
-	return 0;
+	} else return SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
+	return 1;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
@@ -280,8 +276,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 public OnRconLoginAttempt(ip[], password[], success)
 {
 	return 1;
-}
-
+}	
 public OnPlayerUpdate(playerid)
 {
 	PlayerAFK[playerid] = 0;
@@ -326,18 +321,68 @@ CMD:makeadmin(playerid, params[]) {
 	else if(CheckExceptionName(playername)) return 0;
 	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) return SEND_CM(playerid, format_white, "Уровень администрирования от 1 до 6");
 	query_string[0] = EOS;
-	format(query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%s'", playername);
+	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%s'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
 	return true;
 }
 
 //? /me /todo /do /try /n /s /b /ame
-CMD:me(playerid, const params[]) {
+CMD:me(playerid, params[]) {
 	if(sscanf(params, "s[118]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
+	return 1;
+}
+CMD:ame(playerid, params[]) {
+	if(sscanf(params, "s[144]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /ame [действие]");
+	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
+	return 1;
+}
+CMD:do(playerid, params[]) {
+	if(sscanf(params, "s[116]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /do [текст]");
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
+	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
+	return 1;
+}
+CMD:try(playerid, params[]) {
+	if(sscanf(params, "s[99]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /try [текст]");
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
+	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	return 1;
+}
+CMD:todo(playerid, params[]) {
+	if(sscanf(params, "s[95]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
+	if(strlen(params) > 95) return SEND_CM(playerid, format_white, "[Ошибка]: Слишком длинный текст!");
+	new message[96];
+	strmid(message, params, 0, sizeof(message));
+	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
+	if(Regex_Check(message, rg_todocheck)) {
+		new star = strfind(message, "*");
+		new action[50];
+		strmid(action, message, star+1, sizeof(message));
+		strdel(message, star, sizeof(message));
+		sstring[0] = EOS;
+		format(sstring, sizeof(sstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+	} else return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
+	return 1;
+}
+CMD:s(playerid, params[]) {
+	if(sscanf(params, "s[105]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /s [текст]");
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring), "%s[%d] крикнул%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
+	ProxDetector(20.0, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
+	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) return ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
+	SetPlayerChatBubble(playerid, params[0], format_white, 25, 7500);
+	return 1;
+}
+CMD:menu(playerid) {
+
 	return 1;
 }
 
@@ -424,9 +469,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case d_Log: {
 			if(response) {
-				if(!strcmp(PlayerInfo[playerid][pPassword], inputtext, true)) {
+			    if(!strlen(inputtext)) return ShowLoginDialog(playerid);
+				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, false, 64) == 0) {
 					query_string[0] = 0;
-					format(query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", pi[playerid][pNames], pi[playerid][pPassword]);
+					mysql_format(db, query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", pi[playerid][pNames], pi[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
 				}
 				else {
@@ -451,7 +497,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_mysqlPlayerAccountGet(playerid);
 @_mysqlPlayerAccountGet(playerid) {
 	query_string[0] = EOS;
-	format(query_string, sizeof query_string, "SELECT 'password' FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
+	mysql_format(db, query_string, sizeof query_string, "SELECT 'password' FROM `accounts` WHERE `names` = '%s'", PlayerInfo[playerid][pNames]);
 	mysql_tquery(db, query_string, "@_mysqlGetPlayerAccount", "i", playerid);
 }
 
@@ -460,7 +506,6 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	SetPlayerColor(playerid, 0xFF);
 
 	if(cache_num_rows() != 0) {
-		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);		
 		ShowLoginDialog(playerid);
 	}
 	else {
@@ -496,12 +541,16 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 
 stock ShowLoginDialog(playerid)
 {
+	cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);		
+	printf("password: %s", PlayerInfo[playerid][pPassword]);
 	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-	ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");	
+	ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");
+	
+	return 1;	
 }
 stock ShowRegDialog(playerid)
 {
@@ -509,7 +558,7 @@ stock ShowRegDialog(playerid)
 	format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
 		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
-		Он будет необходим для дальнейшей авторизации на сервере.\n\
+		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
 		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
@@ -660,12 +709,16 @@ stock GetPlayerID(const string[]) {
 stock ConnectSQL()
 {
 	db = mysql_connect(m_host, m_user, m_pass, m_db);
-    if(mysql_errno() == 0)  {
-		print("[mysql] НЕХУЯ ЗАРАБОТАЛО УАСЯ");
-	}
-	else {
-		print("[mysql] НЕ РАБОТАИТ БЛЕАДЬ");
+   	switch(mysql_errno()){
+		case 0: print("РАБОТАЕТ НАХУЙ");
+	    case 1044: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ КОГО В ПОЛЬЗОВАТЕЛИ УКАЗАЛ??? Я НЕ ЗНАЮ ЕГО]");
+	    case 1045: return print("НЕ РАБОТАЕТ НАХУЙ [НЕПРАВИЛЬНЫЙ ПАРОЛЬ БЛЯТЬ]");
+	    case 1049: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ НАШЕЛ ТАКУЮ БАЗУ ДАННЫХ]");
+	    case 2003: return print("НЕ РАБОТАЕТ НАХУЙ [СЕРВЕР ЗАДУДОСИЛИ ЕБА]");
+		case 2002: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ СЕРВЕР НЕ ВКЛЮЧИЛ ЕБАНЬ]");
+	    case 2005: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ ЗНАЮ ЭТОТ АДРЕС]");
+	    default: return printf("НЕ РАБОТАЕТ НАХУЙ [ХУЙ ЕГО ЗНАЕТ. ОШИБКА: %d]", mysql_errno());
 	}
 	mysql_log(DEBUG); 
-	
+	return 1;
 }
