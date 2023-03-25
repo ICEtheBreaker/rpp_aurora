@@ -38,3 +38,5 @@ server_log.txt
 logs/warnings.log
 logs/
 .project
+.pub
+.

@@ -175,7 +175,7 @@ native GetPVarNameAtIndex(playerid, index, ret_varname[], ret_len);
 native GetPVarType(playerid, varname[]);
 
 #define MAX_CHATBUBBLE_LENGTH 144
-native SetPlayerChatBubble(playerid, text[], color, Float:drawdistance, expiretime);
+native SetPlayerChatBubble(playerid, const text[], color, Float:drawdistance, expiretime);
 
 // Player control
 native PutPlayerInVehicle(playerid, vehicleid, seatid);
@@ -184,7 +184,7 @@ native GetPlayerVehicleSeat(playerid);
 native RemovePlayerFromVehicle(playerid);
 native TogglePlayerControllable(playerid, toggle);
 native PlayerPlaySound(playerid, soundid, Float:x, Float:y, Float:z);
-native ApplyAnimation(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0);
+native ApplyAnimation(playerid, const animlib[], const animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0);
 native ClearAnimations(playerid, forcesync = 0);
 native GetPlayerAnimationIndex(playerid); // return the index of any running applied animations (0 if none are running)
 native GetAnimationName(index, animlib[], len1, animname[], len2); // get the animation lib/name for the index

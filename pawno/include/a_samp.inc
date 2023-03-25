@@ -376,7 +376,7 @@ forward OnPlayerSelectedMenuRow(playerid, row);
 forward OnPlayerExitedMenu(playerid);
 forward OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
 forward OnPlayerKeyStateChange(playerid, newkeys, oldkeys);
-forward OnRconLoginAttempt( ip[], password[], success );
+forward OnRconLoginAttempt(ip[], password[], success );
 forward OnPlayerUpdate(playerid);
 forward OnPlayerStreamIn(playerid, forplayerid);
 forward OnPlayerStreamOut(playerid, forplayerid);

@@ -1,3 +1,9 @@
+/////////////////////////////////////////////////////
+//
+// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+//
+////////////////////////////////////////////////////
+
 #define DIALOG_M						DIALOG_STYLE_MSGBOX
 #define DIALOG_L    					DIALOG_STYLE_LIST
 #define DIALOG_I          				DIALOG_STYLE_INPUT
