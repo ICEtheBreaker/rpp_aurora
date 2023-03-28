@@ -4,26 +4,43 @@
 //
 ////////////////////////////////////////////////////
 main () {}
-@If_u_can_read_this_u_r_nerd();
-@If_u_can_read_this_u_r_nerd()
+@___If_u_can_read_this_u_r_nerd();
+@___If_u_can_read_this_u_r_nerd()
 {
-    #emit    stack    0x7FFFFFFF
-    #emit    inc.s    cellmax
-    static const ___[][] = {"protected from", "deamx"};
-    #emit    retn
-    #emit    load.s.pri    ___
-    #emit    proc
-    #emit    proc
-    #emit    fill    cellmax
-    #emit    proc
-    #emit    stack    1
-    #emit    stor.alt    ___
-    #emit    strb.i    2
-    #emit    switch    4
-    #emit    retn
-L1:
-    #emit    jump    L1
-    #emit    zero    cellmin
+	#emit stack 0x7FFFFFFF
+	#emit inc.s cellmax
+	static const ___[][] = {"AntiDeAMX"};
+	#emit retn
+	#emit load.s.pri ___
+	#emit proc
+	#emit proc
+	#emit fill cellmax
+	#emit proc
+	#emit stor.alt ___
+	#emit strb.i 2
+	#emit switch 4
+	#emit retn
+	L1:
+	#emit jump L1
+	#emit zero cellmin
+}
+
+AntiDeAMX()
+{
+	new a[][] =
+	{
+		"Unarmed (Fist)",
+		"Brass K"
+	};
+
+	new b;
+	#emit load.pri b
+	#emit stor.pri b
+
+ 	#pragma unused a
+  	#pragma dynamic 400000
+  	#pragma warning disable 219
+   	//#pragma disablerecursion
 }
 
 #pragma tabsize 0
@@ -115,13 +132,17 @@ enum {
 public OnGameModeInit()
 {
 	ConnectSQL();
+	AntiDeAMX();
 
 	new MySQLOpt: option_id = mysql_init_options();
+	new currenttime = GetTickCount();
+
 	mysql_set_option(option_id, AUTO_RECONNECT, true);
 	SetGameModeText(""#mode_name""); 
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
 
+	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 	//? timers
 
 	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
