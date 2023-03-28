@@ -4,6 +4,45 @@
 //
 ////////////////////////////////////////////////////
 main () {}
+@___If_u_can_read_this_u_r_nerd();
+@___If_u_can_read_this_u_r_nerd()
+{
+	#emit stack 0x7FFFFFFF
+	#emit inc.s cellmax
+	static const ___[][] = {"AntiDeAMX"};
+	#emit retn
+	#emit load.s.pri ___
+	#emit proc
+	#emit proc
+	#emit fill cellmax
+	#emit proc
+	#emit stor.alt ___
+	#emit strb.i 2
+	#emit switch 4
+	#emit retn
+	L1:
+	#emit jump L1
+	#emit zero cellmin
+}
+
+AntiDeAMX()
+{
+	new a[][] =
+	{
+		"Unarmed (Fist)",
+		"Brass K"
+	};
+
+	new b;
+	#emit load.pri b
+	#emit stor.pri b
+
+ 	#pragma unused a
+  	#pragma dynamic 400000
+  	#pragma warning disable 219
+   	//#pragma disablerecursion
+}
+
 #pragma tabsize 0
 
 #include <a_samp> // надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
@@ -15,11 +54,9 @@ main () {}
 #include <crashdetect>
 #include <dc_cmd>
 #include <Pawn.Regex>
-
 #include "../../defines/name" // макрос касаемый названия проекта и прочего
 #include "../../defines/db_conn" // подключение к бд (конфиг)
 #include "../../defines/colors" // цвета
-
 #include "../../defines/systems/capture_natives/natives" // перехват нативок
 #include "../../defines/macroses" // прочие макросы
 
@@ -50,7 +87,8 @@ new query_string[356]; // ??? в дальнейшем убрать вследствие оптимизации стека
 enum pInfo {
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
-	pPassword[64], // пароль может состоять из 64 символов, при необходимости можно изменить значение
+	pPassword[65], //? pPassword = 65 ибо хэш длинный
+	pSalt[11],
 	pIP[16],
 	pRegData[13],
 	pLastIP[16],
@@ -94,16 +132,20 @@ enum {
 public OnGameModeInit()
 {
 	ConnectSQL();
+	AntiDeAMX();
 
 	new MySQLOpt: option_id = mysql_init_options();
+	new currenttime = GetTickCount();
+
 	mysql_set_option(option_id, AUTO_RECONNECT, true);
 	SetGameModeText(""#mode_name""); 
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
 
+	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 	//? timers
 
-	SetTimer("AFKSystemUpdates", 1000, true);
+	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
 	return 1;
 }
 
@@ -392,42 +434,28 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	{
 		case dReg1: 
 		{
-			if (!response) {
+			if(response) {
+				if(!strlen(inputtext)) return SEND_CM(playerid, format_red, "Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Длина пароля должна быть от 6 до 22 символов."), ShowRegDialog(playerid);
+				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
+
+				if(Regex_Check(inputtext, rg_passwordcheck)){ 
+					new salt[11];
+					for(new i; i < 10; i++) salt[i] = random(79) + 47;
+                	salt[10] = 0;
+					SHA256_PassHash(inputtext, salt, PlayerInfo[playerid][pPassword], 65);
+					strmid(PlayerInfo[playerid][pSalt], salt, 0, 11, 11);
+					sstring[0] = 0;
+					format(sstring, sizeof(sstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+				} else {
+					ShowRegDialog(playerid), SEND_CM(playerid, format_red, "Пароль может состоять только из чисел и латинских символов любого регистра.");
+				}
+				Regex_Delete(rg_passwordcheck);
+			} else {
 				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
-			}
-
-			if(!(6 <= strlen(inputtext) <= 22)) {
-				SEND_CM(playerid, format_white, !"Длина пароля должна состоять от 6 до 22 символов");
-
-				sstring[0] = EOS;
-				format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\nДля продолжения, введите пароль в поле ниже.\nОн будет необходим для дальнейшей авторизации на сервере.", pi[playerid][pNames]);
-				ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");												
-				
-			}
-			for (new i = 0; i < strlen(inputtext); i ++) 
-			{
-				switch (inputtext[i]) {
-					case 'a'..'z', 'A'..'Z', '0'..'9':
-						continue;
-
-					default: {
-						SEND_CM(playerid, format_white, !"Пароль не должен состоять из кириллицы и других запретных символов!");
-
-						sstring[0] = 0;
-						format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\nДля продолжения, введите пароль в поле ниже.\nОн будет необходим для дальнейшей авторизации на сервере.", pi[playerid][pNames]);
-						ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");			
-
-					}
-				}
-			}
-			strmid(PlayerInfo[playerid][pPassword], inputtext, 0, strlen(inputtext), 32);
-
-			if(response) {
-				sstring[0] = 0;
-				format(sstring, sizeof(sstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
-				ShowPlayerDialog(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 			}
 		}
 		case dReg2:
@@ -440,15 +468,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			else {
 				if(!IsValidEmail(inputtext)) {
 					SEND_CM(playerid, format_red, !"Неккоректный адрес электронной почты.");
-					ShowPlayerDialog(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
 					SEND_CM(playerid, format_red, !"Вы не указали почту.");
-					ShowPlayerDialog(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
 					strmid(PlayerInfo[playerid][pEmail],inputtext,0,strlen(inputtext), 32);
-					ShowPlayerDialog(playerid, dReg3, DIALOG_L, !"{FFFFFF}[3/4]{FFA500} Пол","{FFA500}1.{FFFFFF} Мужской\n{FFA500}2.{FFFFFF} women", !"Выбрать", !"Отмена");
+					SHOW_PD(playerid, dReg3, DIALOG_L, !"{FFFFFF}[3/4]{FFA500} Пол","{FFA500}1.{FFFFFF} Мужской\n{FFA500}2.{FFFFFF} women", !"Выбрать", !"Отмена");
 				}
 			}
 		}
@@ -469,21 +497,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case d_Log: {
 			if(response) {
-			    if(!strlen(inputtext)) return ShowLoginDialog(playerid);
-				if(strcmp(PlayerInfo[playerid][pPassword], inputtext, false, 64) == 0) {
-					query_string[0] = 0;
-					mysql_format(db, query_string, sizeof(query_string),"SELECT * FROM `accounts` WHERE `names` = '%s' AND `password` = '%s'", pi[playerid][pNames], pi[playerid][pPassword]);
+				new checkpass[65];
+			   	SHA256_PassHash(inputtext, PlayerInfo[playerid][pSalt], checkpass, 65);
+				printf("%s\n%s", checkpass, PlayerInfo[playerid][pSalt]);
+			   	if(strcmp(PlayerInfo[playerid][pPassword], checkpass, false, 64) == 0) {
+					query_string[0] = EOS;
+					mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `name` = '%s' AND `password` = '%s'", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
+				} else {
+					SEND_CM(playerid, format_red,"Пароль неверен"), ShowLoginDialog(playerid);
 				}
-				else {
-					return @_IncorrectPassword(playerid);
-				}
-			} else {
-				SEND_CM(playerid, -1, "Вы отказались от авторизации."); 
-				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
-				return Kick(playerid);
 			}
-			query_string[0] = 0;
 		}
 	}
 	return 1;
@@ -506,6 +530,8 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	SetPlayerColor(playerid, 0xFF);
 
 	if(cache_num_rows() != 0) {
+		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);
+		cache_get_value_name(0, "salt", PlayerInfo[playerid][pSalt], 11);		
 		ShowLoginDialog(playerid);
 	}
 	else {
@@ -525,7 +551,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 			format(ssstring,sizeof(ssstring),"\
 				{FF0000}Вы ввели неверный пароль!\n\
 				{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
-			ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
+			SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
 			SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") +1);
 			ssstring[0] = EOS;
 		} 
@@ -541,14 +567,12 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 
 stock ShowLoginDialog(playerid)
 {
-	cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);		
-	printf("password: %s", PlayerInfo[playerid][pPassword]);
 	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-	ShowPlayerDialog(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");
+	SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");
 	
 	return 1;	
 }
@@ -562,7 +586,7 @@ stock ShowRegDialog(playerid)
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
 		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
-	ShowPlayerDialog(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
+	SHOW_PD(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
 	return 1;
 }
 
@@ -579,8 +603,8 @@ stock CreateAccount(playerid)
 	new date[13];
 	format(date, sizeof(date), "%02d.%02d.%d", Day, Month, Year);
 
-	mysql_format(db, query_string, sizeof(query_string),"INSERT INTO `accounts` (`names`, `password`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`) VALUES ('%s','%s','%s','%s','%s','%s',%d,%d,%d,%d,%d)", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
-	mysql_tquery(db, query_string);
+	mysql_format(db, query_string, sizeof(query_string),"INSERT INTO `accounts` (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`) VALUES ('%s','%s','%s','%s','%s','%s','%s',%d,%d,%d,%d,%d)", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel]);
+	mysql_query(db, query_string, true);
 	printf("(%s) %s", strlen(query_string), query_string);
 
 	playerLoggedStatus[playerid] = true;
@@ -601,6 +625,8 @@ stock LoginPlayer(playerid) {
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 
 	PlayerInfo[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
+
+	TogglePlayerSpectating(playerid, 0);
 
 	if(PlayerInfo[playerid][pAdmin] > 0) return SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
 	
