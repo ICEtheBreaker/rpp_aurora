@@ -4,6 +4,8 @@
 //
 ////////////////////////////////////////////////////
 
+#include "../../defines/macroses.inc" //! подключение инклуда для доступа к нативке SEND_CM
+
 stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]) {
     return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
 }
@@ -77,11 +79,11 @@ stock ProxDetector(Float:radi, playerid, const string[], col1,col2,col3,col4,col
             	    tempposx = (oldposx - posx);
             	    tempposy = (oldposy - posy);
             	    tempposz = (oldposz - posz);
-            	    if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < -radi/16) && (tempposy > -radi/16)) && ((tempposz < -radi/16) && (tempposz > -radi/16))) SendClientMessage(i, col1, string);
-            	    else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < -radi/8) && (tempposy > -radi/8)) && ((tempposz < -radi/8) && (tempposz > -radi/8))) SendClientMessage(i, col2, string);
-            	    else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < -radi/4) && (tempposy > -radi/4)) && ((tempposz < -radi/4) && (tempposz > -radi/4))) SendClientMessage(i, col3, string);
-            	    else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < -radi/2) && (tempposy > -radi/2)) && ((tempposz < -radi/2) && (tempposz > -radi/2))) SendClientMessage(i, col4, string);
-            	    else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < -radi) && (tempposy > -radi)) && ((tempposz < -radi) && (tempposz > -radi))) SendClientMessage(i, col5, string);
+            	    if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < -radi/16) && (tempposy > -radi/16)) && ((tempposz < -radi/16) && (tempposz > -radi/16))) SEND_CM(i, col1, string);
+            	    else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < -radi/8) && (tempposy > -radi/8)) && ((tempposz < -radi/8) && (tempposz > -radi/8))) SEND_CM(i, col2, string);
+            	    else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < -radi/4) && (tempposy > -radi/4)) && ((tempposz < -radi/4) && (tempposz > -radi/4))) SEND_CM(i, col3, string);
+            	    else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < -radi/2) && (tempposy > -radi/2)) && ((tempposz < -radi/2) && (tempposz > -radi/2))) SEND_CM(i, col4, string);
+            	    else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < -radi) && (tempposy > -radi)) && ((tempposz < -radi) && (tempposz > -radi))) SEND_CM(i, col5, string);
             	}
          	}
      	}
