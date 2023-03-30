@@ -38,7 +38,7 @@ AntiDeAMX()
 	#emit stor.pri b
 
  	#pragma unused a
-  	#pragma dynamic 400000
+  	#pragma dynamic 1000
   	#pragma warning disable 219
    	//#pragma disablerecursion
 }
@@ -162,7 +162,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
-	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid);
+	//SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid); //! временно отключено
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
@@ -207,7 +207,7 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-    if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизованы!"), Kick(playerid);
+    if(!playerLoggedStatus[playerid]) SEND_CM(playerid, -1, "Вы не авторизованы!"), Kick(playerid);
 	
 	sstring[0] = EOS;
 	if(strlen(text) < 64) {
@@ -215,7 +215,7 @@ public OnPlayerText(playerid, text[])
 		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
 	 	SetPlayerChatBubble(playerid, text, format_white, 20, 7500);
 
-		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) return ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
+		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
 	} else return SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
 	return 1;
 }
@@ -359,9 +359,9 @@ CMD:plvh(pl) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	IsAdmin(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) return SEND_CM(playerid, format_white, !"Введите: /makeadmin [ник игрока] [уровень администратора]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) SEND_CM(playerid, format_white, !"Введите: /makeadmin [ник игрока] [уровень администратора]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) return SEND_CM(playerid, format_white, "Уровень администрирования от 1 до 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SEND_CM(playerid, format_white, "Уровень администрирования от 1 до 6");
 	query_string[0] = EOS;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%s'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -370,7 +370,7 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
+	if(sscanf(params, "s[118]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -378,12 +378,12 @@ CMD:me(playerid, params[]) {
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /ame [действие]");
+	if(sscanf(params, "s[144]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /ame [действие]");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /do [текст]");
+	if(sscanf(params, "s[116]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /do [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
 	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -391,15 +391,15 @@ CMD:do(playerid, params[]) {
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /try [текст]");
+	if(sscanf(params, "s[99]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /try [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
 	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }
 CMD:todo(playerid, params[]) {
-	if(sscanf(params, "s[95]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
-	if(strlen(params) > 95) return SEND_CM(playerid, format_white, "[Ошибка]: Слишком длинный текст!");
+	if(sscanf(params, "s[95]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
+	if(strlen(params) > 95) SEND_CM(playerid, format_white, "[Ошибка]: Слишком длинный текст!");
 	new message[96];
 	strmid(message, params, 0, sizeof(message));
 	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
@@ -415,11 +415,11 @@ CMD:todo(playerid, params[]) {
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) return SEND_CM(playerid, format_white, "[Информация]: /s [текст]");
+	if(sscanf(params, "s[105]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /s [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s[%d] крикнул%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.0, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
-	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) return ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
+	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
 	SetPlayerChatBubble(playerid, params[0], format_white, 25, 7500);
 	return 1;
 }
