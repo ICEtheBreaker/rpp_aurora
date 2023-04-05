@@ -555,7 +555,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 			SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") +1);
 			ssstring[0] = EOS;
 		} 
-		else return LoginPlayer(playerid);
+		else LoginPlayer(playerid);
 
 		if(GetPVarInt(playerid, "BadAttempt") >= 3) {
 			SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.");
@@ -594,9 +594,9 @@ stock CreateAccount(playerid)
 {
 	sstring[0] = 0;
 	query_string[0] = 0;
-	PlayerInfo[playerid][pMoney] = BONUS_MONEY;
-	PlayerInfo[playerid][pLevel] = START_LEVEL;
-	PlayerInfo[playerid][pSkin] = DEFAULT_SKIN;
+	PlayerInfo[playerid][pMoney]	 = BONUS_MONEY;
+	PlayerInfo[playerid][pLevel] 	 = START_LEVEL;
+	PlayerInfo[playerid][pSkin] 	 = DEFAULT_SKIN;
 
 	new Year, Month, Day;
 	getdate(Year, Month, Day);
@@ -628,7 +628,7 @@ stock LoginPlayer(playerid) {
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(PlayerInfo[playerid][pAdmin] > 0) return SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
+	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
 	
 	playerLoggedStatus[playerid] = true;
 	return 1;
@@ -724,8 +724,7 @@ stock CheckExceptionName(const string[]) {
 stock GetString(const param1[],const param2[]) return !strcmp(param1, param2, false);
 stock GetPlayerID(const string[]) {
     new testname[MAX_PLAYER_NAME];
-	for(new i = MAX_PLAYERS; i--; ) {
-		if(!IsPlayerConnected(i)) continue;
+	foreach(new i:Player) {
 		GetPlayerName(i, testname, sizeof(testname));
 		if(!strcmp(testname, string, true)) return i;
 	}
