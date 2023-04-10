@@ -63,7 +63,7 @@
    - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/colors.inc">defines/colors.inc</a> - цветовые коды HTML & HEX;</br></h3>
    - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/db_conn">defines/db_conn</a> - подключение SQL;</br></h3>
    - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/macroses.inc">defines/macroses.inc</a> - сокращённые макросы нативов;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/name.inc">defines/name.inc</a> - наименование сервера, карта, <a href="vk.com/rpp.aurora">группа  ВКонтакте</a>;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/name.inc">defines/name.inc</a> - наименование сервера, карта, <a href="https://vk.com/rpp.aurora">группа  ВКонтакте</a>;</br></h3>
    - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/pawno/includes">pawno/includes</a> - все основные инклуды, без которых ничего работать не будет.</br></h3>
 
 ------------------------------------------------
