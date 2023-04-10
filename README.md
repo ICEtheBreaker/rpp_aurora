@@ -31,7 +31,7 @@
 
 ### Быстрый старт
 
-Рабочий <a href="https://github.com/ICEtheBreaker/CRMPProject-Main">репозиторий</a>
+Рабочий <a href="https://github.com/ICEtheBreaker/CRMPProject-Main">репозиторий</a> - это цитадель всего исходного кода проекта <a href="https://vk.com/rpp.aurora">Aurora RP</a>.
 
 Если Вы хотите работать над этим проектом, есть два условия:
   
