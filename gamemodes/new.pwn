@@ -27,8 +27,7 @@ main () {}
 
 AntiDeAMX()
 {
-	new a[][] =
-	{
+	new a[][] = {
 		"Unarmed (Fist)",
 		"Brass K"
 	};
@@ -82,7 +81,7 @@ AntiDeAMX()
 // после инклудов желательно начать регистрировать переменные
 //  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
 
-new query_string[356]; // ??? в дальнейшем убрать вследствие оптимизации стека
+new query_string[356];
 
 enum pInfo {
 	pID,
@@ -207,7 +206,7 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-    if(!playerLoggedStatus[playerid]) SEND_CM(playerid, -1, "Вы не авторизованы!"), Kick(playerid);
+    if(!playerLoggedStatus[playerid]) return 0;
 	
 	sstring[0] = EOS;
 	if(strlen(text) < 64) {
@@ -216,8 +215,8 @@ public OnPlayerText(playerid, text[])
 	 	SetPlayerChatBubble(playerid, text, format_white, 20, 7500);
 
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else return SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
-	return 1;
+	} else SEND_CM(playerid, format_red, "[Ошибка]: Слишком длинное сообщение!");
+	return 0;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
