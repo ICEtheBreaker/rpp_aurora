@@ -221,7 +221,6 @@ public OnPlayerText(playerid, text[])
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	print("pidor");
 	return 1;
 }
 
