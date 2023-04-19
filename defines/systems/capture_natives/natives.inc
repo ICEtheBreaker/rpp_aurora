@@ -1,10 +1,11 @@
-/////////////////////////////////////////////////////
+//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+// Цель: все основные проверки и системы, которые требуют много памяти.
 //
-////////////////////////////////////////////////////
+//=============================================================================//
 
-#include "../../defines/macroses.inc" //! ����������� ������� ��� ������� � ������� SEND_CM
+
+#include "../../defines/macroses.inc" //! подключение инклуда для доступа к нативке SEND_CM
 
 stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]) {
     return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
@@ -50,13 +51,13 @@ stock AFKSystemUpdates(playerid) {
 		PlayerAFK[i]++;
 		if(++PlayerAFK[i] > 3) {
 			new string[] = "{FFFFFF}AFK: ";
-			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d ���.", string, PlayerAFK[i]);
+			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d сек.", string, PlayerAFK[i]);
 
 		}else{
 			new minute = floatround(PlayerAFK[i]/60, floatround_floor);
 			new second = PlayerAFK[i] % 60;
 			string[0] = EOS;
-			format(string, sizeof(string),"%s%d ���. %d ���.", string, minute, second);
+			format(string, sizeof(string),"%s%d мин. %d сек.", string, minute, second);
 		}
 		SetPlayerChatBubble(i, string, -1, 20, 1000)
 	}
