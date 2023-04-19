@@ -1,8 +1,9 @@
-/////////////////////////////////////////////////////
+//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+// ÷ель: макросы, сокращающие основные нативы. ”прощает написание кода
 //
-////////////////////////////////////////////////////
+//=============================================================================//
+
 
 #define DIALOG_M						DIALOG_STYLE_MSGBOX
 #define DIALOG_L    					DIALOG_STYLE_LIST
