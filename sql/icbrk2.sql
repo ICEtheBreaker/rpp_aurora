@@ -1,11 +1,9 @@
--- phpMyAdmin SQL Dump
--- version 5.2.0
--- https://www.phpmyadmin.net/
+--========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============--
 --
--- РҐРѕСЃС‚: 127.0.0.1:3306
--- Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ: РњР°СЂ 11 2023 Рі., 16:08
--- Р’РµСЂСЃРёСЏ СЃРµСЂРІРµСЂР°: 5.7.39-log
--- Р’РµСЂСЃРёСЏ PHP: 7.4.30
+-- Цель: база данных SQL для импорта в phpMyAdmin
+--
+--=============================================================================--
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
