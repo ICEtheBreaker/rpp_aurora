@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Мар 11 2023 г., 16:08
--- Версия сервера: 5.7.39-log
--- Версия PHP: 7.4.30
+-- Время создания: Апр 20 2023 г., 02:10
+-- Версия сервера: 5.7.33-log
+-- Версия PHP: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,12 +29,13 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `accounts` (
   `id` int(8) NOT NULL,
-  `names` varchar(24) NOT NULL,
-  `password` varchar(64) NOT NULL,
-  `regIP` varchar(16) NOT NULL,
-  `regData` varchar(12) NOT NULL,
-  `lastIP` varchar(16) NOT NULL,
-  `email` varchar(64) NOT NULL,
+  `names` varchar(24) DEFAULT NULL,
+  `password` varchar(65) NOT NULL,
+  `salt` varchar(11) NOT NULL,
+  `regIP` varchar(16) DEFAULT NULL,
+  `regData` varchar(12) DEFAULT NULL,
+  `lastIP` varchar(16) DEFAULT NULL,
+  `email` varchar(64) DEFAULT NULL,
   `sex` int(2) NOT NULL,
   `admin` int(1) NOT NULL,
   `currentskin` int(3) NOT NULL,
@@ -46,8 +47,8 @@ CREATE TABLE `accounts` (
 -- Дамп данных таблицы `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `names`, `password`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`) VALUES
-(37, 'jopaxui', 'jopaxui', '26.87.224.43', '09.03.2023', '26.87.224.43', 'dimamironov1337228@gmail.com', 2, 0, 102, 250, 1);
+INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`) VALUES
+(49, 'kilo_joiii', '8A37C7F03A5A083CAAD0B11F063C4416C6E5241183035D0AB63BE899AE926956', '\\^|t|X[PM<', '127.0.0.1', '20.04.2023', '	', 'gordd@gmail.com', 1, 0, 102, 250, 1);
 
 -- --------------------------------------------------------
 
@@ -87,7 +88,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT для таблицы `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT для таблицы `admin`

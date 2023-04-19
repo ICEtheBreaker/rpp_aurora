@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"path": "/rpp-aurora"
+		},
+		{
+			"path": "/CRMP-LAUNCH"
+		},
+		{
+			"path": "/Primehost"
+		}
+	],
+	"settings": {
+		"workbench.statusBar.visible": true,
+		"statusBarCustomItem.text": "Daniil Pererva",
+		"sqltools.connections": [
+			{
+				"mysqlOptions": {
+					"authProtocol": "default"
+				},
+				"previewLimit": 50,
+				"server": "127.0.0.1",
+				"port": 3306,
+				"driver": "MySQL",
+				"name": "ICBRK-SQL",
+				"database": "icbrk2",
+				"username": "root",
+				"password": ""
+			}
+		],
+		"files.encoding": "windows1251",
+		"liveServer.settings.multiRootWorkspaceName": "CRMP"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": []
+	}
+}
