@@ -1,6 +1,6 @@
 --========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============--
 --
--- ����: ���� ������ SQL ��� ������� � phpMyAdmin
+-- Цель: база данных SQL для импорта в phpMyAdmin
 --
 --=============================================================================--
 
@@ -16,13 +16,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `icbrk2`
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С…: `icbrk2`
 --
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `accounts`
+-- РЎС‚СЂСѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ `accounts`
 --
 
 CREATE TABLE `accounts` (
@@ -41,7 +41,7 @@ CREATE TABLE `accounts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
--- Дамп данных таблицы `accounts`
+-- Р”Р°РјРї РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹ `accounts`
 --
 
 INSERT INTO `accounts` (`id`, `names`, `password`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`) VALUES
@@ -50,7 +50,7 @@ INSERT INTO `accounts` (`id`, `names`, `password`, `regIP`, `regData`, `lastIP`,
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `admin`
+-- РЎС‚СЂСѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ `admin`
 --
 
 CREATE TABLE `admin` (
@@ -62,33 +62,33 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
--- Индексы сохранённых таблиц
+-- Р�РЅРґРµРєСЃС‹ СЃРѕС…СЂР°РЅС‘РЅРЅС‹С… С‚Р°Р±Р»РёС†
 --
 
 --
--- Индексы таблицы `accounts`
+-- Р�РЅРґРµРєСЃС‹ С‚Р°Р±Р»РёС†С‹ `accounts`
 --
 ALTER TABLE `accounts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Индексы таблицы `admin`
+-- Р�РЅРґРµРєСЃС‹ С‚Р°Р±Р»РёС†С‹ `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- AUTO_INCREMENT РґР»СЏ СЃРѕС…СЂР°РЅС‘РЅРЅС‹С… С‚Р°Р±Р»РёС†
 --
 
 --
--- AUTO_INCREMENT для таблицы `accounts`
+-- AUTO_INCREMENT РґР»СЏ С‚Р°Р±Р»РёС†С‹ `accounts`
 --
 ALTER TABLE `accounts`
   MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
--- AUTO_INCREMENT для таблицы `admin`
+-- AUTO_INCREMENT РґР»СЏ С‚Р°Р±Р»РёС†С‹ `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
