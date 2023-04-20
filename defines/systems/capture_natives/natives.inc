@@ -1,10 +1,19 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
+<<<<<<< HEAD
 // Цель: системы и проверки
 //
 //=============================================================================//
 
 #include "../../defines/macroses.inc"
+=======
+// Цель: все основные проверки и системы, которые требуют много памяти.
+//
+//=============================================================================//
+
+
+#include "../../defines/macroses.inc" //! подключение инклуда для доступа к нативке SEND_CM
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]) {
     return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
@@ -50,13 +59,21 @@ stock AFKSystemUpdates(playerid) {
 		PlayerAFK[i]++;
 		if(++PlayerAFK[i] > 3) {
 			new string[] = "{FFFFFF}AFK: ";
+<<<<<<< HEAD
 			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d ���.", string, PlayerAFK[i]);
+=======
+			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d сек.", string, PlayerAFK[i]);
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 		}else{
 			new minute = floatround(PlayerAFK[i]/60, floatround_floor);
 			new second = PlayerAFK[i] % 60;
 			string[0] = EOS;
+<<<<<<< HEAD
 			format(string, sizeof(string),"%s%d ���. %d ���.", string, minute, second);
+=======
+			format(string, sizeof(string),"%s%d мин. %d сек.", string, minute, second);
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 		}
 		SetPlayerChatBubble(i, string, -1, 20, 1000)
 	}

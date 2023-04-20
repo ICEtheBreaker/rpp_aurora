@@ -1,5 +1,6 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
+<<<<<<< HEAD
 // Цель: игровой мод Авроры
 //
 //=============================================================================//
@@ -7,6 +8,17 @@
 
 // main(){} обязательно должен быть в начале!!!
 main(){}
+=======
+// Цель: игровой мод Авроры, со всеми системами и координатами.
+//
+//=============================================================================================//
+
+
+// main(){} обязательно должно быть в самом начале кода!!!
+main () {}
+
+
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -45,6 +57,7 @@ AntiDeAMX()
 }
 #pragma tabsize 0
 
+<<<<<<< HEAD
 #include <a_samp>  //! надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
 
 //! ysi хорошо занимает стек но и оптимизирует его
@@ -52,6 +65,9 @@ AntiDeAMX()
 // #include "YSI_Coding\y_malloc"
 // #include "YSI_Coding/y_hooks"
 
+=======
+#include <a_samp> // надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 #include <a_mysql>
 #include <sscanf2>
 #include <foreach>
@@ -65,26 +81,45 @@ AntiDeAMX()
 #include "../../defines/colors" // цвета
 #include "../../defines/systems/capture_natives/natives" // перехват нативок
 #include "../../defines/macroses" // прочие макросы
+<<<<<<< HEAD
 #include "../../defines/objs/autoLoader.inc" //! здесь содержится т.н. "автоконнект" необходимых "зависимостей" с целью убрать засорения лишнего кода
 // дефайны
+=======
+
+// дефайны
+
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 #define function%0(%1)	forward%0(%1); public%0(%1)
 #define pi 				PlayerInfo
 #define f%0%1			format(%0,sizeof(%0), %1
 #define IsAdmin(%0) 	if(PlayerInfo[playerid][pAdmin] < %0) return 1
 
 //вписан в мод
+<<<<<<< HEAD
 #define NAME_FULL_ACCESS_1				"Name_Subname"
 #define NAME_FULL_ACCESS_2				"Name_Subname"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
+=======
+#define NAME_FULL_ACCESS_1				""
+#define NAME_FULL_ACCESS_2				""
+#define NAME_FULL_ACCESS_3				""
+#define NAME_FULL_ACCESS_4				""
+
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 #undef MAX_PLAYERS
 #define MAX_PLAYERS (3)
 
 #define GetName(%0)						pi[%0][pNames]
 
+<<<<<<< HEAD
 //! после инклудов желательно начать регистрировать переменные
 //!  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
+=======
+// после инклудов желательно начать регистрировать переменные
+//  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 new query_string[356];
 
@@ -120,7 +155,12 @@ enum  {
 new 
 	bool: playerLoggedStatus[MAX_PLAYERS]; 
 
+<<<<<<< HEAD
 new sstring[512];
+=======
+
+new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 new PlayerAFK[MAX_PLAYERS];
 enum {
 	dNull = 0, 
@@ -128,6 +168,12 @@ enum {
 	dMM = 6, 
 }
 
+<<<<<<< HEAD
+=======
+/* 	потом уберу. надо определиться с дизайном проекта (дабы была единая цветограмма). 
+	перво наперво поработать с системой сохранения и безопасности пользователя. */
+
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 public OnGameModeInit()
 {
 	ConnectSQL();
@@ -147,8 +193,13 @@ public OnGameModeInit()
 	SendRconCommand("mapname "#map_proj"");
 
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
+<<<<<<< HEAD
 
 	//? timers
+=======
+	//? timers
+
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
 	return 1;
 }
@@ -166,7 +217,11 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
+<<<<<<< HEAD
 	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid); //! временно отключено
+=======
+	//SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid); //! временно отключено
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
@@ -176,9 +231,12 @@ public OnPlayerConnect(playerid)
 		Kick(playerid);
 	}
 	SEND_CM(playerid, format_black, !"Добро пожаловать на "color_white""name_proj"!");
+<<<<<<< HEAD
 
 	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
 
+=======
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 	return 1;
 }
 
@@ -192,7 +250,11 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid) {
 	if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
+<<<<<<< HEAD
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
+=======
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 	SetCameraBehindPlayer(playerid);
 	return 1;
 }
@@ -417,7 +479,11 @@ CMD:todo(playerid, params[]) {
 		strmid(action, message, star+1, sizeof(message));
 		strdel(message, star, sizeof(message));
 		sstring[0] = EOS;
+<<<<<<< HEAD
 		format(sstring, sizeof(sstring), "- '%e' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+=======
+		format(sstring, sizeof(sstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
 	} else return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
 	return 1;
@@ -514,6 +580,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// printf("input:%s", inputtext);
 				
 			   	SHA256_PassHash(inputtext, PlayerInfo[playerid][pSalt], checkpass, 65);
+<<<<<<< HEAD
 
 				// printf("%d", strcmp(PlayerInfo[playerid][pPassword], checkpass));
 
@@ -525,6 +592,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "d", playerid);
 				} else @_IncorrectPassword(playerid);
+=======
+				printf("%s\n%s", checkpass, PlayerInfo[playerid][pSalt]);
+			   	if(strcmp(PlayerInfo[playerid][pPassword], checkpass, false, 64) == 0) {
+					query_string[0] = EOS;
+					mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `name` = '%s' AND `password` = '%s'", PlayerInfo[playerid][pNames], PlayerInfo[playerid][pPassword]);
+					mysql_tquery(db, query_string, "LoginPlayer", "i", playerid);
+				} else {
+					SEND_CM(playerid, format_red,"Пароль неверен"), ShowLoginDialog(playerid);
+				}
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 			}
 		}
 	}
@@ -563,6 +640,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @StopAnimation(playerid) return ApplyAnimation(playerid, "PED", "facanger", 4.1, 0, 1, 1, 1, 1);
 
 @_IncorrectPassword(playerid);
+<<<<<<< HEAD
 @_IncorrectPassword(playerid) {
 	if(cache_num_rows() == 0) {
 		new ssstring[80];
@@ -584,6 +662,27 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	}
 
 	return 1; 
+=======
+@_IncorrectPassword(playerid)
+{
+		if(cache_num_rows() == 0) {
+		 	new ssstring[80];
+			format(ssstring,sizeof(ssstring),"\
+				{FF0000}Вы ввели неверный пароль!\n\
+				{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
+			SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
+			SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") +1);
+			ssstring[0] = EOS;
+		} 
+		else LoginPlayer(playerid);
+
+		if(GetPVarInt(playerid, "BadAttempt") >= 3) {
+			SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.");
+			SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+			return Kick(playerid);
+		}
+		return 1; 
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 }
 
 stock ShowLoginDialog(playerid)
@@ -701,7 +800,11 @@ stock SavePlayer(playerid) {
 	else {
 		query_string[0] = EOS;
 		if(!level) return SEND_CM(playerid, format_white, "Игрок не администратор");
+<<<<<<< HEAD
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', %d, CURDATE())", name, level);
+=======
+		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%s', %d, CURDATE()", name, level);
+>>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 		mysql_tquery(db, query_string, "", "");
 		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 		mysql_tquery(db, query_string, "", "");
