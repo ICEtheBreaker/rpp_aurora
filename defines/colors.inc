@@ -1,8 +1,8 @@
-/////////////////////////////////////////////////////
+//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+// Цель: цвета HEX & HTML формата
 //
-////////////////////////////////////////////////////
+//=============================================================================//
 
 #define format_black 0xFF
 #define format_white 0xFFFFFFFF

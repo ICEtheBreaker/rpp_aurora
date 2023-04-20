@@ -1,8 +1,8 @@
-/////////////////////////////////////////////////////
+//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+// Цель: названия сервера, карта.
 //
-////////////////////////////////////////////////////
+//=============================================================================//
 
 #define name_proj "CRMP"
 #define map_proj "Russia"

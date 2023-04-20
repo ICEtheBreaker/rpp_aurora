@@ -1,8 +1,8 @@
-/////////////////////////////////////////////////////
+//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved.
+// Цель: сокращенные макросы
 //
-////////////////////////////////////////////////////
+//=============================================================================//
 
 #define DIALOG_M						DIALOG_STYLE_MSGBOX
 #define DIALOG_L    					DIALOG_STYLE_LIST
