@@ -1,6 +1,6 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Φελό: loadobj.inc
+// Π¦ΠµΠ»Ρ: loadobj.inc
 //
 //=============================================================================//
 
