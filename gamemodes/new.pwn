@@ -66,13 +66,13 @@ AntiDeAMX()
 #include "../../defines/systems/capture_natives/natives" // перехват нативок
 #include "../../defines/macroses" // прочие макросы
 #include "../../defines/objs/autoLoader.inc" //! здесь содержится т.н. "автоконнект" необходимых "зависимостей" с целью убрать засорения лишнего кода
-// �������
+// дефайны
 #define function%0(%1)	forward%0(%1); public%0(%1)
 #define pi 				PlayerInfo
 #define f%0%1			format(%0,sizeof(%0), %1
 #define IsAdmin(%0) 	if(PlayerInfo[playerid][pAdmin] < %0) return 1
 
-//������ � ���
+//вписан в мод
 #define NAME_FULL_ACCESS_1				"Name_Subname"
 #define NAME_FULL_ACCESS_2				"Name_Subname"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
@@ -120,7 +120,7 @@ enum  {
 new 
 	bool: playerLoggedStatus[MAX_PLAYERS]; 
 
-new sstring[512]; // ����� ����� ����� ������ � ���������� � ����� �����
+new sstring[512];
 new PlayerAFK[MAX_PLAYERS];
 enum {
 	dNull = 0, 
