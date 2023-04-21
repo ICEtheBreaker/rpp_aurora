@@ -62,7 +62,6 @@ stock AFKSystemUpdates(playerid) {
 	}
 	return 1;
 }
-
 stock ProxDetector(Float:radi, playerid, const string[], col1,col2,col3,col4,col5)
 {
  	if(IsPlayerConnected(playerid))
