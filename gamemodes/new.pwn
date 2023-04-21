@@ -60,6 +60,7 @@ AntiDeAMX()
 #include <crashdetect> //? юзать чтоб ловить краши если шото не так
 #include <dc_cmd>
 #include <Pawn.Regex>
+#include <cef>
 #include "../../defines/name" // макрос касаемый названия проекта и прочего
 #include "../../defines/db_conn" // подключение к бд (конфиг)
 #include "../../defines/colors" // цвета
