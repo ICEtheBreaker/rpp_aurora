@@ -1,11 +1,10 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Цель: все основные проверки и системы, которые требуют много памяти.
+// Цель: системы и проверки
 //
 //=============================================================================//
 
-
-#include "../../defines/macroses.inc" //! подключение инклуда для доступа к нативке SEND_CM
+#include "../../defines/macroses.inc"
 
 stock ex_ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]) {
     return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
@@ -63,30 +62,28 @@ stock AFKSystemUpdates(playerid) {
 	}
 	return 1;
 }
+stock ProxDetector(Float:range, playerid, const string[], c1 = -1,c2 = -1,c3 = -1,c4 = -1,c5 = -1) {
+    new
+        Float: x,
+        Float: y,
+        Float: z,
+        i = GetMaxPlayers(),
+        world = GetPlayerVirtualWorld(playerid);
 
-stock ProxDetector(Float:radi, playerid, const string[], col1,col2,col3,col4,col5)
-{
- 	if(IsPlayerConnected(playerid))
- 	{
-    	new Float:posx;new Float:posy;new Float:posz;new Float:oldposx;new Float:oldposy;new Float:oldposz;new Float:tempposx;new Float:tempposy;new Float:tempposz;
-       	GetPlayerPos(playerid, oldposx, oldposy, oldposz);
-     	foreach(new i:Player)
-     	{
-        	if(IsPlayerConnected(i))
-        	{
-            	if(GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
-            	{
-            	    GetPlayerPos(i, posx, posy, posz);
-            	    tempposx = (oldposx - posx);
-            	    tempposy = (oldposy - posy);
-            	    tempposz = (oldposz - posz);
-            	    if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < -radi/16) && (tempposy > -radi/16)) && ((tempposz < -radi/16) && (tempposz > -radi/16))) SEND_CM(i, col1, string);
-            	    else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < -radi/8) && (tempposy > -radi/8)) && ((tempposz < -radi/8) && (tempposz > -radi/8))) SEND_CM(i, col2, string);
-            	    else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < -radi/4) && (tempposy > -radi/4)) && ((tempposz < -radi/4) && (tempposz > -radi/4))) SEND_CM(i, col3, string);
-            	    else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < -radi/2) && (tempposy > -radi/2)) && ((tempposz < -radi/2) && (tempposz > -radi/2))) SEND_CM(i, col4, string);
-            	    else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < -radi) && (tempposy > -radi)) && ((tempposz < -radi) && (tempposz > -radi))) SEND_CM(i, col5, string);
-            	}
-         	}
-     	}
-	}
+    GetPlayerPos(playerid, x, y, z);
+
+    do {
+        if(0 == IsPlayerConnected(--i)
+        || world != GetPlayerVirtualWorld(i)
+        || GetPlayerDistanceFromPoint(i, x, y, z) > range)
+            continue;
+        
+		else if(((x < range/16) && (x > -range/16)) && ((y < -range/16) && (y > -range/16)) && ((z < -range/16) && (z > -range/16))) SEND_CM(i, c1, string);
+		else if(((x < range/8) && (x > -range/8)) && ((y < -range/8) && (y > -range/8)) && ((z < -range/8) && (z > -range/8))) SEND_CM(i, c2, string);
+		else if(((x < range/4) && (x > -range/4)) && ((y < -range/4) && (y > -range/4)) && ((z < -range/4) && (z > -range/4))) SEND_CM(i, c3, string);
+		else if(((x < range/2) && (x > -range/2)) && ((y < -range/2) && (y > -range/2)) && ((z < -range/2) && (z > -range/2))) SEND_CM(i, c4, string);
+		else if(((x < range) && (x > -range)) && ((y < -range) && (y > -range)) && ((z < -range) && (z > -range))) SEND_CM(i, c5, string);
+    	else SEND_CM(i, c1, string);
+    } while(i > 0);
+    return 1;
 }
