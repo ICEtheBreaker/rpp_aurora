@@ -31,15 +31,15 @@
 
 ### Быстрый старт
 
-Рабочий <a href="https://github.com/ICEtheBreaker/CRMPProject-Main">репозиторий</a> - это цитадель всего исходного кода проекта <a href="https://vk.com/rpp.aurora">Aurora RP</a>.
+Рабочий <a href="https://github.com/ICEtheBreaker/rpp_aurora">репозиторий</a> - это цитадель всего исходного кода проекта <a href="https://vk.com/rpp.aurora">Aurora RP</a>.
 
 Если Вы хотите работать над этим проектом, есть два условия:
   
 ##### У Вас установлен <a href="https://git-scm.com/downloads">Git</a> и настроен <a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">SSH-клиент </a>.
 
 ```
-  git clone git@github.com:ICEtheBreaker/CRMPProject-Main.git
-  cd ${workspaceRoot}/CRMPProject-Main
+  git clone git@github.com:ICEtheBreaker/rpp_aurora.git
+  cd ${workspaceRoot}/{dirname}
   make quick-release
 ```
 ##### У Вас установлен клиент <a href="https://www.sourcetreeapp.com">Sourcetree</a> или <a href="https://desktop.github.com">Github Desktop</a>.
