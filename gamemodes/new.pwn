@@ -42,18 +42,25 @@ AntiDeAMX()
    	//#pragma disablerecursion
 }
 #pragma tabsize 0
+#define STREAMER_USAGE //! закомментировать эту строку когда будет не нужна
 
 #include <a_samp>  //! надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
 
-//! ysi хорошо занимает стек но и оптимизирует его
-// #define YSI_YES_HEAP_MALLOC  //? есть два макроса YSI_YES_HEAP_MALLOC; YSI_NO_HEAP_MALLOC; -- в документациях все описано
-// #include "YSI_Coding\y_malloc"
-// #include "YSI_Coding/y_hooks"
+//! бля че за хуйня внизу я не понимаю
 
+
+#if defined YSI_YES_HEAP_MALLOC  //? есть два макроса YSI_YES_HEAP_MALLOC; YSI_NO_HEAP_MALLOC; -- в документациях все описано
+	#include "YSI_Coding\y_malloc"
+#endif
 #include <a_mysql>
 #include <sscanf2>
 #include <foreach>
-#include <streamer>
+
+#if defined STREAMER_USAGE //? если имеется дефайн STREAMER_USAGE то будет использоваться стример, если нет то не будет.
+	#tryinclude <streamer> //? попробует инклуднуть стример если таковой имеется в папке инклудов, если нету то оно пропустит
+#endif	
+	
+
 #include <fix>
 #include <crashdetect> //? юзать чтоб ловить краши если шото не так
 #include <dc_cmd>
@@ -73,7 +80,7 @@ AntiDeAMX()
 
 //вписан в мод
 #define NAME_FULL_ACCESS_1				"Jei_Kilo"
-#define NAME_FULL_ACCESS_2				"Name_Subname"
+#define NAME_FULL_ACCESS_2				"I]C[E_the_Bre]a[ker"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
 
@@ -146,7 +153,7 @@ public OnGameModeInit()
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 
 	DisableInteriorEnterExits(); //! убирает желтые пикапы стандартных интерьеров
-	EnableStuntBonusForAll(0); //! убирает бонус за трюки
+	EnableStuntBonusForAll(0); //! убирает бонус за трюки да ну
 
 	//? timers
 	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
@@ -208,11 +215,7 @@ public OnVehicleDeath(vehicleid, killerid)
 {
 	return 1;
 }
-// CMD:testsdssd(id) {
-// 	printf("%s [%d] - var isinagame = %d", GetName(id), id, playerLoggedStatus[id]);
-// 	ProxDetector(20.00, id, "xuii", format_orange, format_white, format_white, format_white, format_white);
-// 	return 1;
-// }
+
 public OnPlayerText(playerid, text[])
 {
     if(!playerLoggedStatus[playerid]) return 0;
@@ -230,7 +233,7 @@ public OnPlayerText(playerid, text[])
 public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (success == 0 || success == -1) 
-		SEND_WM(playerid, !"Такой команды не существует!");
+		SEND_WM(playerid, !"{941000}[Ошибка]: {FFFFFF}Неверная команда.");
 	return 1;
 }
 
@@ -343,7 +346,7 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SEND_CM(playerid, format_white, !"Введите: /giveweap [id of PLAYER] [weaponID] [ammoValue]");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SEND_CM(playerid, format_white, !"Введите: /giveweap [playerid] [weaponID] [ammoValue]");
 	else if (!(0 <= (weaponID) <= 46)) return SEND_CM(playerid, format_white, !"Диапазон weaponID < 0 либо > 46!");
 	else if (!(0 <= (ammoValue) <= 150)) return SEND_CM(playerid, format_white, !"Диапазон ammoValue < 0 либо > 150!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
