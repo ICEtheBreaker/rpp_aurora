@@ -4,8 +4,6 @@
 //
 //=============================================================================//
 
-<<<<<<< HEAD
-
 #include a_samp
 _loadMapping() {
     //return CreateObject //!
@@ -13,7 +11,7 @@ _loadMapping() {
 }
 _loadObjects() {
     return _loadMapping();
-=======
+
 #include a_samp
 _loadMapping() {
     //! return CreateObject's
@@ -39,5 +37,4 @@ _loadObjects() {
 _remMapping() {
     //! return DestroyObject's
     return false;
->>>>>>> b113ad4bac10bba26e5b56441eb969464d5113a5
 }
