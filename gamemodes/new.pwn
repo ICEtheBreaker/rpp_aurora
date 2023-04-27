@@ -1,12 +1,10 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Р¦РµР»СЊ: РёРіСЂРѕРІРѕР№ РјРѕРґ РђРІСЂРѕСЂС‹
+// Цель: игровой мод Авроры
 //
 //=============================================================================//
-
-
-// main(){} РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІ РЅР°С‡Р°Р»Рµ!!!
-main(){}
+// main(){} обязательно должен быть в начале!!!
+main () {}
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -44,38 +42,45 @@ AntiDeAMX()
    	//#pragma disablerecursion
 }
 #pragma tabsize 0
+#define STREAMER_USAGE //! закомментировать эту строку когда будет не нужна
 
-#include <a_samp>  //! РЅР°РґРѕ РїРѕРёРіСЂР°С‚СЊСЃСЏ СЃ РѕРіСЂР°РЅРёС‡РµРЅРёСЏРјРё, РґР°Р±С‹ РІ РґР°Р»СЊРЅРµР№С€РµРј РїРѕР»РЅРѕСЃС‚СЊСЋ РѕС‚РєР°Р·Р°С‚СЊСЃСЏ РѕС‚ streamer
+#include <a_samp>  //! надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
 
-//! ysi С…РѕСЂРѕС€Рѕ Р·Р°РЅРёРјР°РµС‚ СЃС‚РµРє РЅРѕ Рё РѕРїС‚РёРјРёР·РёСЂСѓРµС‚ РµРіРѕ
-// #define YSI_YES_HEAP_MALLOC  //? РµСЃС‚СЊ РґРІР° РјР°РєСЂРѕСЃР° YSI_YES_HEAP_MALLOC; YSI_NO_HEAP_MALLOC; -- РІ РґРѕРєСѓРјРµРЅС‚Р°С†РёСЏС… РІСЃРµ РѕРїРёСЃР°РЅРѕ
-// #include "YSI_Coding\y_malloc"
-// #include "YSI_Coding/y_hooks"
+//! бля че за хуйня внизу я не понимаю
 
+
+#if defined YSI_YES_HEAP_MALLOC  //? есть два макроса YSI_YES_HEAP_MALLOC; YSI_NO_HEAP_MALLOC; -- в документациях все описано
+	#include "YSI_Coding\y_malloc"
+#endif
 #include <a_mysql>
 #include <sscanf2>
 #include <foreach>
-#include <streamer>
+
+#if defined STREAMER_USAGE //? если имеется дефайн STREAMER_USAGE то будет использоваться стример, если нет то не будет.
+	#tryinclude <streamer> //? попробует инклуднуть стример если таковой имеется в папке инклудов, если нету то оно пропустит
+#endif	
+	
+
 #include <fix>
-#include <crashdetect> //? СЋР·Р°С‚СЊ С‡С‚РѕР± Р»РѕРІРёС‚СЊ РєСЂР°С€Рё РµСЃР»Рё С€РѕС‚Рѕ РЅРµ С‚Р°Рє
+#include <crashdetect> //? юзать чтоб ловить краши если шото не так
 #include <dc_cmd>
 #include <Pawn.Regex>
-#include <cef>
-#include "../../defines/name" // РјР°РєСЂРѕСЃ РєР°СЃР°РµРјС‹Р№ РЅР°Р·РІР°РЅРёСЏ РїСЂРѕРµРєС‚Р° Рё РїСЂРѕС‡РµРіРѕ
-#include "../../defines/db_conn" // РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р±Рґ (РєРѕРЅС„РёРі)
-#include "../../defines/colors" // С†РІРµС‚Р°
-#include "../../defines/systems/capture_natives/natives" // РїРµСЂРµС…РІР°С‚ РЅР°С‚РёРІРѕРє
-#include "../../defines/macroses" // РїСЂРѕС‡РёРµ РјР°РєСЂРѕСЃС‹
-#include "../../defines/objs/autoLoader.inc" //! Р·РґРµСЃСЊ СЃРѕРґРµСЂР¶РёС‚СЃСЏ С‚.РЅ. "Р°РІС‚РѕРєРѕРЅРЅРµРєС‚" РЅРµРѕР±С…РѕРґРёРјС‹С… "Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№" СЃ С†РµР»СЊСЋ СѓР±СЂР°С‚СЊ Р·Р°СЃРѕСЂРµРЅРёСЏ Р»РёС€РЅРµРіРѕ РєРѕРґР°
-// РґРµС„Р°Р№РЅС‹
+#include "../../defines/name" // макрос касаемый названия проекта и прочего
+#include "../../defines/db_conn" // подключение к бд (конфиг)
+#include "../../defines/colors" // цвета
+#include "../../defines/macroses" // прочие макросы
+#include "../../defines/systems/capture_natives/natives" // перехват нативок
+#include "../../defines/objs/autoLoader.inc" //! здесь содержится т.н. "автоконнект" необходимых "зависимостей" с целью убрать засорения лишнего кода
+// дефайны
+
 #define function%0(%1)	forward%0(%1); public%0(%1)
 #define pi 				PlayerInfo
 #define f%0%1			format(%0,sizeof(%0), %1
 #define IsAdmin(%0) 	if(PlayerInfo[playerid][pAdmin] < %0) return 1
 
-//РІРїРёСЃР°РЅ РІ РјРѕРґ
-#define NAME_FULL_ACCESS_1				"Name_Subname"
-#define NAME_FULL_ACCESS_2				"Name_Subname"
+//вписан в мод
+#define NAME_FULL_ACCESS_1				"Jei_Kilo"
+#define NAME_FULL_ACCESS_2				"I]C[E_the_Bre]a[ker"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
 
@@ -84,15 +89,15 @@ AntiDeAMX()
 
 #define GetName(%0)						pi[%0][pNames]
 
-//! РїРѕСЃР»Рµ РёРЅРєР»СѓРґРѕРІ Р¶РµР»Р°С‚РµР»СЊРЅРѕ РЅР°С‡Р°С‚СЊ СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ
-//!  * СЃР»РµРґРёС‚СЊ Р·Р° РєРѕР»РёС‡РµСЃС‚РІРѕРј Рё РЅРµ СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ Р»РёС€РЅРёРµ, РёРЅР°С‡Рµ Р±СѓРґСѓС‚ Р»РµС‚РµС‚СЊ РІР°СЂРЅРёРЅРіРё
+//! после инклудов желательно начать регистрировать переменные
+//!  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
 
 new query_string[356];
 
 enum pInfo {
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
-	pPassword[65], //? pPassword = 65 РёР±Рѕ С…СЌС€ РґР»РёРЅРЅС‹Р№
+	pPassword[65], //? pPassword = 65 ибо хэш длинный
 	pSalt[11],
 	pIP[16],
 	pRegData[13],
@@ -134,10 +139,8 @@ public OnGameModeInit()
 	ConnectSQL();
 	AntiDeAMX();
 
-	//? РґР»СЏ С„-Р№ С‚РёРїР° РїРѕРєР°Р·Р° Рё СЂР°Р·РіСЂСѓР·РєРё РѕР±СЊРµРєС‚РѕРІ, РјР°РїРїРёРЅРіР°, СЃРєРёРЅРѕРІ Рё РїСЂ. Р±СѓРґРµРј СЋР·Р°С‚СЊ _ (РЅРёР¶РЅРµРµ РїРѕРґС‡РµСЂРєРёРІР°РЅРёРµ)
-	_loadObjects(); //! [_loadObjects] РЅР°С…РѕРґРёС‚СЃСЏ РІ defines/objs/mapping/loadobj.inc
-
-	//! С‡С‚Рѕ РєР°СЃР°РµРјРѕ Р»РёРјРёС‚РѕРІ, РІРѕР·РІСЂР°С‰Р°С‚СЊСЃСЏ Рє РІРѕРїСЂРѕСЃСѓ РїРѕ РїРѕРІРѕРґСѓ СѓСЃС‚СЂР°РЅРµРЅРёСЏ streamer Рё С‚.Рї. СЃ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРёРµРј РѕРїС‚РёРјРёР·Р°С†РёРё
+	//? для ф-й типа показа и разгрузки обьектов, маппинга, скинов и пр. будем юзать _ (нижнее подчеркивание)
+	//! что касаемо лимитов, возвращаться к вопросу по поводу устранения streamer и т.п. с гарантированием оптимизации
 
 	new MySQLOpt: option_id = mysql_init_options();
 	new currenttime = GetTickCount();
@@ -147,10 +150,13 @@ public OnGameModeInit()
 	SendRconCommand("hostname "#name_proj"");
 	SendRconCommand("mapname "#map_proj"");
 
-	printf("OnGameModeInit Р·Р°РіСЂСѓР·РёР»СЃСЏ Р·Р° %i ms", GetTickCount() - currenttime);
+	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
+
+	DisableInteriorEnterExits(); //! убирает желтые пикапы стандартных интерьеров
+	EnableStuntBonusForAll(0); //! убирает бонус за трюки да ну
 
 	//? timers
-	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - СЌС‚Р° РЅР°С…РѕРґРёС‚СЃСЏ РІ natives.inc
+	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
 	return 1;
 }
 
@@ -167,16 +173,16 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
-	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid); //! РІСЂРµРјРµРЅРЅРѕ РѕС‚РєР»СЋС‡РµРЅРѕ
+	SetTimerEx("@_mysqlPlayerAccountGet", 1000, 0, "i", playerid); //! временно отключено
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		SEND_CM(playerid, format_red, !"Р’Р°С€Рµ РёРјСЏ СЃРѕРґРµСЂР¶РёС‚ Р·Р°РїСЂРµС‰РµРЅРЅС‹Рµ СЃРёРјРІРѕР»С‹ РёР»Рё С†РёС„СЂС‹. РСЃРїРѕР»СЊР·СѓР№С‚Рµ С„РѕСЂРјР°С‚: [РРјСЏ_Р¤Р°РјРёР»РёСЏ]");
+		SEND_CM(playerid, format_red, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		Kick(playerid);
 	}
-	SEND_CM(playerid, format_black, !"Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ РЅР° "color_white""name_proj"!");
+	SEND_CM(playerid, format_black, !"Добро пожаловать на "color_white""name_proj"!");
 
 	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
 
@@ -192,22 +198,19 @@ public OnPlayerDisconnect(playerid, reason)
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Р’С‹ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°Р»РёСЃСЊ!"), Kick(playerid);
+	if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
 	SetCameraBehindPlayer(playerid);
 	return 1;
 }
-
 public OnPlayerDeath(playerid, killerid, reason)
 {
 	return 1;
 }
-
 public OnVehicleSpawn(vehicleid)
 {
 	return 1;
 }
-
 public OnVehicleDeath(vehicleid, killerid)
 {
 	return 1;
@@ -217,113 +220,102 @@ public OnPlayerText(playerid, text[])
 {
     if(!playerLoggedStatus[playerid]) return 0;
 	
-	sstring[0] = EOS;
+	sstring[0] = 0;
 	if(strlen(text) < 64) {
-		format(sstring, sizeof(sstring), "%s[%d] РіРѕРІРѕСЂРёС‚: %s", PlayerInfo[playerid][pNames], playerid, text);
-		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
-	 	SetPlayerChatBubble(playerid, text, format_white, 20, 7500);
-
+		format(sstring, sizeof(sstring), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
+		ProxDetector(20.00, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
+		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else SEND_CM(playerid, format_red, "[РћС€РёР±РєР°]: РЎР»РёС€РєРѕРј РґР»РёРЅРЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ!");
+	} else SEND_EM(playerid, "[Ошибка]: Слишком длинное сообщение!");
 	return 0;
+}
+public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
+public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
+	if (success == 0 || success == -1) 
+		SEND_WM(playerid, !"{941000}[Ошибка]: {FFFFFF}Неверная команда.");
+	return 1;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 	return 1;
 }
-
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
 	return 1;
 }
-
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
 	return 1;
 }
-
 public OnPlayerEnterCheckpoint(playerid)
 {
 	return 1;
 }
-
 public OnPlayerLeaveCheckpoint(playerid)
 {
 	return 1;
 }
-
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
 	return 1;
 }
-
 public OnPlayerLeaveRaceCheckpoint(playerid)
 {
 	return 1;
 }
-
 public OnRconCommand(cmd[])
 {
 	return 1;
 }
-
 public OnPlayerRequestSpawn(playerid)
 {
 	SetSpawnInfo(playerid, 0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	return 1;
 }
 
+
 public OnObjectMoved(objectid)
 {
 	return 1;
 }
-
 public OnPlayerObjectMoved(playerid, objectid)
 {
 	return 1;
 }
-
 public OnPlayerPickUpPickup(playerid, pickupid)
 {
 	return 1;
 }
-
 public OnVehicleMod(playerid, vehicleid, componentid)
 {
 	return 1;
 }
-
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
 	return 1;
 }
-
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
 {
 	return 1;
 }
-
 public OnPlayerSelectedMenuRow(playerid, row)
 {
 	return 1;
 }
-
 public OnPlayerExitedMenu(playerid)
 {
 	return 1;
 }
-
 public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 {
 	return 1;
 }
-
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	return 1;
 }
-
 public OnRconLoginAttempt(ip[], password[], success)
 {
 	return 1;
@@ -333,29 +325,34 @@ public OnPlayerUpdate(playerid)
 	PlayerAFK[playerid] = 0;
 	return 1;
 }
-
 public OnPlayerStreamIn(playerid, forplayerid)
 {
 	return 1;
 }
-
 public OnPlayerStreamOut(playerid, forplayerid)
 {
 	return 1;
 }
-
 public OnVehicleStreamIn(vehicleid, forplayerid)
 {
 	return 1;
 }
-
 public OnVehicleStreamOut(vehicleid, forplayerid)
 {
 	return 1;
 }
 
 
-//! РїРѕС„РёРєСЃРёС‚СЊ Р±РµСЃРєРѕРЅРµС‡РЅС‹Р№ СЃРїР°РІРЅ РјР°С€РёРЅ
+
+CMD:giveweap(playerid, params[]) {
+	new weaponID, ammoValue;
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SEND_CM(playerid, format_white, !"Введите: /giveweap [playerid] [weaponID] [ammoValue]");
+	else if (!(0 <= (weaponID) <= 46)) return SEND_CM(playerid, format_white, !"Диапазон weaponID < 0 либо > 46!");
+	else if (!(0 <= (ammoValue) <= 150)) return SEND_CM(playerid, format_white, !"Диапазон ammoValue < 0 либо > 150!");
+	GivePlayerWeapon(params[0], weaponID, ammoValue);
+	return 1;
+}
+//! пофиксить бесконечный спавн машин
 CMD:plvh(pl) {
 	new Float: X,
 		Float: Y,
@@ -368,9 +365,9 @@ CMD:plvh(pl) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	IsAdmin(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) SEND_CM(playerid, format_white, !"Р’РІРµРґРёС‚Рµ: /makeadmin [РЅРёРє РёРіСЂРѕРєР°] [СѓСЂРѕРІРµРЅСЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) SEND_CM(playerid, format_white, !"Введите: /makeadmin [ник игрока] [уровень администратора]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SEND_CM(playerid, format_white, "РЈСЂРѕРІРµРЅСЊ Р°РґРјРёРЅРёСЃС‚СЂРёСЂРѕРІР°РЅРёСЏ РѕС‚ 1 РґРѕ 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SEND_CM(playerid, format_white, "Уровень администрирования от 1 до 6");
 	query_string[0] = EOS;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -379,55 +376,57 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /me [РґРµР№СЃС‚РІРёРµ]");
+	if(sscanf(params, "s[118]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
-	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /ame [РґРµР№СЃС‚РІРёРµ]");
+	if(sscanf(params, "s[144]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /ame [действие]");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /do [С‚РµРєСЃС‚]");
+	if(sscanf(params, "s[116]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /do [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
-	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /try [С‚РµРєСЃС‚]");
+	if(sscanf(params, "s[99]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /try [текст]");
 	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}РќРµСѓРґР°С‡РЅРѕ") : ("{32CD32}РЈРґР°С‡РЅРѕ"));
-	ProxDetector(20.0, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
+	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }
 CMD:todo(playerid, params[]) {
-	if(sscanf(params, "s[95]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /todo [С‚РµРєСЃС‚*РґРµР№СЃС‚РІРёРµ]");
-	if(strlen(params) > 95) SEND_CM(playerid, format_white, "[РћС€РёР±РєР°]: РЎР»РёС€РєРѕРј РґР»РёРЅРЅС‹Р№ С‚РµРєСЃС‚!");
+	if(sscanf(params, "s[95]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
+	if(strlen(params[0]) > 95) SEND_CM(playerid, format_white, "[Ошибка]: Слишком длинный текст!");
 	new message[96];
 	strmid(message, params, 0, sizeof(message));
-	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-СЏРђ-РЇ.-_,\\s]{2,48}\\*[a-zA-Za-СЏРђ-РЇ.-_,\\s]{2,48}$");
+	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
 	if(Regex_Check(message, rg_todocheck)) {
 		new star = strfind(message, "*");
 		new action[50];
 		strmid(action, message, star+1, sizeof(message));
 		strdel(message, star, sizeof(message));
 		sstring[0] = EOS;
-		format(sstring, sizeof(sstring), "- '%e' - {DE92FF}СЃРєР°Р·Р°Р»%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("Р°"), PlayerInfo[playerid][pNames], action);
-		ProxDetector(20.0, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
-	} else return SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /todo [С‚РµРєСЃС‚*РґРµР№СЃС‚РІРёРµ]");
+		format(sstring, sizeof(sstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+		ProxDetector(20.00, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+	} else return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) SEND_CM(playerid, format_white, "[РРЅС„РѕСЂРјР°С†РёСЏ]: /s [С‚РµРєСЃС‚]");
+	if(sscanf(params, "s[105]", params[0])) SEND_CM(playerid, format_white, !"[Информация]: /s [текст]");
+	else if (!(0 <= strlen(params[0]) <= 105)) return SEND_WM(playerid, !"Длина текста < 0 или > 105");
+	else if (!strlen(params[0])) return SEND_WM(playerid, !"Текст пуст");
 	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s[%d] РєСЂРёРєРЅСѓР»%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("Р°"), params[0]);
-	ProxDetector(20.0, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
+	format(sstring, sizeof(sstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
+	ProxDetector(20.00, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
 	SetPlayerChatBubble(playerid, params[0], format_white, 25, 7500);
 	return 1;
@@ -444,8 +443,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg1: 
 		{
 			if(response) {
-				if(!strlen(inputtext)) return SEND_CM(playerid, format_red, "Р’С‹ РЅРёС‡РµРіРѕ РЅРµ РІРІРµР»Рё."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Р”Р»РёРЅР° РїР°СЂРѕР»СЏ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РѕС‚ 6 РґРѕ 22 СЃРёРјРІРѕР»РѕРІ."), ShowRegDialog(playerid);
+				if(!strlen(inputtext)) return SEND_CM(playerid, format_red, "Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Длина пароля должна быть от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -456,14 +455,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					// printf("salt::%s;pass:%s", salt, PlayerInfo[playerid][pPassword]);
 					strmid(PlayerInfo[playerid][pSalt], salt, 0, 11, 11);
 					sstring[0] = 0;
-					format(sstring, sizeof(sstring), "{FFFFFF}Р’РІРµРґРёС‚Рµ Р’Р°С€ {FFA500}e-mail{FFFFFF} Р°РґСЂРµСЃ, Р·Р° РєРѕС‚РѕСЂС‹Рј Р±СѓРґРµС‚ Р·Р°РєСЂРµРїР»С‘РЅ РґР°РЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚.\nР•СЃР»Рё Р’С‹ РїРѕС‚РµСЂСЏРµС‚Рµ РґРѕСЃС‚СѓРї Рє СЃРІРѕРµРјСѓ Р°РєРєР°СѓРЅС‚Сѓ, С‚Рѕ СЃ РїРѕРјРѕС‰СЊСЋ {FFA500}e-mail{FFFFFF} Р’С‹ СЃРјРѕР¶РµС‚Рµ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РµРіРѕ.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} РџРѕС‡С‚Р°", sstring, !"Р”Р°Р»РµРµ", !"РћС‚РјРµРЅР°");	
+					format(sstring, sizeof(sstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 				} else {
-					ShowRegDialog(playerid), SEND_CM(playerid, format_red, "РџР°СЂРѕР»СЊ РјРѕР¶РµС‚ СЃРѕСЃС‚РѕСЏС‚СЊ С‚РѕР»СЊРєРѕ РёР· С‡РёСЃРµР» Рё Р»Р°С‚РёРЅСЃРєРёС… СЃРёРјРІРѕР»РѕРІ Р»СЋР±РѕРіРѕ СЂРµРіРёСЃС‚СЂР°.");
+					ShowRegDialog(playerid), SEND_CM(playerid, format_red, "Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
 				Regex_Delete(rg_passwordcheck);
 			} else {
-				SEND_CM(playerid, format_red, !"Р’С‹ РѕС‚РєР°Р·Р°Р»РёСЃСЊ РѕС‚ СЂРµРіРёСЃС‚СЂР°С†РёРё.");
+				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
 			}
@@ -471,36 +470,36 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg2:
 		{
 			if(!response){
-				SEND_CM(playerid, format_red, !"Р’С‹ РѕС‚РєР°Р·Р°Р»РёСЃСЊ РѕС‚ СЂРµРіРёСЃС‚СЂР°С†РёРё.");
+				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
 			}
 			else {
 				if(!IsValidEmail(inputtext)) {
-					SEND_CM(playerid, format_red, !"РќРµРєРєРѕСЂРµРєС‚РЅС‹Р№ Р°РґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} РџРѕС‡С‚Р°", sstring, !"Р”Р°Р»РµРµ", !"РћС‚РјРµРЅР°");	
+					SEND_CM(playerid, format_red, !"Неккоректный адрес электронной почты.");
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
-					SEND_CM(playerid, format_red, !"Р’С‹ РЅРµ СѓРєР°Р·Р°Р»Рё РїРѕС‡С‚Сѓ.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} РџРѕС‡С‚Р°", sstring, !"Р”Р°Р»РµРµ", !"РћС‚РјРµРЅР°");	
+					SEND_CM(playerid, format_red, !"Вы не указали почту.");
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
 					strmid(PlayerInfo[playerid][pEmail],inputtext,0,strlen(inputtext), 32);
-					SHOW_PD(playerid, dReg3, DIALOG_L, !"{FFFFFF}[3/4]{FFA500} РџРѕР»","{FFA500}1.{FFFFFF} РњСѓР¶СЃРєРѕР№\n{FFA500}2.{FFFFFF} women", !"Р’С‹Р±СЂР°С‚СЊ", !"РћС‚РјРµРЅР°");
+					SHOW_PD(playerid, dReg3, DIALOG_L, !"{FFFFFF}[3/4]{FFA500} Пол","{FFA500}1.{FFFFFF} Мужской\n{FFA500}2.{FFFFFF} women", !"Выбрать", !"Отмена");
 				}
 			}
 		}
 		case dReg3: 
 		{
 			if(!response) {
-				SEND_CM(playerid, format_red, !"Р’С‹ РѕС‚РєР°Р·Р°Р»РёСЃСЊ РѕС‚ СЂРµРіРёСЃС‚СЂР°С†РёРё.");
+				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
 				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 				return Kick(playerid);
 			}
 			else {
 				switch(listitem) {
-					case 0: PlayerInfo[playerid][pSex] = 1; // 1 - РјСѓР¶СЃРєРѕР№
-					case 1: PlayerInfo[playerid][pSex] = 2; // 2 - Р¶РµРЅСЃРєРёР№
+					case 0: PlayerInfo[playerid][pSex] = 1; // 1 - мужской
+					case 1: PlayerInfo[playerid][pSex] = 2; // 2 - женский
 				}
 			}
 			CreateAccount(playerid);
@@ -569,17 +568,17 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 		new ssstring[80];
 		// print("yesss 3");
 		format(ssstring,sizeof(ssstring),"\
-			{FF0000}Р’С‹ РІРІРµР»Рё РЅРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ!\n\
-			{FFFFFF}РџРѕРїС‹С‚РѕРє РґР»СЏ РІРІРѕРґР° РїР°СЂРѕР»СЏ:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
+			{FF0000}Вы ввели неверный пароль!\n\
+			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
 
-		SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}РђРІС‚РѕСЂРёР·Р°С†РёСЏ", ssstring, "Р’РѕР№С‚Рё", "РћС‚РјРµРЅР°");
+		SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
 		SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") + 1);
 		ssstring[0] = EOS;
 	} else {LoginPlayer(playerid);}
 
 	if(GetPVarInt(playerid, "BadAttempt") >= 3) {
 		// print("yesss 444");
-		SEND_CM(playerid, format_red, !"Р’С‹ РёСЃС‚СЂР°С‚РёР»Рё РїРѕРїС‹С‚РєРё РЅР° Р°РІС‚РѕСЂРёР·Р°С†РёСЋ.");
+		SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.");
 		SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
 		return Kick(playerid);
 	}
@@ -591,24 +590,24 @@ stock ShowLoginDialog(playerid)
 {
 	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"\
-		{FFFFFF}Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ РЅР° {daa44a}"mode_name"\n\n\
-		{FFFFFF}Р’РІРµРґРёС‚Рµ СЃРІРѕР№ РїР°СЂРѕР»СЊ\n\
-		{FFFFFF}РџРѕРїС‹С‚РѕРє РґР»СЏ РІРІРѕРґР° РїР°СЂРѕР»СЏ:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-	SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}РђРІС‚РѕСЂРёР·Р°С†РёСЏ", sstring, "Р’РѕР№С‚Рё", "РћС‚РјРµРЅР°");
+		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
+		{FFFFFF}Введите свой пароль\n\
+		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
+	SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");
 	
 	return 1;	
 }
 stock ShowRegDialog(playerid)
 {
 	sstring[0] = 0;
-	format(sstring, sizeof(sstring),"{FFFFFF}Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ, {0093ff}%s\n\n\
-		{FFFFFF}Р”Р°РЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚ {FFA500}РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚{FFFFFF} РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С….\n\
-		Р”Р»СЏ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ, РІРІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ РІ РїРѕР»Рµ РЅРёР¶Рµ.\n\
-		РћРЅ Р±СѓРґРµС‚ РЅРµРѕР±С…РѕРґРёРј РґР»СЏ РґР°Р»СЊРЅРµР№С€РµР№ Р°РІС‚РѕСЂРёР·Р°С†РёРё РЅР° СЃРµСЂРІРµСЂРµ.\n\n\
-		\t\t{FFFFFF}РџСЂРёРјРµС‡Р°РЅРёРµ РґР»СЏ РІРІРѕРґР° РїР°СЂРѕР»СЏ:\n\
-		\t\t- {FFA500}РџР°СЂРѕР»СЊ РґРѕР»Р¶РµРЅ СЃРѕСЃС‚РѕСЏС‚СЊ РёР· Р»Р°С‚РёРЅРёС†С‹ Рё РЅРµ СЃРѕРґРµСЂР¶Р°С‚СЊ С†РёС„СЂС‹\n\
-		\t\t- {FFA500}РџР°СЂРѕР»СЊ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ 6 Рё Р±РѕР»СЊС€Рµ 24 СЃРёРјРІРѕР»РѕРІ.", pi[playerid][pNames]);
-	SHOW_PD(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} РџР°СЂРѕР»СЊ", sstring, !"Р”Р°Р»РµРµ",!"РћС‚РјРµРЅР°");	
+	format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
+		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
+		Для продолжения, введите пароль в поле ниже.\n\
+		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
+		\t\t{FFFFFF}Примечание для ввода пароля:\n\
+		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
+		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
+	SHOW_PD(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
 	return 1;
 }
 
@@ -653,7 +652,7 @@ function LoginPlayer(playerid) {
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, format_white, !"[A] Р’С‹ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅС‹. Р’РІРµРґРёС‚Рµ /alogin");
+	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
 	
 	// SavePlayer(playerid);
 
@@ -684,7 +683,7 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE names = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
 			sstring[0] = EOS;
-			format(sstring, sizeof(sstring),"РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ %s Р±С‹Р» СЃРЅСЏС‚ СЃ РґРѕР»Р¶РЅРѕСЃС‚Рё.", name);
+			format(sstring, sizeof(sstring),"Администратор %s был снят с должности.", name);
 			SEND_CM(playerid, format_red, sstring);
 		}
 		else {
@@ -695,19 +694,19 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 			mysql_tquery(db, query_string, "", "");
 			sstring[0] = EOS;
-			format(sstring, sizeof(sstring), "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ %s С‚РµРїРµСЂСЊ РёРјРµРµС‚ %i СѓСЂРѕРІРµРЅСЊ РґРѕСЃС‚СѓРїР°.", name, level);
+			format(sstring, sizeof(sstring), "Администратор %s теперь имеет %i уровень доступа.", name, level);
 			SEND_CM(playerid, format_white, sstring);
 		}
 	}
 	else {
 		query_string[0] = EOS;
-		if(!level) return SEND_CM(playerid, format_white, "РРіСЂРѕРє РЅРµ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ");
+		if(!level) return SEND_CM(playerid, format_white, "Игрок не администратор");
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', %d, CURDATE())", name, level);
 		mysql_tquery(db, query_string, "", "");
 		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 		mysql_tquery(db, query_string, "", "");
 		sstring[0] = EOS;
-		format(sstring, sizeof(sstring),"%s РґРѕР±Р°РІР»РµРЅ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РєР°Рє Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ. РЈСЂРѕРІРµРЅСЊ РґРѕСЃС‚СѓРїР°: %i", name, level);
+		format(sstring, sizeof(sstring),"%s добавлен в базу данных как администратор. Уровень доступа: %i", name, level);
 		SEND_CM(playerid, format_white, sstring);
 		if(GetPlayerID(name) != INVALID_PLAYER_ID) {
 			PlayerInfo[GetPlayerID(name)][pAdmin] = level;
@@ -767,14 +766,14 @@ stock ConnectSQL()
 {
 	db = mysql_connect(m_host, m_user, m_pass, m_db);
    	switch(mysql_errno()){
-		case 0: print("Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™");
-	    case 1044: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РўР« РљРћР“Рћ Р’ РџРћР›Р¬Р—РћР’РђРўР•Р›Р РЈРљРђР—РђР›??? РЇ РќР• Р—РќРђР® Р•Р“Рћ]");
-	    case 1045: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РќР•РџР РђР’РР›Р¬РќР«Р™ РџРђР РћР›Р¬ Р‘Р›РЇРўР¬]");
-	    case 1049: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РќР• РќРђРЁР•Р› РўРђРљРЈР® Р‘РђР—РЈ Р”РђРќРќР«РҐ]");
-	    case 2003: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РЎР•Р Р’Р•Р  Р—РђР”РЈР”РћРЎРР›Р Р•Р‘Рђ]");
-		case 2002: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РўР« РЎР•Р Р’Р•Р  РќР• Р’РљР›Р®Р§РР› Р•Р‘РђРќР¬]");
-	    case 2005: return print("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РќР• Р—РќРђР® Р­РўРћРў РђР”Р Р•РЎ]");
-	    default: return printf("РќР• Р РђР‘РћРўРђР•Рў РќРђРҐРЈР™ [РҐРЈР™ Р•Р“Рћ Р—РќРђР•Рў. РћРЁРР‘РљРђ: %d]", mysql_errno());
+		case 0: print("РАБОТАЕТ НАХУЙ");
+	    case 1044: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ КОГО В ПОЛЬЗОВАТЕЛИ УКАЗАЛ??? Я НЕ ЗНАЮ ЕГО]");
+	    case 1045: return print("НЕ РАБОТАЕТ НАХУЙ [НЕПРАВИЛЬНЫЙ ПАРОЛЬ БЛЯТЬ]");
+	    case 1049: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ НАШЕЛ ТАКУЮ БАЗУ ДАННЫХ]");
+	    case 2003: return print("НЕ РАБОТАЕТ НАХУЙ [СЕРВЕР ЗАДУДОСИЛИ ЕБА]");
+		case 2002: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ СЕРВЕР НЕ ВКЛЮЧИЛ ЕБАНЬ]");
+	    case 2005: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ ЗНАЮ ЭТОТ АДРЕС]");
+	    default: return printf("НЕ РАБОТАЕТ НАХУЙ [ХУЙ ЕГО ЗНАЕТ. ОШИБКА: %d]", mysql_errno());
 	}
 	mysql_log(DEBUG); 
 	return 1;
