@@ -56,6 +56,13 @@ AntiDeAMX()
 
 #pragma tabsize 0
 #define STREAMER_USAGE 
+#define MAILER_PHP_SCRIPT
+
+#if defined MAILER_PHP_SCRIPT
+	#define MAILER_URL "../../raw/mailer.php"
+	#define MAILER_MAX_MAIL_SIZE (1024) 
+	#include "mailer"
+#endif
 
 #if defined YSI_YES_HEAP_MALLOC  
 	#include "YSI_Coding\y_malloc"
@@ -94,7 +101,8 @@ AntiDeAMX()
 #define SERVER_FORUM                    "/"
 #define SERVER_GROUP                    "vk.com/rpp_aurora"
 #define SERVER_FREE_GROUP               "vk.com/rpp_aurora"
-#define SERVER_LANGUAGE                 "Russian/English/Belarusian"
+#define SERVER_LANGUAGE                 "Russian/English/Belarussian"
+#define SERVER_MAIL_ADDRESS				"support@rpp_aurora"
 
 
 //=================================[FULL ACCESS CONFIG]==================================//
@@ -132,6 +140,14 @@ enum pInfo {
 	pSkin,
 	pMoney,
 	pLevel,
+	pShowName,
+	pHungryBar,
+	pShowDocuments,
+	sdTrade,
+	pEmailAuth,
+	pVkontakte,
+	pLanguage,
+	pGoogle,
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
@@ -152,10 +168,12 @@ new
 
 new sstring[512];
 new PlayerAFK[MAX_PLAYERS];
+new oldhour; //? переменная реального времени
+new timedata[5]; //? переменные времени и даты
 enum {
 	dNull = 0, 
 	dLogin = 1, dReg1 = 2, dReg2 = 3, dReg3 = 4, d_Log = 5,
-	dMM = 6, 
+	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8
 }
 
 public OnGameModeInit()
@@ -175,6 +193,8 @@ public OnGameModeInit()
 	SendRconCommand("mapname "#map_proj"");
 
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
+	gettime(timedata[0], timedata[1]);
+	oldhour = timedata[0]; //! установка реального времени
 
 	DisableInteriorEnterExits();
 	EnableStuntBonusForAll(0); 
@@ -456,9 +476,23 @@ CMD:s(playerid, params[]) {
 	return 1;
 }
 CMD:menu(playerid) {
-
+	sstring[0] = EOS;
+	gettime(timedata[0], timedata[1]);
+	format(sstring, sizeof(sstring), "{0093ff} Игровое меню | Точное время: %02d.%02d", timedata[0], timedata[1]);
+	ShowPlayerDialog(playerid, dMM, DIALOG_L, sstring, "{B03131}[1]{FFFFFF} Действие персонажа\n\
+		{B03131}[2]{FFFFFF} Навыки персонажа\n\
+		{B03131}[3]{FFFFFF} Связь с администрацией\n\
+		{B03131}[4]{FFFFFF} Помощь по серверу\n\
+		{B03131}[5]{FFFFFF} Настройки персонажа\n\
+		{B03131}[6]{FFFFFF} Телефон\n\
+		{B03131}[7]{FFFFFF} История ников\n\
+		{B03131}[8]{FFFFFF} История наказаний\n\
+		{B03131}[9]{FFFFFF} Промокод: {0093FF}\n\
+		{B03131}[10]{FFFFFF} Система промокодов", "Выбор","Отмена");
 	return 1;
 }
+CMD:mn(playerid) return cmd_menu(playerid);
+CMD:mm(playerid) return cmd_menu(playerid);
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
@@ -521,7 +555,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				return Kick(playerid);
 			}
 			else {
-				switch(listitem) {
+				switch listitem do {
 					case 0: PlayerInfo[playerid][pSex] = 1; // 1 - мужской
 					case 1: PlayerInfo[playerid][pSex] = 2; // 2 - женский
 				}
@@ -549,6 +583,36 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "d", playerid);
 				} else @_IncorrectPassword(playerid);
+			}
+		}
+		case dMM: {
+			if(response) {
+				switch listitem do {
+					case 0: ShowStats(playerid);
+					case 1: return 1;
+					case 2: return 1;
+					case 3: return 1;
+					case 4: ShowUpdateSettings(playerid);
+				}
+			}
+		}
+		case d_PLAYER_SETTINGS: { //! нужно закончить
+			if(response) {
+				switch listitem do {
+					case 0: {
+						PlayerInfo[playerid][pShowName] = !PlayerInfo[playerid][pShowName];
+						foreach(new i: Player) ShowPlayerNameTagForPlayer(playerid, i, PlayerInfo[playerid][pShowName]);
+					} 
+					case 1: return Warning(playerid, "В разработке");
+					case 2: return Warning(playerid, "В разработке");
+					case 3: return Warning(playerid, "В разработке");
+					case 4: return Warning(playerid, "В разработке");
+					case 5: return Warning(playerid, "В разработке");
+					case 6: return Warning(playerid, "В разработке");
+					case 7: {
+						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, "[Ошибка]: {FFFFFF} Установить Google Authenticator могут только игроки старше 1-го уровня!");
+					}
+				}
 			}
 		}
 	}
@@ -634,6 +698,30 @@ stock ShowRegDialog(playerid)
 	SHOW_PD(playerid, dReg1, DIALOG_I, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
 	return 1;
 }
+stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
+	sstring[0] = EOS;
+	format(sstring, sizeof(sstring), "Система\tСостояние\n\
+	{AFAFAF}Ники:\t%s\n\
+	{AFAFAF}E-mail:\t%s\n\
+	{AFAFAF}Сменить пароль\t{0093ff}[ Аккаунт ]\n\
+	{AFAFAF}Сменить пароль\t{0093ff}[ Банковская карта]\n\
+	{AFAFAF}Показывать голод:\t%s\n\
+	{AFAFAF}Изменить\t{0093ff}[ Место спавна ]\n\
+	{AFAFAF}Отмена показа документов:\t%s\n\
+	{AFAFAF}Google Authenticator\t{0093ff}Анти-взлом система\n\
+	{AFAFAF}Вход через почту:\t%s\n\
+	{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
+	{AFAFAF}Привязка ВКонтакте:\t%s",
+	PlayerInfo[playerid][pShowName] ? ("{008000}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
+	PlayerInfo[playerid][pEmail],!PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
+	PlayerInfo[playerid][pShowDocuments] ? ("{9ACD32}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
+	PlayerInfo[playerid][pEmailAuth] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
+	PlayerInfo[playerid][pLanguage] ? ("русский") : ("английский"),
+	strlen(vkontakte) > 2 ? vkontakte: ("{B83434}Не привязан"));
+	
+	//if(PlayerInfo[playerid][pVkontakte]) && strlen(vkontakte) < 2 return GetVKName(playerid);
+	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", sstring, !"Выбор", "Отмена");
+}
 
 stock CreateAccount(playerid)
 {
@@ -676,7 +764,7 @@ function LoginPlayer(playerid) {
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, format_white, !"[A] Вы не авторизованы. Введите /alogin");
+	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, COLOR_WHITE, ADMIN_NOT_LOGGED);
 	
 	// SavePlayer(playerid);
 
@@ -685,6 +773,10 @@ function LoginPlayer(playerid) {
 
 	return 1;
 }
+function ShowStats(playerid) {
+	return 1;
+}
+
 stock SavePlayer(playerid) {
 	if(!playerLoggedStatus[playerid]) return 0;
 
