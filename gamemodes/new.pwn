@@ -2,7 +2,8 @@
 //
 // Цель: игровой мод Авроры
 //
-//=============================================================================//
+//==============================================================================================//
+
 // main(){} обязательно должен быть в начале!!!
 main () {}
 @___If_u_can_read_this_u_r_nerd();
@@ -41,63 +42,86 @@ AntiDeAMX()
   	#pragma warning disable 219
    	//#pragma disablerecursion
 }
+#if !defined IsValidVehicle
+     native IsValidVehicle(vehicleid);
+#endif
+#include <a_samp>
+#define MYSQL_R41_4 true
+#if MYSQL_R41_4 == true
+	#include <a_mysql>
+#endif
+
+#undef MAX_PLAYERS
+#define MAX_PLAYERS (6)
+
 #pragma tabsize 0
-#define STREAMER_USAGE //! закомментировать эту строку когда будет не нужна
+#define STREAMER_USAGE 
 
-#include <a_samp>  //! надо поиграться с ограничениями, дабы в дальнейшем полностью отказаться от streamer
-
-//! бля че за хуйня внизу я не понимаю
-
-
-#if defined YSI_YES_HEAP_MALLOC  //? есть два макроса YSI_YES_HEAP_MALLOC; YSI_NO_HEAP_MALLOC; -- в документациях все описано
+#if defined YSI_YES_HEAP_MALLOC  
 	#include "YSI_Coding\y_malloc"
 #endif
-#include <a_mysql>
 #include <sscanf2>
 #include <foreach>
 
-#if defined STREAMER_USAGE //? если имеется дефайн STREAMER_USAGE то будет использоваться стример, если нет то не будет.
-	#tryinclude <streamer> //? попробует инклуднуть стример если таковой имеется в папке инклудов, если нету то оно пропустит
+#if defined STREAMER_USAGE 
+	#tryinclude <streamer> 
 #endif	
 	
-
 #include <fix>
-#include <crashdetect> //? юзать чтоб ловить краши если шото не так
+#include <crashdetect> 
 #include <dc_cmd>
 #include <Pawn.Regex>
-#include "../../defines/name" // макрос касаемый названия проекта и прочего
-#include "../../defines/db_conn" // подключение к бд (конфиг)
-#include "../../defines/colors" // цвета
-#include "../../defines/macroses" // прочие макросы
-#include "../../defines/systems/capture_natives/natives" // перехват нативок
-#include "../../defines/objs/autoLoader.inc" //! здесь содержится т.н. "автоконнект" необходимых "зависимостей" с целью убрать засорения лишнего кода
-// дефайны
+#include "../../defines/db_conn" 
+#include "../../defines/colors" 
+#include "../../defines/macroses" 
+#include "../../defines/systems/capture_natives/natives" 
+#include "../../defines/objs/autoLoader.inc" 
 
-#define function%0(%1)	forward%0(%1); public%0(%1)
-#define pi 				PlayerInfo
-#define f%0%1			format(%0,sizeof(%0), %1
-#define IsAdmin(%0) 	if(PlayerInfo[playerid][pAdmin] < %0) return 1
+//=================================[SERVER CONFIG]==================================//
+#define function%0(%1)					forward%0(%1); public%0(%1)
+#define pi 								PlayerInfo
+#define f%0%1							format(%0,sizeof(%0), %1
+#define IsAdmin(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
+#define GetName(%0)						pi[%0][pNames]
 
-//вписан в мод
+
+#define SERVER_NAME 					"Aurora RolePlay"
+#define SERVER_VERSION 					"Aurora [v."MODE_VERS"]"
+#define MODE_VERS						"0.1.1.0"
+#define SERVER_MAP                      "South Ural"
+#define SERVER_WEBSITE 					"aurora-rp.ru/"
+#define PRIME_HOST_PAGE 				"prime-host.pro/"
+#define SERVER_FORUM                    "/"
+#define SERVER_GROUP                    "vk.com/rpp_aurora"
+#define SERVER_FREE_GROUP               "vk.com/rpp_aurora"
+#define SERVER_LANGUAGE                 "Russian/English/Belarusian"
+
+
+//=================================[FULL ACCESS CONFIG]==================================//
 #define NAME_FULL_ACCESS_1				"Jei_Kilo"
 #define NAME_FULL_ACCESS_2				"I]C[E_the_Bre]a[ker"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
 
-#undef MAX_PLAYERS
-#define MAX_PLAYERS (3)
 
-#define GetName(%0)						pi[%0][pNames]
+//=================================[ADMIN CONFIG]==================================//
+#define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не авторизованы. Используйте {33CCFF}/alog"
+#define ADMIN_ALREADY_LOGGED 	        "{0093ff}[ADM]: {FFFFFF}Вы уже в системе!"
+#define PLAYER_INVALID 					"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не активен."
+#define PLAYER_NOT_LOGGED 				"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не авторизован."
 
-//! после инклудов желательно начать регистрировать переменные
-//!  * следить за количеством и не регистрировать лишние, иначе будут лететь варнинги
+//=================================[PLAYER CONFIG]==================================//
+#define NOT_AVAILABLE 					"{F04245}[Ошибка]: {FFFFFF}Вам недоступна данная возможность!"
+#define NOT_ENOUGH_MONEY                "{F04245}[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
+#define SERVER_CLOSED 					"{F04245}[Ошибка]: {FFFFFF}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
+#define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
 new query_string[356];
 
 enum pInfo {
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
-	pPassword[65], //? pPassword = 65 ибо хэш длинный
+	pPassword[65], 
 	pSalt[11],
 	pIP[16],
 	pRegData[13],
@@ -139,8 +163,8 @@ public OnGameModeInit()
 	ConnectSQL();
 	AntiDeAMX();
 
-	//? для ф-й типа показа и разгрузки обьектов, маппинга, скинов и пр. будем юзать _ (нижнее подчеркивание)
-	//! что касаемо лимитов, возвращаться к вопросу по поводу устранения streamer и т.п. с гарантированием оптимизации
+	_loadObjects();
+
 
 	new MySQLOpt: option_id = mysql_init_options();
 	new currenttime = GetTickCount();
@@ -152,11 +176,11 @@ public OnGameModeInit()
 
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 
-	DisableInteriorEnterExits(); //! убирает желтые пикапы стандартных интерьеров
-	EnableStuntBonusForAll(0); //! убирает бонус за трюки да ну
+	DisableInteriorEnterExits();
+	EnableStuntBonusForAll(0); 
 
 	//? timers
-	SetTimer("AFKSystemUpdates", 1000, true); //! [AFKSystemUpdates] - эта находится в natives.inc
+	SetTimer("AFKSystemUpdates", 1000, true); 
 	return 1;
 }
 
@@ -182,7 +206,7 @@ public OnPlayerConnect(playerid)
 		SEND_CM(playerid, format_red, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		Kick(playerid);
 	}
-	SEND_CM(playerid, format_black, !"Добро пожаловать на "color_white""name_proj"!");
+	SEND_CM(playerid, format_black, !"Добро пожаловать на "SERVER_NAME"!");
 
 	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
 
@@ -227,13 +251,13 @@ public OnPlayerText(playerid, text[])
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else SEND_EM(playerid, "[Ошибка]: Слишком длинное сообщение!");
+	} else Error(playerid, "[Ошибка]: Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (success == 0 || success == -1) 
-		SEND_WM(playerid, !"{941000}[Ошибка]: {FFFFFF}Неверная команда.");
+		Warning(playerid, !"{941000}[Ошибка]: {FFFFFF}Неверная команда.");
 	return 1;
 }
 
@@ -422,8 +446,8 @@ CMD:todo(playerid, params[]) {
 }
 CMD:s(playerid, params[]) {
 	if(sscanf(params, "s[105]", params[0])) SEND_CM(playerid, format_white, !"[Информация]: /s [текст]");
-	else if (!(0 <= strlen(params[0]) <= 105)) return SEND_WM(playerid, !"Длина текста < 0 или > 105");
-	else if (!strlen(params[0])) return SEND_WM(playerid, !"Текст пуст");
+	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"Длина текста < 0 или > 105");
+	else if (!strlen(params[0])) return Warning(playerid, !"Текст пуст");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.00, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
@@ -590,7 +614,7 @@ stock ShowLoginDialog(playerid)
 {
 	sstring[0] = 0;
 	format(sstring, sizeof(sstring),"\
-		{FFFFFF}Добро пожаловать на {daa44a}"mode_name"\n\n\
+		{FFFFFF}Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
 	SHOW_PD(playerid, d_Log, DIALOG_I, "{FFA500}Авторизация", sstring, "Войти", "Отмена");

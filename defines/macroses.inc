@@ -10,8 +10,11 @@
 #define DIALOG_I          				DIALOG_STYLE_INPUT
 #define SHOW_PD							ShowPlayerDialog
 #define SEND_CM							SendClientMessage
-#define SEND_EM(%0,%1)				    SendClientMessage(%0,format_red,%1)
-#define SEND_WM(%0,%1)					SendClientMessage(%0,format_red,%1)
+
+#define Error(%0,%1)                    SendClientMessage(%0, error_color, %1)
+#define Log(%0,%1)                      SendClientMessage(%0, log_color, %1)
+#define Warning(%0,%1)                  SendClientMessage(%0, warning_color, %1)
+#define Info(%0,%1)                     SendClientMessage(%0, info_color, %1)
 
 #define BONUS_MONEY						250
 #define START_LEVEL						1
