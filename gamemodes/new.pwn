@@ -4,7 +4,7 @@
 //
 //==============================================================================================//
 
-mail(){}
+main(){}
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -95,13 +95,13 @@ AntiDeAMX()
 #define SERVER_VERSION 					"Aurora [v."MODE_VERS"]"
 #define MODE_VERS						"0.1.1.0"
 #define SERVER_MAP                      "South Ural"
-#define SERVER_WEBSITE 					"aurora-rp.ru/"
+#define SERVER_WEBSITE 					"rpp-aurora.ru/"
 #define PRIME_HOST_PAGE 				"prime-host.pro/"
 #define SERVER_FORUM                    "/"
 #define SERVER_GROUP                    "vk.com/rpp_aurora"
 #define SERVER_FREE_GROUP               "vk.com/rpp_aurora"
 #define SERVER_LANGUAGE                 "Russian/English/Belarussian"
-#define SERVER_MAIL_ADDRESS				"support@rpp_aurora"
+#define SERVER_MAIL_ADDRESS				"support@rpp-aurora"
 #define TEST_EMAIL						"dimamironov1337228@gmail.com"
 
 //=================================[FULL ACCESS CONFIG]==================================//
@@ -187,9 +187,9 @@ public OnGameModeInit()
 	new currenttime = GetTickCount();
 
 	mysql_set_option(option_id, AUTO_RECONNECT, true);
-	SetGameModeText(""#mode_name""); 
-	SendRconCommand("hostname "#name_proj"");
-	SendRconCommand("mapname "#map_proj"");
+	SetGameModeText(""#SERVER_VERSION""); 
+	SendRconCommand("hostname "#SERVER_NAME"");
+	SendRconCommand("mapname "#SERVER_MAP"");
 
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 	gettime(timedata[0], timedata[1]);
@@ -222,13 +222,13 @@ public OnPlayerConnect(playerid)
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		SEND_CM(playerid, format_red, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
+		Error(playerid, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		Kick(playerid);
 	}
-	SEND_CM(playerid, format_black, !"Добро пожаловать на "SERVER_NAME"!");
+	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
 	new code = 999 + random(9000);
 	format(sstring, sizeof(sstring), "Код для подтверждения: %d", code);
-	SendMail(USER_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", sstring);
+	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", sstring);
 
 	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
 
@@ -244,7 +244,7 @@ public OnPlayerDisconnect(playerid, reason)
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus[playerid]) return SEND_CM(playerid, -1, "Вы не авторизовались!"), Kick(playerid);
+	if(!playerLoggedStatus[playerid]) return Error(playerid, !"Вы не авторизовались!"), Kick(playerid);
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
 	SetCameraBehindPlayer(playerid);
 	return 1;
@@ -392,9 +392,9 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SEND_CM(playerid, format_white, !"Введите: /giveweap [playerid] [weaponID] [ammoValue]");
-	else if (!(0 <= (weaponID) <= 46)) return SEND_CM(playerid, format_white, !"Диапазон weaponID < 0 либо > 46!");
-	else if (!(0 <= (ammoValue) <= 150)) return SEND_CM(playerid, format_white, !"Диапазон ammoValue < 0 либо > 150!");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponID] [ammoValue]");
+	else if (!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон weaponID < 0 либо > 46!");
+	else if (!(0 <= (ammoValue) <= 150)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue < 0 либо > 150!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
@@ -411,9 +411,9 @@ CMD:plvh(pl) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	IsAdmin(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) SEND_CM(playerid, format_white, !"Введите: /makeadmin [ник игрока] [уровень администратора]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [уровень администратора]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SEND_CM(playerid, format_white, "Уровень администрирования от 1 до 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Уровень администрирования от 1 до 6");
 	query_string[0] = EOS;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -422,7 +422,7 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /me [действие]");
+	if(sscanf(params, "s[118]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /me [действие]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -430,7 +430,7 @@ CMD:me(playerid, params[]) {
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /ame [действие]");
+	if(sscanf(params, "s[144]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /ame [действие]");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
@@ -443,15 +443,15 @@ CMD:do(playerid, params[]) {
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /try [текст]");
+	if(sscanf(params, "s[99]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /try [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
 	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }
 CMD:todo(playerid, params[]) {
-	if(sscanf(params, "s[95]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
-	if(strlen(params[0]) > 95) SEND_CM(playerid, format_white, "[Ошибка]: Слишком длинный текст!");
+	if(sscanf(params, "s[95]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
+	if(strlen(params[0]) > 95) Error(playerid, !"[Ошибка]:{FFFFFF} Слишком длинный текст!");
 	new message[96];
 	strmid(message, params, 0, sizeof(message));
 	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
@@ -463,13 +463,13 @@ CMD:todo(playerid, params[]) {
 		sstring[0] = EOS;
 		format(sstring, sizeof(sstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
 		ProxDetector(20.00, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
-	} else return SEND_CM(playerid, format_white, "[Информация]: /todo [текст*действие]");
+	} else return Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) SEND_CM(playerid, format_white, !"[Информация]: /s [текст]");
-	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"Длина текста < 0 или > 105");
-	else if (!strlen(params[0])) return Warning(playerid, !"Текст пуст");
+	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /s [текст]");
+	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"[Ошибка]:{FFFFFF} Длина текста от 0 до 105");
+	else if (!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.00, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
