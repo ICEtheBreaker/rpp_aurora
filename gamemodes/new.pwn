@@ -4,8 +4,7 @@
 //
 //==============================================================================================//
 
-// main(){} обязательно должен быть в начале!!!
-main () {}
+mail(){}
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -59,7 +58,7 @@ AntiDeAMX()
 #define MAILER_PHP_SCRIPT
 
 #if defined MAILER_PHP_SCRIPT
-	#define MAILER_URL "../../raw/mailer.php"
+	#define MAILER_URL "dimamins.beget.tech/mailer.php"
 	#define MAILER_MAX_MAIL_SIZE (1024) 
 	#include "mailer"
 #endif
@@ -103,7 +102,7 @@ AntiDeAMX()
 #define SERVER_FREE_GROUP               "vk.com/rpp_aurora"
 #define SERVER_LANGUAGE                 "Russian/English/Belarussian"
 #define SERVER_MAIL_ADDRESS				"support@rpp_aurora"
-
+#define TEST_EMAIL						"dimamironov1337228@gmail.com"
 
 //=================================[FULL ACCESS CONFIG]==================================//
 #define NAME_FULL_ACCESS_1				"Jei_Kilo"
@@ -227,6 +226,9 @@ public OnPlayerConnect(playerid)
 		Kick(playerid);
 	}
 	SEND_CM(playerid, format_black, !"Добро пожаловать на "SERVER_NAME"!");
+	new code = 999 + random(9000);
+	format(sstring, sizeof(sstring), "Код для подтверждения: %d", code);
+	SendMail(USER_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", sstring);
 
 	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
 
@@ -835,6 +837,7 @@ stock SavePlayer(playerid) {
 }
 
 stock IsLoginInvalid(const text[]) {
+	new playername[24];
 	if(strfind(text, "none", false) != -1) return 1;
 	if(strfind(text, "'", true) != -1) return 1;
 	if(strfind(text, "/", true) != -1) return 1;
@@ -852,6 +855,7 @@ stock IsLoginInvalid(const text[]) {
 	if(strfind(text, "7", true) != -1) return 1;
 	if(strfind(text, "8", true) != -1) return 1;
 	if(strfind(text, "9", true) != -1) return 1;
+	else if(CheckExceptionName(playername)) return 0;
 	return 0;
 }
 // GetString(const p1[], const p2[]) return !strcmp(p1, p2);
