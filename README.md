@@ -27,7 +27,7 @@
   - плагины
   - настройки для <a href="https://code.visualstudio.com">VS Code</a>; 
      - <a href="https://learn.microsoft.com/en-us/visualstudio/releases/2019/release-notes">VS2019 Community</a>;
-     - <a href="https://github.com">Git Hub</a>.
+     - <a href="https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens">Git Lens</a>.
 
 ### Быстрый старт
 
