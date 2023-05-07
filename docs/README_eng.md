@@ -15,6 +15,7 @@
             height="50"
              width="50"></a></td>
         </tr>
+	
         <tr>
             <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
             <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
