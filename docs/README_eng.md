@@ -15,7 +15,7 @@
 </p>
 
 
-# Что это?
+# What is this?
 This is **The Home Depot** of <a href="https://vk.com/rpp.aurora">Aurora RP</a>, which is a role-playing project where everyone has to play their role, create and develop their characters. Anyone can reach unprecedented heights or stay in the lowlands. Join a government organization or a faction. Complete tasks for your faction and increase its reputation. Create your own unique business and use all the forces of marketing to make it popular.
 
 
@@ -30,14 +30,14 @@ This repo hosts:
      - <a href="https://learn.microsoft.com/en-us/visualstudio/releases/2019/release-notes">VS2019 Community</a>;
      - <a href="https://gitlens.com">Git Lens</a> - this is the main extension for better work with Git.
 
-### Быстрый старт
+### Quick start
 
 Main <a href="https://github.com/ICEtheBreaker/rpp_aurora">repo</a> - is the citadel of everything related to project <a href="https://vk.com/rpp.aurora">Aurora RP</a>. 
 
 You can freely fork this repository and add your own improvements. 
 	
 	- And if you want to help with development, you can clone the repository and open a pull request.
-
+	
 
 Если Вы хотите работать над этим проектом, есть два условия:
   
