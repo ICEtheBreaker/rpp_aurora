@@ -226,11 +226,10 @@ public OnPlayerConnect(playerid)
 		Kick(playerid);
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
-	new code = 999 + random(9000);
+	/*new code = 999 + random(9000);
 	format(sstring, sizeof(sstring), "Код для подтверждения: %d", code);
 	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", sstring);
-
-	// printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));
+	printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));*/
 
 	return 1;
 }
@@ -273,7 +272,7 @@ public OnPlayerText(playerid, text[])
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else Error(playerid, "[Ошибка]: Слишком длинное сообщение!");
+	} else Error(playerid, "[Ошибка]:{FFFFFF} Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
@@ -392,9 +391,9 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponID] [ammoValue]");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [value (0-999)]");
 	else if (!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон weaponID < 0 либо > 46!");
-	else if (!(0 <= (ammoValue) <= 150)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue < 0 либо > 150!");
+	else if (!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
@@ -435,7 +434,7 @@ CMD:ame(playerid, params[]) {
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) SEND_CM(playerid, format_white, "[Информация]: /do [текст]");
+	if(sscanf(params, "s[116]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /do [текст]");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
 	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
