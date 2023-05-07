@@ -1,9 +1,9 @@
 > Поиск разработчиков! Мы ищем разработчиков в проект. Напишите нам в нашей <a href="https://vk.com/rpp.aurora">группе</a>. 
 
 <p align="center">
-   <img src="https://i.ibb.co/zRYpSCd/polechudes_nobackground.png"
-        height="320"
-        width="520">
+   <img src="https://igroid.com.ua/uploads/posts/2014-09/pole-chudes.jpg"
+        height="451"
+        width="1024">
 </p>
 <h2 align="center">Localization</h2>
 <table align="center">
