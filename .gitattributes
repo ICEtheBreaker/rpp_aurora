@@ -27,7 +27,6 @@
 #* change language tag
 
 *.css linguist-language=CSS
-*.dll linguist-language=C++
 *.pwn linguist-language=Pawn
 *.inc linguist-language=Pawn
 *.md  linguist-language=Markdown
@@ -35,7 +34,6 @@
 *.json linguist-language=JSON
 *.sqlite linguist-language=SQL
 *.sql linguist-language=SQL
-*.exe linguist-language=C++
 *.php linguist-language=PHP
 *.html linguist-language=HTML
 *.mdl linguist-language=Objective-C
