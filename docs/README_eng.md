@@ -88,9 +88,9 @@ ${workspaceRoot} - path to your folder</h4>
 
 ------------------------------------------------
 
-### If you have Git-clients such as: Sourcetree, Github Desktop, etc.
+### If you have Git-clients such as: <a href="https://www.sourcetreeapp.com">Sourcetree</a>, <a href="https://desktop.github.com">Github Desktop</a>, etc.
 </br>
-<h2>Sourcetree</h2>
+<h2><a href="//www.sourcetreeapp.com">Sourcetree</a></h2>
 
 
 1. Authenticate your GitHub profile with Sourcetree;
@@ -104,7 +104,7 @@ git@github.com:ICEtheBreaker/rpp_aurora.git
 
 > We use Sourcetree for easiest work with git.
 </br>
-<h2>GitHub Desktop</h2>
+<h2><a href="https://dekstop.github.com">GitHub Desktop</a></h2>
 
 
 1. Click on 'File' in the upper bar;
@@ -141,7 +141,7 @@ We use the following IDEs for faster and more convenient development. They also 
 
 ------------------------------------------------
 
-# License
+# <a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/LICENSE.md">License</a>
 All resources, except for includs outside the `/defines` directory, are under the SAMP-LICENSE and are the property of Darkside Interactive. Usage of the source code for personal gain, theft, transfer to third parties or distribution to the masses is strictly prohibited.
 
 All logos in `/raw` are trademarks of their respective companies and operate in accordance with their terms and license.
