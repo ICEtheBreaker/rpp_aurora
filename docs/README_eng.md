@@ -1,17 +1,48 @@
+> Call for developers! We're looking for others developers. Leave a message in <a href="https://vk.com/rpp.aurora">our group</a>
+
 <p align="center">
-   <img src="https://i.ibb.co/zRYpSCd/polechudes_nobackground.png"
-        height="320"
-        width="520">
+   <img src="https://igroid.com.ua/uploads/posts/2014-09/pole-chudes.jpg"
+        height="451"
+        width="1024">
 </p>
+
+<h2 align="center">Localization</h2>
+<table align="center">
+    <tbody>
+        <tr>
+            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
+            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
+            height="50"
+             width="50"></a></td>
+        </tr>
+        <tr>
+            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
+            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
+            height="50"
+            width="50"></a></td>
+        </tr>
+    </tbody>
+</table></br></br>
+
+<h2 align='center'>Repo status</h2>
 <p align="center">
+    	<img src="https://img.shields.io/github/actions/workflow/status/ICEtheBreaker/rpp_aurora/manual.yml?label=GAMEMODE%20BUILD&style=for-the-badge" alt="Build check">
     <a href="https://github.com/ICEtheBreaker/CRMPProject-Main/graphs/contributors" alt="Contributors">
-        <img src="https://img.shields.io/github/contributors/ICEtheBreaker/CRMPProject-Main?label=%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%B8%D0%B1%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D1%8B&style=for-the-badge" alt="Контрибьютеры"></a>
+        <img src="https://img.shields.io/github/contributors/ICEtheBreaker/rpp_aurora?style=for-the-badge" alt="Contributors"></a>
     <a href="https://github.com/ICEtheBreaker/CRMPProject-Main/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/ICEtheBreaker/CRMPProject-Main?label=%D0%90%D0%9A%D0%A2%D0%98%D0%92%D0%9D%D0%9E%D0%A1%D0%A2%D0%AC&style=for-the-badge" alt="Активность" ></a>
+        <img src="https://img.shields.io/github/commit-activity/m/ICEtheBreaker/rpp_aurora?label=COMMIT%20ACTIVITY&style=for-the-badge" alt="Activity" ></a>
     <a href="https://github.com/ICEtheBreaker/CRMPProject-Main/graphs/commit-activity" alt="Last activity">
-        <img src="https://img.shields.io/github/last-commit/ICEtheBreaker/CRMPProject-Main?label=%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D1%8F%D1%8F%20%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D0%BE%D1%81%D1%82%D1%8C&style=for-the-badge" alt="Последняя активность" ></a>
-    <a href="https://vk.com/rpp.aurora" alt="Следить">
-        <img src="https://img.shields.io/twitter/follow/rpp.aurora?&style=for-the-badge" alt="Check latest news"></a>
+        <img src="https://img.shields.io/github/last-commit/ICEtheBreaker/rpp_aurora?label=LAST%20ACTIVITY&style=for-the-badge" alt="Last activity" ></a>
+	<img src="https://img.shields.io/github/repo-size/ICEtheBreaker/rpp_aurora?style=for-the-badge" alt="Repo size">
+<!--- <a href="https://vk.com/rpp.aurora" alt="Follow us">
+        <img src="https://img.shields.io/twitter/follow/rpp.aurora?&style=for-the-badge" alt="Check latest news"></a>--->
+</p>
+<h2 align="center">Branches check</h2>
+<p align="center">
+    <img src="https://img.shields.io/github/checks-status/ICEtheBreaker/rpp_aurora/master?label=master&style=for-the-badge" alt="master checks">
+    <img src="https://img.shields.io/github/checks-status/ICEtheBreaker/rpp_aurora/develop?label=develop&style=for-the-badge" alt="develop checks">
+    <img src="https://img.shields.io/github/checks-status/ICEtheBreaker/rpp_aurora/feature_duttilao?label=feature_duttilao&style=for-the-badge" alt="feature_dutillao checks">
+    <img src="https://img.shields.io/github/checks-status/ICEtheBreaker/rpp_aurora/feature_devjan?label=feature_devjan&style=for-the-badge" alt="feature_devjan checks">
 </p>
 
 
@@ -30,54 +61,97 @@ This repo hosts:
      - <a href="https://learn.microsoft.com/en-us/visualstudio/releases/2019/release-notes">VS2019 Community</a>;
      - <a href="https://gitlens.com">Git Lens</a> - this is the main extension for better work with Git.
 
-### Quick start
+## Quick start
 
 Main <a href="https://github.com/ICEtheBreaker/rpp_aurora">repo</a> - is the citadel of everything related to project <a href="https://vk.com/rpp.aurora">Aurora RP</a>. 
 
 You can freely fork this repository and add your own improvements. 
+And if you want to help with development, you can clone the repository and open a pull request.
 	
-	- And if you want to help with development, you can clone the repository and open a pull request.
-	
+## Cloning  
+Follow steps below to quickly start working with this repo
+</br>
 
-Если Вы хотите работать над этим проектом, есть два условия:
-  
-##### У Вас установлен <a href="https://git-scm.com/downloads">Git</a> и настроен <a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">SSH-клиент </a>.
+Before you start, you will need Git and SSH.
 
-```
-  git clone git@github.com:ICEtheBreaker/rpp_aurora.git
-  cd ${workspaceRoot}/{dirname}
-  make quick-release
-```
-##### У Вас установлен клиент <a href="https://www.sourcetreeapp.com">Sourcetree</a> или <a href="https://desktop.github.com">Github Desktop</a>.
+##### You have installed <a href="https://git-scm.com/downloads">Git</a> and setupped <a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">SSH-client </a>.
 
+1. Open your Git terminal and enter the following lines:
 ```
-  git@github.com:ICEtheBreaker/CRMPProject-Main.git || https://github.com/ICEtheBreaker/CRMPProject-Main.git
+git clone git@github.com:ICEtheBreaker/rpp_aurora.git
 ```
 
-# Разработка
-Мы используем следующие среды разработки, а также дополнения к ним.
+<h4>This will clone our repository into your workspace root.</h4>
+
+------------------------------------------------
+
+2. When cloning is finished, switch to the folder in which you have cloned the repository.
+```
+cd /disk/${workspaceRoot}/name of folder
+```
+<h4>disk - the letter of your disk.</br>
+${workspaceRoot} - path to your folder</h4>
+
+------------------------------------------------
+
+### If you have Git-clients such as: <a href="https://www.sourcetreeapp.com">Sourcetree</a>, <a href="https://desktop.github.com">Github Desktop</a>, etc.
+</br>
+<h2><a href="//www.sourcetreeapp.com">Sourcetree</a></h2>
+
+
+1. Authenticate your GitHub profile with Sourcetree;
+2. Click on 'Clone' button;
+3. Enter this line and choose folder to clone;
+```
+git@github.com:ICEtheBreaker/rpp_aurora.git
+```
+4. Wait for clone to finish;
+5. Start working.
+
+> We use Sourcetree for easiest work with git.
+</br>
+<h2><a href="https://dekstop.github.com">GitHub Desktop</a></h2>
+
+
+1. Click on 'File' in the upper bar;
+2. Choose 'Clone repository';
+3. Click on 'URL' and paste this path:
+```
+git@github.com:ICEtheBreaker/rpp_aurora.git
+```
+4. Select the folder where the repository is being cloned;
+5. Wait for clone to finish;
+6. Start working.
+
+> GitHub Desktop is the official GitHub Git-client
+
+If you can't do steps above, you can goto repository and click 'Code' and then Download ZIP. You will download current version on selected branch.
+
+# File directories and development
+We use the following IDEs for faster and more convenient development. They also come with the necessary extensions and testing tools
 - <a href="https://code.visualstudio.com">Visual Studio Code</a>; 
 - <a href="https://www.sublimetext.com">Sublime Text</a>;
 - <a href="https://learn.microsoft.com/en-us/visualstudio/releases/2019/release-notes">Visual Studio 2019 Community</a>;
 
 - <a href="https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens">Git Lens</a>.
 ------------------------------------------------
-### Директории файлов и наименования:
+### Files paths
 
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/gamemodes/new.pwn">gamemodes/new.pwn</a> - игровой мод;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/systems/capture_natives">defines/systems/captune_natives/natives.inc</a> - нативы и функции;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/colors.inc">defines/colors.inc</a> - цветовые коды HTML & HEX;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/db_conn">defines/db_conn</a> - подключение SQL;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/macroses.inc">defines/macroses.inc</a> - сокращённые макросы нативов;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/name.inc">defines/name.inc</a> - наименование сервера, карта, <a href="https://vk.com/rpp.aurora">группа  ВКонтакте</a>;</br></h3>
-   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/pawno/includes">pawno/includes</a> - все основные инклуды, без которых ничего работать не будет.</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/gamemodes/new.pwn">gamemodes/new.pwn</a> - main gamemode;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/systems/capture_natives">defines/systems/captune_natives/natives.inc</a> - natives and macroses;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/colors.inc">defines/colors.inc</a> - HTML & HEX color codes;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/db_conn">defines/db_conn</a> - SQL-connection;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/macroses.inc">defines/macroses.inc</a> - macroses and natives;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/defines/name.inc">defines/name.inc</a> - hostname, modname, mapname, <a href="https://vk.com/rpp.aurora">project group</a>;</br></h3>
+   - <h3><a href="https://github.com/ICEtheBreaker/CRMPProject-Main/tree/develop/pawno/includes">pawno/includes</a> - all includes and header files</br></h3>
 
 ------------------------------------------------
 
-# Лицензия
-Все ресурсы, кроме инклудов вне директории `/defines`, находятся под ЛИЦЕНЗИЕЙ SAMP-LICENSE и являются собственностью Darkside Interactive. Использование исходного кода в целях личной выгоды, кражи, передачи третьим лицам или распространении в массы строго запрещены. 
+# <a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/LICENSE.md">License</a>
+All resources, except for includs outside the `/defines` directory, are under the SAMP-LICENSE and are the property of Darkside Interactive. Usage of the source code for personal gain, theft, transfer to third parties or distribution to the masses is strictly prohibited.
 
-Все логотипы в `/raw` являются товарными знаками соответствующих компаний и действуют в соответствии с их условиями и лицензией.
-# Поддержка
+All logos in `/raw` are trademarks of their respective companies and operate in accordance with their terms and license.
 
-<h4>Если найдена ошибка в коде, создавайте отчёт в <a href="https://github.com/ICEtheBreaker/CRMPProject-Main/issues">Issues</a>.</h4>
+# Support
+
+<h4>You can contact us or create new issue if you find any error or poor code.</h4>
