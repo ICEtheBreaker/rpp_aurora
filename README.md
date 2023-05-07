@@ -91,9 +91,9 @@ ${workspaceRoot} - путь к вашей рабочей директории.</
 
 ------------------------------------------------
 
-### Если у Вас установлены Git-клиенты, такие как: Sourcetree, GitHub Desktop и т.д
+### Если у Вас установлены Git-клиенты, такие как: <a href="https://sourcetreeapp.com">Sourcetree</a>, <a href="https://desktop.github.com">GitHub Desktop</a> и т.д
 </br>
-<h2>Sourcetree</h2>
+<h2><a href="https://sourcetreeapp.com">Sourcetree</a></h2>
 
 
 1. Подключите свой профиль GitHub к Sourcetree;
@@ -107,7 +107,7 @@ git@github.com:ICEtheBreaker/rpp_aurora.git
 
 > Мы используем Sourcetree для легкой работы с Git
 </br>
-<h2>GitHub Desktop</h2>
+<h2><a href="https://desktop.github.com">GitHub Desktop</a></h2>
 
 
 1. Нажмите на 'File' в верхнем таскбаре;
@@ -144,7 +144,7 @@ git@github.com:ICEtheBreaker/rpp_aurora.git
 
 ------------------------------------------------
 
-# Лицензия
+# <a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/LICENSE.md">Лицензия</a>
 Все ресурсы, кроме инклудов вне директории `/defines`, находятся под ЛИЦЕНЗИЕЙ SAMP-LICENSE и являются собственностью Darkside Interactive. Использование исходного кода в целях личной выгоды, кражи, передачи третьим лицам или распространении в массы строго запрещены. 
 
 Все логотипы в `/raw` являются товарными знаками соответствующих компаний и действуют в соответствии с их условиями и лицензией.
