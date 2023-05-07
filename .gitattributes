@@ -42,12 +42,10 @@
 *.bmf linguist-language=Objective-C
 *.ep linguist-language=C++
 *.rsc linguist-language=Lua
-*.mat linguist-language=MATLAB
 *.fnt linguist-language=F#
 *.lfx linguist-language=HLSL
 *.tfx linguist-language=HLSL
 *.pfx linguist-language=HLSL
-*.ans linguist-language=ANTLR
 *.gtitle linguist-language=Python
 *.gtitleinfo linguist-language=Python
 *.cfg linguist-language=TypeScript
