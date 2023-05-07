@@ -1,3 +1,5 @@
+> Поиск разработчиков! Мы ищем разработчиков в проект. Напишите нам в нашей <a href="https://vk.com/rpp.aurora">группе</a>. 
+
 <p align="center">
    <img src="https://i.ibb.co/zRYpSCd/polechudes_nobackground.png"
         height="320"
