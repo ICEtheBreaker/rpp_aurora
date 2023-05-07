@@ -10,94 +10,18 @@
     <tbody>
         <tr>
             <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
+            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" title="English" alt="English"
             height="50"
             width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
+            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
+            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" title="Русский" alt="Русский"
             height="50"
             width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
-            height="50"
-            width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
-            height="50"
-            width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
-            height="50"
-            width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
-            height="50"
-            width="50"></a></td>
-	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_eng.md">  
-            <img src="https://cdn.icon-icons.com/icons2/3665/PNG/512/gb_flag_great_britain_england_union_jack_english_icon_228674.png" alt="English"
-            height="50"
-            width="50"></a></td>
+ 	    <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
+	    <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" title="Беларуска мова" alt="Беларуская мова"
+	    height="50"
+	    width="50"></a></td>
         </tr>
-        <tr>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-            <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/README.md">
-            <img src="https://cdn.icon-icons.com/icons2/83/PNG/512/russia_15804.png" alt="Русский"
-            height="50"
-            width="50"></a></td>
-        </tr>
-	<tr>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	   <td><a href="https://github.com/ICEtheBreaker/rpp_aurora/blob/master/docs/README_bel.md">
-	   <img src="https://cdn.icon-icons.com/icons2/107/PNG/512/belarus_18247.png" alt="Беларуская мова"
-	   height="50"
-	   width="50"></a></td>
-	</tr>
     </tbody>
 </table></br></br>
 
