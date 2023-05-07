@@ -1,4 +1,4 @@
-> Пошук распрацоўшчыкаў! Мы шукаем распрацоўнікаў у праект. Напішыце нам у нашай <a href="https://vk.com/rpp.aurora" > групе< / a>.
+> Пошук распрацоўшчыкаў! Мы шукаем распрацоўнікаў у праект. Напішыце нам у нашай <a href="https://vk.com/rpp.aurora"> групе</a>.
 
 <p align="center">
    <img src="https://igroid.com.ua/uploads/posts/2014-09/pole-chudes.jpg"
