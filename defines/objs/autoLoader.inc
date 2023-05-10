@@ -1,13 +1,8 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Π¦ΠµΠ»Ρ: loadobj.inc
+// Φελό: loadobj.inc
 //
 //=============================================================================//
-<<<<<<< HEAD
-
-#include a_samp
-#include "../../defines/objs/mapping/loadobj.inc" //? loadobj.inc
-=======
 #include a_samp
 #include "../../defines/objs/mapping/loadobj.inc" //? loadobj.inc
 
@@ -28,4 +23,3 @@ public OnGameModeInit() {
 #if defined obj_OnGameModeInit
     forward obj_OnGameModeInit();
 #endif
->>>>>>> b113ad4bac10bba26e5b56441eb969464d5113a5

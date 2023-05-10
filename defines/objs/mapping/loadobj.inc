@@ -1,18 +1,8 @@
 //========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
 //
-// Цель: objects
+// Р¦РµР»СЊ: objects
 //
 //=============================================================================//
-<<<<<<< HEAD
-
-#include a_samp
-_loadMapping() {
-    //return CreateObject //!
-    return true;
-}
-_loadObjects() {
-    return _loadMapping();
-=======
 #include a_samp
 _loadMapping() {
     //! return CreateObject's
@@ -38,5 +28,4 @@ _loadObjects() {
 _remMapping() {
     //! return DestroyObject's
     return false;
->>>>>>> b113ad4bac10bba26e5b56441eb969464d5113a5
 }
