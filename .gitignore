@@ -19,6 +19,8 @@
 # Compiled Dynamic libraries
 *.dylib
 
+# Server Config, Settings for stable server work
+*.cfg
 
 # Fortran module files
 *.mod
