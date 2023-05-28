@@ -5,8 +5,8 @@
 //==============================================================================================//
 
 main(){}
-@___If_u_can_read_this_u_r_nerd();
-@___If_u_can_read_this_u_r_nerd() {
+@If_u_can_read_this_u_r_nerd() {
+@If_u_can_read_this_u_r_nerd();
 	#emit stack 0x7FFFFFFF
 	#emit inc.s cellmax
 	static const ___[][] = {"AntiDeAMX"};
@@ -66,17 +66,24 @@ AntiDeAMX()
 #if defined YSI_YES_HEAP_MALLOC  
 	#include "YSI_Coding\y_malloc"
 #endif
-#include <sscanf2>
-#include <foreach>
+
 
 #if defined STREAMER_USAGE 
 	#tryinclude <streamer> 
 #endif	
 	
+
+//=================================[THIS IS INCLUDES]==================================//
+
+#include <sscanf2>
+#include <foreach>
 #include <fix>
 #include <crashdetect> 
 #include <dc_cmd>
 #include <Pawn.Regex>
+
+//=================================[DIRECTORY INCLUDES]==================================//
+
 #include "../../defines/db_conn" 
 #include "../../defines/colors" 
 #include "../../defines/macroses" 
