@@ -6,6 +6,11 @@
 
 // main(){}
 
+//! даня смс для тебя:
+//! если в команде имеется ввод ид игрока то это всегда будет playerid
+//! ничего другое
+//! стереть после прочтения
+
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -69,11 +74,21 @@ AntiDeAMX()
 // #define YSI_YES_HEAP_MALLOC
 
 //! появились ошибки при запуске сервака с библиотекой y_asi
+//! ну и хуй с ними 
 
 #if defined YSI_YES_HEAP_MALLOC
 	#define jitter_use
 	#include "YSI_Coding\y_malloc"
-#endif
+#endif //! а тут он просто напросто не нужен
+
+#if defined jitter_use
+	#if defined YSI_NO_HEAP_MALLOC
+		#undef jitter_use
+		#include "YSI_Coding\y_malloc"
+		#tryinclude "YSI\jit.inc"
+	#endif
+#endif //! без __no_heap_mal. не работает jitter.inc
+
 #include <sscanf2>
 #include <foreach>
 
@@ -91,15 +106,13 @@ AntiDeAMX()
 #include <dc_cmd>
 #include <Pawn.Regex>
 
-//=================================[DIRECTORY INCLUDES]==================================//
+//=================================[DIRECTORY | SYSTEMS | INCLUDES]==================================//
 
 #include "../../defines/db_conn" 
 #include "../../defines/colors" 
 #include "../../defines/macroses" 
 #include "../../defines/systems/capture_natives/natives" 
 #include "../../defines/objs/autoLoader.inc"
-
-//=================================[SYSTEMS]========================================//
 // #include "../../defines/systems/autoschool/main"
 
 //=================================[SERVER CONFIG]==================================//
@@ -148,8 +161,7 @@ AntiDeAMX()
 #define NOT_ENOUGH_MONEY                "{F04245}[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
 #define SERVER_CLOSED 					"{F04245}[Ошибка]: {FFFFFF}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
-#define IS_PLAYER_NOT_LOGGED			"{F04245}[Ошибка]: {FFFFFF}Игрок не подключен."
-#define LICS_NON_VALID_NUM				"{F04245}[Ошибка]: {FFFFFF}ID lic не может быть < 0 и > 5"
+#define LICENSE_INVALID					"{F04245}[Ошибка]: {FFFFFF}ID лицензии не может быть меньше 0 и больше 5"
 
 new query_string[356];
 
@@ -442,6 +454,8 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 }
 //! все эти стеки вынести в инклуд по завершении 
 //! отдельный путь \defines\systems\autoschool\main.inc
+//! а почему бы там сразу не делать
+//! и кстати есть и другие лицензии, например: рыболовство, охота и т.д
 stock LicType(id) {
 	new type[16];
 	switch(id) {
@@ -470,18 +484,17 @@ stock GiveLic(playerid,id) {
 
 	return 1;
 }
-//!
 
 CMD:agivelic(playerid, params[]) {
 	new LicID, TargetID;
 
 	IsAdmin(ADM_MODER);
 
-	if(sscanf(params, "ii", TargetID, LicID)) Info(playerid, !"[Информация]:{FFFFFF} /agivelic (TargetID) (LicID)");
+	if(sscanf(params, "ii", TargetID, LicID)) Info(playerid, !"[Информация]:{FFFFFF} /agivelic (playerid) (licid)");
 	else if(isConn(TargetID)) 
-		return Error(playerid, IS_PLAYER_NOT_LOGGED);
+		return Error(playerid, PLAYER_INVALID);
 	else if (!(1 <= (LicID) <= 5))
-		return Error(playerid, LICS_NON_VALID_NUM);
+		return Error(playerid, LICENSE_INVALID);
 	
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(TargetID),TargetID,LicID,LicType(LicID));
@@ -911,12 +924,12 @@ stock ShowStats(playerid) {
 
 	format(sstring, sizeof(sstring), "Система\tИнфо\n\
 	{AFAFAF}Ваш ID:\t {0093ff}%d\n\
-	{AFAFAF}Ваш Nick:\t {0093ff}%s\n\
+	{AFAFAF}Ваш игровой псевдоним:\t {0093ff}%s\n\
 	{AFAFAF}Ваша почта:\t {0093ff}%s\n\
 	{AFAFAF}Уровень розыска:\t {0093ff}%d\n\
 	{AFAFAF}Паспорт:\t [ {0093ff}%s ]\n\
 	{AFAFAF}Вод. удостоверение:\t [ {0093ff}%s, тип: %s{ffffff} ]",
-		pi[playerid][pID],
+		playerid, //! pi[playerid][pID] это ид ячейки в базе
 		pi[playerid][pNames],
 		pi[playerid][pEmail],
 		pi[playerid][pWantedLevel],
