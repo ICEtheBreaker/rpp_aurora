@@ -5,6 +5,30 @@
 //==============================================================================================//
 
 // main(){}
+/*
+           _ _ _ _ _ _		_ _ _ _ _ _ _		__ 					   __
+		 _|	 _ _ _ _ _|    |  _ _ _ _ _  |	   |_ |_   			 	 _|  |
+	   _|  _|		  	   | |		   | |		 |_ |_             _| _|
+	  |	 _|                | |         | |		   |_ |_ 		 _| _|
+      |	|	 _ _ _ _ _     | |_ _ _ _ _| | 		     |_ |_     _| _| 
+	  |	|	| _ _ _   |    |  _ _ _ _ _  |			   |_ |___| _|
+	  |	|			| |	   | | 		   | |			     |_   _|
+	  |	|_			| |	   | |		   | |		     	   | |
+	  |_  |_ _ _ _ _| |    | |         | |                 | |
+		|_ _ _ _ _ _ _|	   |_|         |_|			       |_|
+
+		 _ _ _ _ _ _ _ 	    _ _ _ _ _ _ _ 
+		|  _ _ _ _ _ _|    |  _ _ _ _ _  |
+		| | 			   | |		   | | 
+		| |_ _ _ _ _ _	   | |		   | |
+		|  _ _ _ _ _ _|	   | |_ _ _ _ _| |
+		| |				   |  _ _ _ _ _  |
+		| |_ _ _ _ _ _	   | |		   | |
+		|_ _ _ _ _ _ _|	   |_|		   |_|
+*/	
+
+
+
 
 //! даня смс для тебя:
 //! если в команде имеется ввод ид игрока то это всегда будет playerid
@@ -203,7 +227,6 @@ enum pInfo {
 	pGoogle,
 	pWantedLevel,
 	pPassport,
-
 	pDriveLic[5], // согласно спецификации 0 id -авто, 1 -судоходства, 2 -воздушные, 3-грузовой транспорт \ средн. 4 - оружие, 5 - бизнес
 	pDriveLics[20], // хранит в себе массив информации о лицензиях (внутри контекста и запросы бд)
 
@@ -517,22 +540,22 @@ CMD:agivelic(playerid, params[]) {
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
 	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [value (0-999)]");
-	else if (!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон weaponID < 0 либо > 46!");
-	else if (!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue < 0 либо > 999!");
+	else if (!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон weaponID: < 0 либо > 46!");
+	else if (!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue: < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
 
 CMD:plvh(playerid, params[]) {
 	sstring[0] = EOS;
-	if(PlayerInfo[playerid][pAdmin] > 3) return 1;
+	IsAdmin(ADM_OLDER_MODER);
 	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
 	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)), Error(playerid, sstring), sstring[0] = EOS;
 	if(GetPlayerVirtualWorld(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)), Error(playerid, sstring), sstring[0] = EOS;
-	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID автомобиля должно быть от 400 до 611");
-	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID первого цвета должно быть от 0 до 255");
-	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID второго цвета должно быть от 0 до 255");
+	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон ID автомобилей: не меньше 400 не больше 611");
+	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон первого цвета: не меньше 0 не больше 255");
+	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон второго цвета: не меньше 0 не больше 255");
 	new Float:x,
 		Float:y,
 		Float:z;
@@ -548,7 +571,7 @@ CMD:makeadmin(playerid, params[]) {
 	IsAdmin(ADM_FOUNDER);
 	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [уровень администратора]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Уровень администрирования от 1 до 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Диапазон доступа к системе: не меньше 1 не больше 6");
 	query_string[0] = EOS;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -603,7 +626,7 @@ CMD:todo(playerid, params[]) {
 }
 CMD:s(playerid, params[]) {
 	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /s [текст]");
-	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"[Ошибка]:{FFFFFF} Длина текста от 0 до 105");
+	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 105");
 	else if (!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
 	sstring[0] = EOS;
 	format(sstring, sizeof(sstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
@@ -639,7 +662,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(response) {
 				if(!strlen(inputtext)) return SEND_CM(playerid, format_red, "Вы ничего не ввели."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Длина пароля должна быть от 6 до 22 символов."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -873,7 +896,7 @@ stock restoreDateOfPlayer(playerid) {
 	pi[playerid][pWantedLevel]		=
 	pi[playerid][pEmailConfirmed] 	= 0;
 
-	printf("%d (%s) id освободил данные | thank you friend!)", playerid, GetName(playerid));
+	printf("%d (%s) id освободил данные | thank you friend! you are gay!", playerid, GetName(playerid));
 
 	for(new i = 5; i > 0; i--) {
     	pi[playerid][pDriveLic][i] = 0;
@@ -910,7 +933,7 @@ stock CreateAccount(playerid)
 	return 1;
 }
 
-stock ResetVariables(playerid) { //! СЃСЋРґР° РґРѕР±Р°РІР»СЏС‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РѕС‡РёСЃС‚РєРё
+stock ResetVariables(playerid) { //! обнуление переменных
 	inadmcar[playerid] = -1;
 }
 function LoginPlayer(playerid) {
