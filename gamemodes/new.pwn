@@ -224,17 +224,11 @@ enum  {
 }
 //						[BOOLEANS]
 new 
-<<<<<<< HEAD
-	bool: playerLoggedStatus[MAX_PLAYERS char]; 
-
-new sstring[512];
-=======
 	bool:playerLoggedStatus[MAX_PLAYERS char]; 
 
 
 new inadmcar[MAX_PLAYERS char];
 new sstring[512]; // РїРѕР·Р¶Рµ РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ СѓР±СЂР°С‚СЊ Рё РїРµСЂРµРґРµР»Р°С‚СЊ РІ СѓРіРѕРґСѓ СЃС‚РµРєР°
->>>>>>> 4-plveh-fix
 new PlayerAFK[MAX_PLAYERS];
 new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
@@ -309,12 +303,7 @@ public OnPlayerDisconnect(playerid, reason) {
 	else SavePlayer(playerid);
 	PlayerAFK[playerid] = -2;
 
-<<<<<<< HEAD
-	restoreDateOfPlayer(playerid);
-
-=======
 	if(inadmcar[playerid] != -1) return DestroyVehicle(inadmcar[playerid]), inadmcar[playerid] = 0;
->>>>>>> 4-plveh-fix
 	return 1;
 }
 
@@ -493,7 +482,6 @@ stock GiveLic(playerid,id) {
 
 	pi[playerid][pDriveLic][id] = 1;
 
-<<<<<<< HEAD
 	sstring[0] =
 	query_string[0] = EOS;
 
@@ -534,25 +522,17 @@ CMD:giveweap(playerid, params[]) {
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
-//! пофиксить бесконечный спавн машин
-CMD:plvh(pl) {
-	new Float: X,
-		Float: Y,
-		Float: Z; 
-	GetPlayerPos(pl, X, Y, Z);
-	new veh = CreateVehicle(422, X, Y, Z, 0.0, 0, 2, 0);
-	OnVehicleSpawn(veh);
-	return PutPlayerInVehicle(pl, veh, 0);
-=======
+
 CMD:plvh(playerid, params[]) {
+	sstring[0] = EOS;
 	if(PlayerInfo[playerid][pAdmin] > 3) return 1;
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[РРЅС„РѕСЂРјР°С†РёСЏ]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
 	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
-	if(GetPlayerInterior(params[0]) != 0) return Error(playerid, !"[РћС€РёР±РєР° ADM]:{FFFFFF} РРіСЂРѕРє РЅР°С…РѕРґРёС‚СЃСЏ РІ РёРЅС‚РµСЂСЊРµСЂРµ (%d)", GetPlayerInterior(playerid));
-	if(GetPlayerVirtualWorld(params[0]) != 0) return Error(playerid, !"[РћС€РёР±РєР° ADM]:{FFFFFF} РРіСЂРѕРє РЅР°С…РѕРґРёС‚СЃСЏ РІ РІРёСЂС‚СѓР°Р»СЊРЅРѕРј РјРёСЂРµ (%d)", GetPlayerVirtualWorld(playerid));
-	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[РћС€РёР±РєР° ADM]:{FFFFFF} ID Р°РІС‚РѕРјРѕР±РёР»СЏ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕС‚ 400 РґРѕ 611");
-	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[РћС€РёР±РєР° ADM]:{FFFFFF} ID РїРµСЂРІРѕРіРѕ С†РІРµС‚Р° РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕС‚ 0 РґРѕ 255");
-	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[РћС€РёР±РєР° ADM]:{FFFFFF} ID РІС‚РѕСЂРѕРіРѕ С†РІРµС‚Р° РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕС‚ 0 РґРѕ 255");
+	if(GetPlayerInterior(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)), Error(playerid, sstring), sstring[0] = EOS;
+	if(GetPlayerVirtualWorld(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)), Error(playerid, sstring), sstring[0] = EOS;
+	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID автомобиля должно быть от 400 до 611");
+	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID первого цвета должно быть от 0 до 255");
+	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID второго цвета должно быть от 0 до 255");
 	new Float:x,
 		Float:y,
 		Float:z;
@@ -562,7 +542,6 @@ CMD:plvh(playerid, params[]) {
 	inadmcar[params[0]] = CreateVehicle(params[1], x, y, z, Angle, params[2], params[3], -1);
 	PutPlayerInVehicle(params[0], inadmcar[params[0]], 0);
 	return 1;
->>>>>>> 4-plveh-fix
 }
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
@@ -930,16 +909,11 @@ stock CreateAccount(playerid)
 	SpawnPlayer(playerid);
 	return 1;
 }
-<<<<<<< HEAD
-function LoginPlayer(playerid) {
-=======
 
 stock ResetVariables(playerid) { //! СЃСЋРґР° РґРѕР±Р°РІР»СЏС‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РѕС‡РёСЃС‚РєРё
 	inadmcar[playerid] = -1;
 }
-
-stock LoginPlayer(playerid) {
->>>>>>> 4-plveh-fix
+function LoginPlayer(playerid) {
 	new getIP[16];
 
 	cache_get_value_name(0, "email", PlayerInfo[playerid][pEmail], 32);
