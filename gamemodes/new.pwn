@@ -251,7 +251,7 @@ new
 
 
 new inadmcar[MAX_PLAYERS char];
-new sstring[512]; // РїРѕР·Р¶Рµ РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ СѓР±СЂР°С‚СЊ Рё РїРµСЂРµРґРµР»Р°С‚СЊ РІ СѓРіРѕРґСѓ СЃС‚РµРєР°
+new fstring[512]; // format string
 new PlayerAFK[MAX_PLAYERS];
 //new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
@@ -315,8 +315,8 @@ public OnPlayerConnect(playerid)
 
 	restoreDateOfPlayer(playerid);
 	/*new code = 999 + random(9000);
-	format(sstring, sizeof(sstring), "Код для подтверждения: %d", code);
-	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", sstring);
+	format(fstring, sizeof(fstring), "Код для подтверждения: %d", code);
+	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", fstring);
 	printf("22:%s", (SHA256_PassHash("AB00ABF5809A496150A22AF43047C1E3D8CAD4CC2B7336E471953BD9D5AF6FA1", "1wv2d<A^_5")));*/
 	return 1;
 }
@@ -356,10 +356,10 @@ public OnVehicleDeath(vehicleid, killerid)
 public OnPlayerText(playerid, text[]) {
     if(!playerLoggedStatus{playerid}) return 0;
 	
-	sstring[0] = EOS;
+	fstring[0] = EOS;
 	if(strlen(text) < 64) {
-		format(sstring, sizeof(sstring), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
-		ProxDetector(20.00, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+		format(fstring, sizeof(fstring), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
+		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
@@ -505,11 +505,11 @@ stock GiveLic(playerid,id) {
 
 	pi[playerid][pDriveLic][id] = 1;
 
-	sstring[0] =
+	fstring[0] = EOS;
 	query_string[0] = EOS;
 
-	format(sstring, sizeof(sstring),"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
-	mysql_format(db, query_string, sizeof(query_string),"UPDATE `accounts` SET `licenses`='%s' WHERE `names`='%e'",sstring,GetName(playerid));
+	format(fstring, sizeof(fstring),"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
+	mysql_format(db, query_string, sizeof(query_string),"UPDATE `accounts` SET `licenses`='%s' WHERE `names`='%e'",fstring,GetName(playerid));
 	mysql_tquery(db, query_string, "", "");
 
 	printf("%s(%d) успешно получил права с licid %d и с типом %s", GetName(playerid), playerid, id, LicType(id));
@@ -528,9 +528,9 @@ CMD:agivelic(playerid, params[]) {
 	else if (!(1 <= (LicID) <= 5))
 		return Error(playerid, LICENSE_INVALID);
 	
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(TargetID),TargetID,LicID,LicType(LicID));
-	Info(playerid, sstring);
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(TargetID),TargetID,LicID,LicType(LicID));
+	Info(playerid, fstring);
 
 	GiveLic(TargetID, LicID);
 
@@ -547,12 +547,18 @@ CMD:giveweap(playerid, params[]) {
 }
 
 CMD:plvh(playerid, params[]) {
-	sstring[0] = EOS;
+	fstring[0] = EOS;
 	IsAdmin(ADM_OLDER_MODER);
 	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
 	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
-	if(GetPlayerInterior(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)), Error(playerid, sstring), sstring[0] = EOS;
-	if(GetPlayerVirtualWorld(params[0]) != 0) return format(sstring,sizeof(sstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)), Error(playerid, sstring), sstring[0] = EOS;
+	if(GetPlayerInterior(params[0]) != 0) {
+		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
+		fstring[0] = EOS;
+	}
+	if(GetPlayerVirtualWorld(params[0]) != 0)  {
+		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Error(playerid, fstring); 
+		fstring[0] = EOS;
+	}
 	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон ID автомобилей: не меньше 400 не больше 611");
 	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон первого цвета: не меньше 0 не больше 255");
 	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон второго цвета: не меньше 0 не больше 255");
@@ -569,7 +575,7 @@ CMD:plvh(playerid, params[]) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	IsAdmin(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [уровень администратора]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [степень доступа]");
 	else if(CheckExceptionName(playername)) return 0;
 	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Диапазон доступа к системе: не меньше 1 не больше 6");
 	query_string[0] = EOS;
@@ -581,9 +587,9 @@ CMD:makeadmin(playerid, params[]) {
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
 	if(sscanf(params, "s[118]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /me [действие]");
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
-	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
+	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
@@ -594,17 +600,17 @@ CMD:ame(playerid, params[]) {
 }
 CMD:do(playerid, params[]) {
 	if(sscanf(params, "s[116]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /do [текст]");
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
-	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
+	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:try(playerid, params[]) {
 	if(sscanf(params, "s[99]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /try [текст]");
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
-	ProxDetector(20.00, playerid, sstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
+	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }
 CMD:todo(playerid, params[]) {
@@ -618,9 +624,9 @@ CMD:todo(playerid, params[]) {
 		new action[50];
 		strmid(action, message, star+1, sizeof(message));
 		strdel(message, star, sizeof(message));
-		sstring[0] = EOS;
-		format(sstring, sizeof(sstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
-		ProxDetector(20.00, playerid, sstring, format_white, format_white, format_white, format_white, format_white);
+		fstring[0] = EOS;
+		format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
 	} else return Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
 	return 1;
 }
@@ -628,18 +634,18 @@ CMD:s(playerid, params[]) {
 	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /s [текст]");
 	else if (!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 105");
 	else if (!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
-	ProxDetector(20.00, playerid, sstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
+	ProxDetector(20.00, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
 	SetPlayerChatBubble(playerid, params[0], format_white, 25, 7500);
 	return 1;
 }
 CMD:menu(playerid) {
-	sstring[0] = EOS;
+	fstring[0] = EOS;
 	gettime(timedata[0], timedata[1]);
-	format(sstring, sizeof(sstring), "{0093ff} Игровое меню | Точное время: %02d.%02d", timedata[0], timedata[1]);
-	ShowPlayerDialog(playerid, dMM, DIALOG_L, sstring, "{B03131}[1]{FFFFFF} Действие персонажа\n\
+	format(fstring, sizeof(fstring), "{0093ff} Игровое меню | Точное время: %02d.%02d", timedata[0], timedata[1]);
+	ShowPlayerDialog(playerid, dMM, DIALOG_L, fstring, "{B03131}[1]{FFFFFF} Действие персонажа\n\
 		{B03131}[2]{FFFFFF} Навыки персонажа\n\
 		{B03131}[3]{FFFFFF} Связь с администрацией\n\
 		{B03131}[4]{FFFFFF} Помощь по серверу\n\
@@ -672,9 +678,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SHA256_PassHash(inputtext, salt, PlayerInfo[playerid][pPassword], 65);
 					// printf("salt::%s;pass:%s", salt, PlayerInfo[playerid][pPassword]);
 					strmid(PlayerInfo[playerid][pSalt], salt, 0, 11, 11);
-					sstring[0] = 0;
-					format(sstring, sizeof(sstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+					fstring[0] = 0;
+					format(fstring, sizeof(fstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				} else {
 					ShowRegDialog(playerid), SEND_CM(playerid, format_red, "Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
@@ -695,11 +701,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			else {
 				if(!IsValidEmail(inputtext)) {
 					SEND_CM(playerid, format_red, !"Неккоректный адрес электронной почты.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
 					SEND_CM(playerid, format_red, !"Вы не указали почту.");
-					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", sstring, !"Далее", !"Отмена");	
+					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
 					strmid(PlayerInfo[playerid][pEmail],inputtext,0,strlen(inputtext), 32);
@@ -836,31 +842,31 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 
 stock ShowLoginDialog(playerid)
 {
-	sstring[0] = 0;
-	format(sstring, sizeof(sstring),"\
+	fstring[0] = 0;
+	format(fstring, sizeof(fstring),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
-	SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", sstring, "Войти", "Отмена");
+	SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", fstring, "Войти", "Отмена");
 	
 	return 1;	
 }
 stock ShowRegDialog(playerid)
 {
-	sstring[0] = 0;
-	format(sstring, sizeof(sstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
+	fstring[0] = 0;
+	format(fstring, sizeof(fstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
 		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
 		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
 		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
-	SHOW_PD(playerid, dReg1, DIALOG_P, !"{FFFFFF}[1/4]{FFA500} Пароль", sstring, !"Далее",!"Отмена");	
+	SHOW_PD(playerid, dReg1, DIALOG_P, !"{FFFFFF}[1/4]{FFA500} Пароль", fstring, !"Далее",!"Отмена");	
 	return 1;
 }
 stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
-	sstring[0] = EOS;
-	format(sstring, sizeof(sstring), "Система\tСостояние\n\
+	fstring[0] = EOS;
+	format(fstring, sizeof(fstring), "Система\tСостояние\n\
 	{AFAFAF}Ники:\t%s\n\
 	{AFAFAF}E-mail:\t%s\n\
 	{AFAFAF}Сменить пароль\t{0093ff}[ Аккаунт ]\n\
@@ -880,7 +886,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	strlen(vkontakte) > 2 ? vkontakte: ("{B83434}Не привязан"));
 	
 	//if(PlayerInfo[playerid][pVkontakte]) && strlen(vkontakte) < 2 return GetVKName(playerid);
-	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", sstring, !"Выбор", "Отмена");
+	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", fstring, !"Выбор", "Отмена");
 }
 
 stock restoreDateOfPlayer(playerid) {
@@ -910,7 +916,7 @@ stock restoreDateOfPlayer(playerid) {
 }
 stock CreateAccount(playerid)
 {
-	sstring[0] =
+	fstring[0] =
 	query_string[0] = EOS;
 
 	PlayerInfo[playerid][pMoney]	 = BONUS_MONEY;
@@ -967,9 +973,9 @@ function LoginPlayer(playerid) {
 	return 1;
 }
 stock ShowStats(playerid) {
-	sstring[0] = EOS;
+	fstring[0] = EOS;
 
-	format(sstring, sizeof(sstring), "Система\tИнфо\n\
+	format(fstring, sizeof(fstring), "Система\tИнфо\n\
 	{AFAFAF}Ваш ID:\t {0093ff}%d\n\
 	{AFAFAF}Ваш игровой псевдоним:\t {0093ff}%s\n\
 	{AFAFAF}Ваша почта:\t {0093ff}%s\n\
@@ -985,7 +991,7 @@ stock ShowStats(playerid) {
 		pi[playerid][pDriveLics]
 	);
 
-	return SHOW_PD(playerid, dNull, DIALOG_STYLE_TABLIST_HEADERS, !"Статистика игрока", sstring, !"Выбор", "Отмена");
+	return SHOW_PD(playerid, dNull, DIALOG_STYLE_TABLIST_HEADERS, !"Статистика игрока", fstring, !"Выбор", "Отмена");
 }
 
 stock SavePlayer(playerid) {
@@ -1010,9 +1016,9 @@ stock SavePlayer(playerid) {
 			mysql_tquery(db, query_string, "", "");
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE names = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
-			sstring[0] = EOS;
-			format(sstring, sizeof(sstring),"Администратор %s был снят с должности.", name);
-			SEND_CM(playerid, format_red, sstring);
+			fstring[0] = EOS;
+			format(fstring, sizeof(fstring),"Администратор %s был снят с должности.", name);
+			SEND_CM(playerid, format_red, fstring);
 		}
 		else {
 			if(GetPlayerID(name) !=INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = level;
@@ -1021,9 +1027,9 @@ stock SavePlayer(playerid) {
 			mysql_tquery(db, query_string, "", "");
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 			mysql_tquery(db, query_string, "", "");
-			sstring[0] = EOS;
-			format(sstring, sizeof(sstring), "Администратор %s теперь имеет %i уровень доступа.", name, level);
-			SEND_CM(playerid, format_white, sstring);
+			fstring[0] = EOS;
+			format(fstring, sizeof(fstring), "Администратор %s теперь имеет %i уровень доступа.", name, level);
+			SEND_CM(playerid, format_white, fstring);
 		}
 	}
 	else {
@@ -1033,9 +1039,9 @@ stock SavePlayer(playerid) {
 		mysql_tquery(db, query_string, "", "");
 		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 		mysql_tquery(db, query_string, "", "");
-		sstring[0] = EOS;
-		format(sstring, sizeof(sstring),"%s добавлен в базу данных как администратор. Уровень доступа: %i", name, level);
-		SEND_CM(playerid, format_white, sstring);
+		fstring[0] = EOS;
+		format(fstring, sizeof(fstring),"%s добавлен в базу данных как администратор. Уровень доступа: %i", name, level);
+		SEND_CM(playerid, format_white, fstring);
 		if(GetPlayerID(name) != INVALID_PLAYER_ID) {
 			PlayerInfo[GetPlayerID(name)][pAdmin] = level;
 			query_string[0] = EOS;
