@@ -1,20 +1,11 @@
-<<<<<<< HEAD
 -- phpMyAdmin SQL Dump
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 20 2023 г., 02:10
+-- Время создания: Май 28 2023 г., 23:24
 -- Версия сервера: 5.7.33-log
 -- Версия PHP: 7.2.34
-=======
---========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============--
---
--- Цель: база данных SQL для импорта в phpMyAdmin
---
---=============================================================================--
-
->>>>>>> acce22c1fc9d48952375d4087c4c76fa9d43c1fc
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Р‘Р°Р·Р° РґР°РЅРЅС‹С…: `icbrk2`
+-- База данных: `icbrk2`
 --
 
 -- --------------------------------------------------------
 
 --
--- РЎС‚СЂСѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ `accounts`
+-- Структура таблицы `accounts`
 --
 
 CREATE TABLE `accounts` (
@@ -49,20 +40,24 @@ CREATE TABLE `accounts` (
   `admin` int(1) NOT NULL,
   `currentskin` int(3) NOT NULL,
   `money` int(11) NOT NULL,
-  `level` int(4) NOT NULL
+  `level` int(4) NOT NULL,
+  `wanted_level` int(2) UNSIGNED NOT NULL DEFAULT '0',
+  `email_confirmed` int(1) NOT NULL DEFAULT '0',
+  `licenses` text
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
--- Р”Р°РјРї РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹ `accounts`
+-- Дамп данных таблицы `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`) VALUES
-(49, 'kilo_joiii', '8A37C7F03A5A083CAAD0B11F063C4416C6E5241183035D0AB63BE899AE926956', '\\^|t|X[PM<', '127.0.0.1', '20.04.2023', '	', 'gordd@gmail.com', 1, 0, 102, 250, 1);
+INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`, `wanted_level`, `email_confirmed`, `licenses`) VALUES
+(49, 'kilo_joiii', '8A37C7F03A5A083CAAD0B11F063C4416C6E5241183035D0AB63BE899AE926956', '\\^|t|X[PM<', '127.0.0.1', '20.04.2023', '	', 'per.dan@gmail.com', 1, 8, 102, 250, 1, 0, 0, '0,0,0,0,0'),
+(50, 'Jei_Kilo', '0A5BD12C6F3A590762A0C2DC8CD49533E5B793BEBD9562BA714414955D77D5FB', '/Rp:v2<fuP', '127.0.0.1', '15.05.2023', '	', 'per.dan@gmail.com', 1, 8, 102, 250, 1, 0, 0, '0,0,0,0,0');
 
 -- --------------------------------------------------------
 
 --
--- РЎС‚СЂСѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ `admin`
+-- Структура таблицы `admin`
 --
 
 CREATE TABLE `admin` (
@@ -74,33 +69,33 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
 --
--- Р�РЅРґРµРєСЃС‹ СЃРѕС…СЂР°РЅС‘РЅРЅС‹С… С‚Р°Р±Р»РёС†
+-- Индексы сохранённых таблиц
 --
 
 --
--- Р�РЅРґРµРєСЃС‹ С‚Р°Р±Р»РёС†С‹ `accounts`
+-- Индексы таблицы `accounts`
 --
 ALTER TABLE `accounts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Р�РЅРґРµРєСЃС‹ С‚Р°Р±Р»РёС†С‹ `admin`
+-- Индексы таблицы `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT РґР»СЏ СЃРѕС…СЂР°РЅС‘РЅРЅС‹С… С‚Р°Р±Р»РёС†
+-- AUTO_INCREMENT для сохранённых таблиц
 --
 
 --
--- AUTO_INCREMENT РґР»СЏ С‚Р°Р±Р»РёС†С‹ `accounts`
+-- AUTO_INCREMENT для таблицы `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
--- AUTO_INCREMENT РґР»СЏ С‚Р°Р±Р»РёС†С‹ `admin`
+-- AUTO_INCREMENT для таблицы `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
