@@ -117,10 +117,12 @@ enum  {
 	ADM_FOUNDER = 8,
 	ADM_DEV = 9
 }
+//						[BOOLEANS]
 new 
-	bool: playerLoggedStatus[MAX_PLAYERS]; 
+	bool:playerLoggedStatus[MAX_PLAYERS char]; 
 
 
+new inadmcar[MAX_PLAYERS char];
 new sstring[512]; // позже нужно будет убрать и переделать в угоду стека
 new PlayerAFK[MAX_PLAYERS];
 
@@ -170,6 +172,7 @@ public OnPlayerConnect(playerid)
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
+	ResetVariables(playerid);
 
 	if(IsLoginInvalid(GetName(playerid))) {
 		SEND_CM(playerid, format_red, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
@@ -184,6 +187,8 @@ public OnPlayerDisconnect(playerid, reason)
 	if(!playerLoggedStatus[playerid]) return 1; 
 	else SavePlayer(playerid);
 	PlayerAFK[playerid] = -2;
+
+	if(inadmcar[playerid] != -1) return DestroyVehicle(inadmcar[playerid]), inadmcar[playerid] = 0;
 	return 1;
 }
 
@@ -236,6 +241,12 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
+	if(oldstate == PLAYER_STATE_DRIVER) {
+		if(inadmcar[playerid] != -1) {
+			DestroyVehicle(inadmcar[playerid]);
+			inadmcar[playerid] = 0;
+		}
+	}
 	return 1;
 }
 
@@ -350,15 +361,24 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 }
 
 
-//! пофиксить бесконечный спавн машин
-CMD:plvh(pl) {
-	new Float: X,
-		Float: Y,
-		Float: Z; 
-	GetPlayerPos(pl, X, Y, Z);
-	new veh = CreateVehicle(422, X, Y, Z, 0.0, 0, 2, 0);
-	OnVehicleSpawn(veh);
-	return PutPlayerInVehicle(pl, veh, 0);
+CMD:plvh(playerid, params[]) {
+	if(PlayerInfo[playerid][pAdmin] > 3) return 1;
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
+	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
+	if(GetPlayerInterior(params[0]) != 0) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid));
+	if(GetPlayerVirtualWorld(params[0]) != 0) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid));
+	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID автомобиля должно быть от 400 до 611");
+	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID первого цвета должно быть от 0 до 255");
+	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} ID второго цвета должно быть от 0 до 255");
+	new Float:x,
+		Float:y,
+		Float:z;
+	new Float:Angle;
+	GetPlayerPos(params[0], x, y, z);
+	GetPlayerFacingAngle(params[0], Angle);
+	inadmcar[params[0]] = CreateVehicle(params[1], x, y, z, Angle, params[2], params[3], -1);
+	PutPlayerInVehicle(params[0], inadmcar[params[0]], 0);
+	return 1;
 }
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
@@ -615,6 +635,11 @@ stock CreateAccount(playerid)
 	SpawnPlayer(playerid);
 	return 1;
 }
+
+stock ResetVariables(playerid) { //! сюда добавлять переменные для очистки
+	inadmcar[playerid] = -1;
+}
+
 stock LoginPlayer(playerid) {
 	new getIP[16];
 	cache_get_value_name_int(0, "email", PlayerInfo[playerid][pEmail]);
