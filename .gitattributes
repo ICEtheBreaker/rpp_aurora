@@ -1,7 +1,7 @@
-#! текстовая конфигурация файлов
+#! ГІГҐГЄГ±ГІГ®ГўГ Гї ГЄГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГї ГґГ Г©Г«Г®Гў
 
-#? text=auto - гит сам определяет текстовый это файл или бинарный
-#? if(-text) - снимает определение текстового/бинарного формата
+#? text=auto - ГЈГЁГІ Г±Г Г¬ Г®ГЇГ°ГҐГ¤ГҐГ«ГїГҐГІ ГІГҐГЄГ±ГІГ®ГўГ»Г© ГЅГІГ® ГґГ Г©Г« ГЁГ«ГЁ ГЎГЁГ­Г Г°Г­Г»Г©
+#? if(-text) - Г±Г­ГЁГ¬Г ГҐГІ Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­ГЁГҐ ГІГҐГЄГ±ГІГ®ГўГ®ГЈГ®/ГЎГЁГ­Г Г°Г­Г®ГЈГ® ГґГ®Г°Г¬Г ГІГ 
 
 * text=auto
 
@@ -27,7 +27,6 @@
 #* change language tag
 
 *.css linguist-language=CSS
-*.dll linguist-language=C++
 *.pwn linguist-language=Pawn
 *.inc linguist-language=Pawn
 *.md  linguist-language=Markdown
@@ -35,5 +34,16 @@
 *.json linguist-language=JSON
 *.sqlite linguist-language=SQL
 *.sql linguist-language=SQL
-*.exe linguist-language=C++
+*.php linguist-language=PHP
+*.html linguist-language=HTML
+*.mdl linguist-language=Objective-C
+*.bmf linguist-language=Objective-C
+*.ep linguist-language=C++
+*.rsc linguist-language=Lua
+*.fnt linguist-language=F#
+*.lfx linguist-language=HLSL
+*.tfx linguist-language=HLSL
+*.pfx linguist-language=HLSL
+*.gtitle linguist-language=Python
+*.gtitleinfo linguist-language=Python
 *.cfg linguist-language=TypeScript
