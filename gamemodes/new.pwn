@@ -175,8 +175,8 @@ AntiDeAMX()
 
 
 //=================================[ADMIN CONFIG]==================================//
-#define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не авторизованы. Используйте {33CCFF}/alog"
-#define ADMIN_ALREADY_LOGGED 	        "{0093ff}[ADM]: {FFFFFF}Вы уже в системе!"
+#define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не в системе. Используйте {33CCFF}/alog"
+#define ADMIN_ALREADY_LOGGED 	        "{0093ff}[Ошибка ADM]: {FFFFFF}Вы уже в системе!"
 #define PLAYER_INVALID 					"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не активен."
 #define PLAYER_NOT_LOGGED 				"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не авторизован."
 
@@ -185,7 +185,7 @@ AntiDeAMX()
 #define NOT_ENOUGH_MONEY                "{F04245}[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
 #define SERVER_CLOSED 					"{F04245}[Ошибка]: {FFFFFF}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
-#define LICENSE_INVALID					"{F04245}[Ошибка]: {FFFFFF}ID лицензии не может быть меньше 0 и больше 5"
+#define LICENSE_INVALID					"{F04245}[Ошибка ADM]: {FFFFFF}Диапазон лицензий: не меньше 0 не больше 5"
 
 new query_string[356];
 
@@ -253,7 +253,7 @@ new
 new inadmcar[MAX_PLAYERS char];
 new sstring[512]; // РїРѕР·Р¶Рµ РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ СѓР±СЂР°С‚СЊ Рё РїРµСЂРµРґРµР»Р°С‚СЊ РІ СѓРіРѕРґСѓ СЃС‚РµРєР°
 new PlayerAFK[MAX_PLAYERS];
-new oldhour; //? переменная реального времени
+//new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
 enum {
 	dNull = 0, 
@@ -1094,7 +1094,7 @@ stock GetPlayerID(const string[]) {
 
 stock ConnectSQL()
 {
-	db = mysql_connect(m_host, m_user, m_pass, m_db);
+	db = mysql_connect(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD, SQL_DATABASE);
    	switch(mysql_errno()){
 		case 0: print("РАБОТАЕТ НАХУЙ");
 	    case 1044: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ КОГО В ПОЛЬЗОВАТЕЛИ УКАЗАЛ??? Я НЕ ЗНАЮ ЕГО]");

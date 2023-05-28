@@ -5,10 +5,10 @@
 //=============================================================================//
 
 
-#define m_host  "127.0.0.1"
-#define m_user  "root"
-#define m_db    "icbrk2"
-#define m_pass  ""
+#define SQL_HOSTNAME  "127.0.0.1"
+#define SQL_USERNAME "root"
+#define SQL_DATABASE   "icbrk2"
+#define SQL_PASSWORD  ""
 
 
 // enter point of the db and used the synt db->mysql_close(...) for example;
