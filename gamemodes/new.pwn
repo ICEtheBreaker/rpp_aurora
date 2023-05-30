@@ -1,10 +1,13 @@
-//========= Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. ============//
-//
-// Цель: игровой мод Авроры
-//
-//==============================================================================================//
+//!============>> Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. <<============//
+//*
+//? Цель: игровой мод Авроры. Подгружает в себя все колонтитульные файлы из `defines`, содержит все
+//? системы, настройки экономики, систему ADM || ICBRK(для уровня DEV) и остальное.
+//*
+//!=====================================================================================================//
 
-// main(){}
+
+
+
 /*
            _ _ _ _ _ _		_ _ _ _ _ _ _		__ 					   __
 		 _|	 _ _ _ _ _|    |  _ _ _ _ _  |	   |_ |_   			 	 _|  |
@@ -14,7 +17,7 @@
 	  |	|	| _ _ _   |    |  _ _ _ _ _  |			   |_ |___| _|
 	  |	|			| |	   | | 		   | |			     |_   _|
 	  |	|_			| |	   | |		   | |		     	   | |
-	  |_  |_ _ _ _ _| |    | |         | |                 | |
+	  |_  |_ _ _ _ _| |    | |         | |                 | |				//! не удивляйтесь это логотип авроры
 		|_ _ _ _ _ _ _|	   |_|         |_|			       |_|
 
 		 _ _ _ _ _ _ _ 	    _ _ _ _ _ _ _ 
@@ -30,11 +33,16 @@
 
 
 
+
+
+
+
 //! даня смс для тебя:
 //! если в команде имеется ввод ид игрока то это всегда будет playerid
 //! ничего другое
 //! стереть после прочтения
 
+//=================================[ANTIDEMAMX PROC]==================================//
 @___If_u_can_read_this_u_r_nerd();
 @___If_u_can_read_this_u_r_nerd() {
 	#emit stack 0x7FFFFFFF
@@ -71,12 +79,19 @@ AntiDeAMX()
   	#pragma warning disable 219
    	//#pragma disablerecursion
 }
+
+//=============================[PREPROCESSOR DIRECTIVES]==============================//
+#include "../../defines/macroses" 
 #if !defined IsValidVehicle
      native IsValidVehicle(vehicleid);
 #endif
 #include <a_samp>
-#define MYSQL_R41_4 true
-#if MYSQL_R41_4 == true
+
+#if MYSQL_IS_LOCAL == true
+	#include "../../defines/sql/local_sql_conn"
+	#include <a_mysql>
+#else
+	#tryinclude "../../defines/sql/sql_conn"
 	#include <a_mysql>
 #endif
 
@@ -112,16 +127,12 @@ AntiDeAMX()
 		#tryinclude "YSI\jit.inc"
 	#endif
 #endif //! без __no_heap_mal. не работает jitter.inc
-
-#include <sscanf2>
-#include <foreach>
-
 #if defined STREAMER_USAGE 
 	#tryinclude <streamer> 
 #endif	
 	
-
-//=================================[THIS IS INCLUDES]==================================//
+main(){}
+//=================================[THIS IS INCLUDES]=================================//
 
 #include <sscanf2>
 #include <foreach>
@@ -130,16 +141,14 @@ AntiDeAMX()
 #include <dc_cmd>
 #include <Pawn.Regex>
 
-//=================================[DIRECTORY | SYSTEMS | INCLUDES]==================================//
+//==========================[DIRECTORY | SYSTEMS | INCLUDES]==========================//
 
-#include "../../defines/db_conn" 
 #include "../../defines/colors" 
-#include "../../defines/macroses" 
 #include "../../defines/systems/capture_natives/natives" 
 #include "../../defines/objs/autoLoader.inc"
 // #include "../../defines/systems/autoschool/main"
 
-//=================================[SERVER CONFIG]==================================//
+//===================================[NATIVE CONFIG]==================================//
 #define function%0(%1)					forward%0(%1); public%0(%1)
 #define pi 								PlayerInfo
 #define f%0%1							format(%0,sizeof(%0), %1
@@ -153,7 +162,7 @@ AntiDeAMX()
 // 	for(new i = 5; i > 0; i--) pi[%0][pDriveLic][i] \
 // }while(false)
 
-
+//===================================[SERVER CONFIG]==================================//
 #define SERVER_NAME 					"Aurora RolePlay"
 #define SERVER_VERSION 					"Aurora [v."MODE_VERS"]"
 #define MODE_VERS						"0.1.1.0"
@@ -167,25 +176,26 @@ AntiDeAMX()
 #define SERVER_MAIL_ADDRESS				"support@rpp-aurora"
 #define TEST_EMAIL						"dimamironov1337228@gmail.com"
 
-//=================================[FULL ACCESS CONFIG]==================================//
+//=================================[FULL ACCESS CONFIG]===============================//
 #define NAME_FULL_ACCESS_1				"Jei_Kilo"
 #define NAME_FULL_ACCESS_2				"I]C[E_the_Bre]a[ker"
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
 
 
-//=================================[ADMIN CONFIG]==================================//
+//==================================[ADM | ICBRK CONFIG]==============================//
 #define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не в системе. Используйте {33CCFF}/alog"
-#define ADMIN_ALREADY_LOGGED 	        "{0093ff}[Ошибка ADM]: {FFFFFF}Вы уже в системе!"
-#define PLAYER_INVALID 					"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не активен."
-#define PLAYER_NOT_LOGGED 				"{F04245}[Ошибка ADM]: {FFFFFF}Игрок не авторизован."
+#define ADMIN_ALREADY_LOGGED 	        "[Ошибка ADM]: {FFFFFF}Вы уже в системе!"
+#define PLAYER_INVALID 					"[Ошибка ADM]: {FFFFFF}Игрок не активен."
+#define PLAYER_NOT_LOGGED 				"[Ошибка ADM]: {FFFFFF}Игрок не авторизован."
+#define LICENSE_INVALID					"[Ошибка ADM]: {FFFFFF}Диапазон лицензий: не меньше 0 не больше 5"
 
-//=================================[PLAYER CONFIG]==================================//
-#define NOT_AVAILABLE 					"{F04245}[Ошибка]: {FFFFFF}Вам недоступна данная возможность!"
-#define NOT_ENOUGH_MONEY                "{F04245}[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
+//====================================[PLAYER CONFIG]=================================//
+#define NOT_AVAILABLE 					"[Ошибка]: {FFFFFF}Вам недоступна данная возможность!"
+#define NOT_ENOUGH_MONEY                "[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
 #define SERVER_CLOSED 					"{F04245}[Ошибка]: {FFFFFF}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
-#define LICENSE_INVALID					"{F04245}[Ошибка ADM]: {FFFFFF}Диапазон лицензий: не меньше 0 не больше 5"
+
 
 new query_string[356];
 
@@ -308,12 +318,12 @@ public OnPlayerConnect(playerid)
 	//! здесь добавить фикс для последнего входа в бд
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		Error(playerid, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
-		Kick(playerid);
+		Error(playerid, !"[Ошибка]:{FFFFFF} Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
+		return Kick(playerid);
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
 
-	restoreDateOfPlayer(playerid);
+	restorePlayerData(playerid);
 	/*new code = 999 + random(9000);
 	format(fstring, sizeof(fstring), "Код для подтверждения: %d", code);
 	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", fstring);
@@ -331,7 +341,7 @@ public OnPlayerDisconnect(playerid, reason) {
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus{playerid}) return Error(playerid, !"Вы не авторизовались!"), Kick(playerid);
+	if(!playerLoggedStatus{playerid}) return Error(playerid, SERVER_CLOSED), Kick(playerid);
 
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
 	SetPlayerScore(playerid, pi[playerid][pLevel]);
@@ -363,14 +373,14 @@ public OnPlayerText(playerid, text[]) {
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else Error(playerid, "[Ошибка]:{FFFFFF} Слишком длинное сообщение!");
+	} else Warning(playerid, "[Предупреждение]:{FFFFFF} Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandText(playerid, cmdtext[]) return 0;
 public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
-		Warning(playerid, !"{941000}[Ошибка]: {FFFFFF}Неверная команда.");
+		Error(playerid, !"{941000}[Ошибка]: {FFFFFF}Введена неверная команда. Для справки используйте '/help'");
 	return 1;
 }
 
@@ -539,7 +549,7 @@ CMD:agivelic(playerid, params[]) {
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [value (0-999)]");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [ammoValue (0-999)]");
 	else if (!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон weaponID: < 0 либо > 46!");
 	else if (!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Информация]:{FFFFFF} Диапазон ammoValue: < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
@@ -549,7 +559,7 @@ CMD:giveweap(playerid, params[]) {
 CMD:plvh(playerid, params[]) {
 	fstring[0] = EOS;
 	IsAdmin(ADM_OLDER_MODER);
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plveh [playerid] [vehicleid] [1 color] [2 color]");
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plvh [playerid] [vehicleid] [1 color] [2 color]");
 	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
 		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
@@ -667,8 +677,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg1: 
 		{
 			if(response) {
-				if(!strlen(inputtext)) return SEND_CM(playerid, format_red, "Вы ничего не ввели."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return SEND_CM(playerid, format_red, "Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
+				if(!strlen(inputtext)) return Error(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return Warning(playerid, !"[Предупреждение]:{FFFFFF} Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -682,29 +692,27 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(fstring, sizeof(fstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				} else {
-					ShowRegDialog(playerid), SEND_CM(playerid, format_red, "Пароль может состоять только из чисел и латинских символов любого регистра.");
+					ShowRegDialog(playerid), Error(playerid, !"[Ошибка]:{FFFFFF} Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
 				Regex_Delete(rg_passwordcheck);
 			} else {
-				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				Error(playerid, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 		}
 		case dReg2:
 		{
 			if(!response){
-				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				Error(playerid, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
 				if(!IsValidEmail(inputtext)) {
-					SEND_CM(playerid, format_red, !"Неккоректный адрес электронной почты.");
+					Error(playerid, !"[Ошибка]:{FFFFFF} Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
-					SEND_CM(playerid, format_red, !"Вы не указали почту.");
+					Error(playerid, !"[Ошибка]:{FFFFFF} Вы не указали почту.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
@@ -716,8 +724,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg3: 
 		{
 			if(!response) {
-				SEND_CM(playerid, format_red, !"Вы отказались от регистрации.");
-				SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+				Error(playerid, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
@@ -832,8 +839,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 
 	if(GetPVarInt(playerid, "BadAttempt") >= 3) {
 		// print("yesss 444");
-		SEND_CM(playerid, format_red, !"Вы истратили попытки на авторизацию.");
-		SHOW_PD(playerid, -1, 0, " ", " ", " ", "");
+		Error(playerid, SERVER_CLOSED);
 		return Kick(playerid);
 	}
 
@@ -860,7 +866,7 @@ stock ShowRegDialog(playerid)
 		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
-		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 24 символов.", pi[playerid][pNames]);
+		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 22 символов.", pi[playerid][pNames]);
 	SHOW_PD(playerid, dReg1, DIALOG_P, !"{FFFFFF}[1/4]{FFA500} Пароль", fstring, !"Далее",!"Отмена");	
 	return 1;
 }
@@ -889,7 +895,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", fstring, !"Выбор", "Отмена");
 }
 
-stock restoreDateOfPlayer(playerid) {
+stock restorePlayerData(playerid) {
 	PlayerAFK[playerid] 			=
 	pi[playerid][pAdmin] 			= 
 	pi[playerid][pLevel] 			=
@@ -1017,8 +1023,8 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE names = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
 			fstring[0] = EOS;
-			format(fstring, sizeof(fstring),"Администратор %s был снят с должности.", name);
-			SEND_CM(playerid, format_red, fstring);
+			format(fstring, sizeof(fstring),"[Предупреждение ADM]:{FFFFFF} Администратор {0093ff}%s больше не имеет доступа к системе.", name);
+			Warning(playerid, fstring);
 		}
 		else {
 			if(GetPlayerID(name) !=INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = level;
@@ -1028,20 +1034,20 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 			mysql_tquery(db, query_string, "", "");
 			fstring[0] = EOS;
-			format(fstring, sizeof(fstring), "Администратор %s теперь имеет %i уровень доступа.", name, level);
-			SEND_CM(playerid, format_white, fstring);
+			format(fstring, sizeof(fstring), "[Информация ADM]:{FFFFFF} Администратор {0093ff}%s получил повышение до %i уровня доступа.", name, level);
+			Info(playerid, fstring);
 		}
 	}
 	else {
 		query_string[0] = EOS;
-		if(!level) return SEND_CM(playerid, format_white, "Игрок не администратор");
+		if(!level) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Указанный игрок не имеет доступа к системе!");
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', %d, CURDATE())", name, level);
 		mysql_tquery(db, query_string, "", "");
 		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 		mysql_tquery(db, query_string, "", "");
 		fstring[0] = EOS;
-		format(fstring, sizeof(fstring),"%s добавлен в базу данных как администратор. Уровень доступа: %i", name, level);
-		SEND_CM(playerid, format_white, fstring);
+		format(fstring, sizeof(fstring),"[Информация ADM]:{0093ff}%s{FFFFFF} теперь имеет доступ к системе и занесён в базу данных. Указанный уровень доступа: %i", name, level);
+		Info(playerid, fstring);
 		if(GetPlayerID(name) != INVALID_PLAYER_ID) {
 			PlayerInfo[GetPlayerID(name)][pAdmin] = level;
 			query_string[0] = EOS;
@@ -1100,17 +1106,22 @@ stock GetPlayerID(const string[]) {
 
 stock ConnectSQL()
 {
-	db = mysql_connect(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD, SQL_DATABASE);
-   	switch(mysql_errno()){
-		case 0: print("РАБОТАЕТ НАХУЙ");
-	    case 1044: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ КОГО В ПОЛЬЗОВАТЕЛИ УКАЗАЛ??? Я НЕ ЗНАЮ ЕГО]");
-	    case 1045: return print("НЕ РАБОТАЕТ НАХУЙ [НЕПРАВИЛЬНЫЙ ПАРОЛЬ БЛЯТЬ]");
-	    case 1049: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ НАШЕЛ ТАКУЮ БАЗУ ДАННЫХ]");
-	    case 2003: return print("НЕ РАБОТАЕТ НАХУЙ [СЕРВЕР ЗАДУДОСИЛИ ЕБА]");
-		case 2002: return print("НЕ РАБОТАЕТ НАХУЙ [ТЫ СЕРВЕР НЕ ВКЛЮЧИЛ ЕБАНЬ]");
-	    case 2005: return print("НЕ РАБОТАЕТ НАХУЙ [НЕ ЗНАЮ ЭТОТ АДРЕС]");
-	    default: return printf("НЕ РАБОТАЕТ НАХУЙ [ХУЙ ЕГО ЗНАЕТ. ОШИБКА: %d]", mysql_errno());
+	#if MYSQL_IS_LOCAL == true 
+		db = mysql_connect(LOCAL_SQL_HOSTNAME, LOCAL_SQL_USERNAME, LOCAL_SQL_PASSWORD, LOCAL_SQL_DATABASE);
+		mysql_log(ERROR | WARNING); 
+	#else
+		db = mysql_connect(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD, SQL_DATABASE);
+		mysql_log(DEBUG); 
+	#endif
+	switch(mysql_errno()){
+		case 0: print("ПОДКЛЮЧЕНИЕ УСПЕШНО [УРА ТЕПЕРЬ Я СМОГУ ЗАПИСАТЬСЯ К ВРАЧУ]");
+	    case 1044: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [НЕ НРАВИТСЯ МНЕ ЭТО ИМЯ ДАВАЙ ПО-НОВОЙ МИША]");
+	    case 1045: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [БЛИН ПАРОЛЬ НЕПРАВИЛЬНЫЙ ТЕПЕРЬ НЕ УКРАДУ ДЕНЬГИ(((]");
+	    case 1049: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [ЧО ЗА БАЗА ТАМ НЕТУ ПАРОЛЕЙ]");
+	    case 2003: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [АААА НЕТУ СЕРВЕРА БОЛЬШЕ ЕГО ВЗОРВАЛИ]");
+		case 2002: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [ВКЛЮЧИ-КА СЕРВЕР А ТО Я ТУДА НЕ ЗАЙДУ]");
+	    case 2005: return print("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [ЧО ЗА АДРЕС Я ТУДА НЕ ДОЕДУ]");
+	    default: return printf("ПОДКЛЮЧЕНИЕ НЕ УСПЕШНО [ААААА ОШИБКА СТОП: %d]", mysql_errno());
 	}
-	mysql_log(DEBUG); 
 	return 1;
 }
