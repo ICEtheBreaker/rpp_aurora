@@ -140,6 +140,7 @@ main(){}
 #include <crashdetect> 
 #include <dc_cmd>
 #include <Pawn.Regex>
+#include <TOTP>
 
 //==========================[DIRECTORY | SYSTEMS | INCLUDES]==========================//
 
@@ -197,7 +198,11 @@ main(){}
 #define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
 
-new query_string[356];
+new 
+	query_string[800], // mysql string
+	fstring[4097]; // format string
+	//GlobalTime;
+	//AuthSymbols[32][] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "2", "3", "4", "5", "6", "7"};
 
 // система лицензий
 
@@ -232,6 +237,9 @@ enum pInfo {
 	pShowDocuments,
 	sdTrade,
 	pEmailAuth,
+	pGugleAuth[17],
+	pGugleSettings,
+	pGugleEnabled,
 	pVkontakte,
 	pLanguage,
 	pGoogle,
@@ -261,14 +269,15 @@ new
 
 
 new inadmcar[MAX_PLAYERS char];
-new fstring[512]; // format string
-new PlayerAFK[MAX_PLAYERS];
+new PlayerAFK[MAX_PLAYERS char];
 //new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
 enum {
 	dNull = 0, 
 	dLogin = 1, dReg1 = 2, dReg2 = 3, dReg3 = 4, d_Log = 5,
-	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8
+	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8,
+	Gugle = 9, Gugle_Settings = 10, GugleInfo = 11, 
+	GugleInfo2 = 12, GugleInfo3 = 13, GugleInfo4 = 14, GugleInfo5 = 15,
 }
 
 public OnGameModeInit()
@@ -377,7 +386,10 @@ public OnPlayerText(playerid, text[]) {
 	return 0;
 }
 public OnPlayerCommandText(playerid, cmdtext[]) return 0;
-public OnPlayerCommandReceived(playerid, cmdtext[]) return 1;
+public OnPlayerCommandReceived(playerid, cmdtext[], params[], flags) {
+	if(!playerLoggedStatus{playerid}) return 0;
+	return 1;
+}
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
 		Error(playerid, !"{941000}[Ошибка]: {FFFFFF}Введена неверная команда. Для справки используйте '/help'");
@@ -559,8 +571,8 @@ CMD:giveweap(playerid, params[]) {
 CMD:plvh(playerid, params[]) {
 	fstring[0] = EOS;
 	IsAdmin(ADM_OLDER_MODER);
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Log(playerid, !"[Информация]:{FFFFFF} /plvh [playerid] [vehicleid] [1 color] [2 color]");
-	if(playerLoggedStatus[playerid] == false) return Error(playerid, PLAYER_NOT_LOGGED);
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Info(playerid, !"[Информация]:{FFFFFF} /plvh [playerid] [vehicleid] [1 color] [2 color]");
+	if(!playerLoggedStatus[params[0]]) return Error(playerid, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
 		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
 		fstring[0] = EOS;
@@ -783,14 +795,109 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 5: return Warning(playerid, "В разработке");
 					case 6: return Warning(playerid, "В разработке");
 					case 7: {
-						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, "[Ошибка]: {FFFFFF} Установить Google Authenticator могут только игроки старше 1-го уровня!");
+						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, "[Ошибка]: {FFFFFF} Установить Google Authenticator могут только игроки старше первого уровня!");
+						fstring[0] = EOS;
+						format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
+						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
 					}
 				}
 			}
 		}
+		//![===========================================[GUGLE AUTHENTICATOR]===========================================]
+		case Gugle: {			
+			if(response) {
+				switch listitem do {
+					case 0: {
+						fstring[0] = EOS;
+						format(fstring, sizeof(fstring), "Состояние Google Authenticator		| %s", (PlayerInfo[playerid][pGugleEnabled] == 0) ? ("{F04245}[Неактивен]") : ("{8FC248}[Функционирует]"));
+						SHOW_PD(playerid, Gugle_Settings, DIALOG_STYLE_LIST, fstring, !"Установить Google Authenticator","Спрашивать Google Authenticator		| %s", 
+						(PlayerInfo[playerid][pGugleSettings] == 0) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]", "Выбрать", "Назад"));
+					}
+				}
+			} 
+			else {
+				cmd::menu(playerid);
+			}
+		}
+		case Gugle_Settings: {
+			if(response) {
+				switch listitem do {
+					case 0: {
+						if(PlayerInfo[playerid][pGugleEnabled] == 1) {
+							Error(playerid, !"[Ошибка]:{FFFFFF} Google Authenticator уже установлен на аккаунте. Действия не требуются");
+						} else {
+							SHOW_PD(playerid, GugleInfo, DIALOG_STYLE_MSGBOX, !"1-вый шаг", !"\n\n{FFFFFF}Начнем с того, что если у вас нет приложения, то его нужно\nзагрузить. Заходим в {FDC459}Play Market или App Store{FFFFFF} и ищем\nGoogle Authenticator.\n\n{B0FD59}Нашли? Нажимаем загрузить приложение.\n\nНажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
+						}
+					}
+					case 1: {
+						if(PlayerInfo[playerid][pGugleSettings] == 0) {
+							PlayerInfo[playerid][pGugleSettings] = 1;
+							Log(playerid, !"[Уведомление]:{FFFFFF} Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
+						} else {
+							PlayerInfo[playerid][pGugleSettings] = 0;
+							Log(playerid, !"[Уведомление]:{FFFFFF} Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
+						}
+					}
+				}
+			}
+			else {
+				fstring[0] = EOS;
+				format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
+				SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
+			}
+		}
+		case GugleInfo: {
+			if(response) SHOW_PD(playerid, GugleInfo2, DIALOG_STYLE_MSGBOX, !"2-ой шаг", !"\n\n{FFFFFF}Отлично! Вы загрузили приложение, теперь давайте его запустим.\nОтыщите{FDC459}+{FFFFFF} в приложении, а затем нажмите на него.\n\n{B0FD59}Нажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
+		}
+		case GugleInfo2: {
+			if(response) {
+				fstring[0] = EOS;
+				PlayerInfo[playerid][pGugleAuth] = EOS;
+				for(new i; i < 16; i++) {
+					PlayerInfo[playerid][pGugleAuth] = random(27) + 65;
+					//strcat(PlayerInfo[playerid][pGugleAuth], AuthSymbols[random(sizeof(symbols))]);
+				}
+				format(fstring, sizeof(fstring), 
+				"{FFFFFF}Если на Вашем телефоне стоит ОС Android, то выберите \"Ввести ключ\"\n\
+				Если на Вашем телефоне стоит IOS, то выберите \"Ввод вручную\"\n\n\
+				В поле \"Аккаунт\" введите: {0093ff}%s@rppaurora\n\
+				В поле \"Ключ\" введите: {0093ff}%s\n\n\
+				Часовой пояс, установленный на телефоне, должен совпадать тому, что установлен на сервере (%s)", 
+				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleAuth], GetCurrentTime());
+				SHOW_PD(playerid, GugleInfo3, DIALOG_STYLE_MSGBOX, !"3-тий шаг", fstring, !"Дальше", !"Отмена");
+			}
+		}
+		case GugleInfo3: {
+			if(response) {
+				fstring[0] = EOS;
+				format(fstring, sizeof(fstring), 
+				"{FFFFFF}Для завершения установки Google Authenticator, введите сгенерированный код из приложения\n\
+				в поле ниже:");
+				SHOW_PD(playerid, GugleInfo4, DIALOG_STYLE_INPUT, !"Финальный шаг", fstring, !"Дальше", !"Отмена");
+			}
+		}
+		case GugleInfo4: {
+			if(response) {
+				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
+				if(strval(inputtext) == getcode && isnull(inputtext)) { //! здесь проверка на пустоту, ибо были жалобы, что TOTP ложил сервер при пустой строке
+					SHOW_PD(playerid, GugleInfo5, DIALOG_STYLE_MSGBOX, !"Успех", !"{FFFFFF}Вы успешно подключили Google Authenticator к своему аккаунту.\nТеперь Вы можете выбрать, когда будет запрашиваться Auth-код.", "Выход", "");
+					PlayerInfo[playerid][pGugleEnabled] = 1;
+					mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `id` = '%d'", 
+					PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pID]);
+					mysql_tquery(db, query_string);
+				}
+				else {
+					Error(playerid, !"[Ошибка]:{FFFFFF} Код введён неверно!");
+				}
+			}
+			else {
+				PlayerInfo[playerid][pGugleAuth] = EOS;
+			}
+		}
 	}
-	return 1;
+	return 1;					
 }
+
 
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
@@ -801,7 +908,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_mysqlPlayerAccountGet(playerid) {
 	query_string[0] = EOS;
 	// print("yesss");
-	mysql_format(db, query_string, sizeof query_string, "SELECT `password`, `salt` FROM `accounts` WHERE `names` = '%e'", GetName(playerid));
+	mysql_format(db, query_string, sizeof query_string, "SELECT `password`, `salt`, `lastIP`, `gugle_auth`, `gugle_settings`, `gugle_enabled` FROM `accounts` WHERE `names` = '%e'", GetName(playerid));
 	mysql_tquery(db, query_string, "@_mysqlGetPlayerAccount", "i", playerid);
 }
 
@@ -810,10 +917,13 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	SetPlayerColor(playerid, 0xFF);
 
 	if(cache_num_rows() != 0) {
-		// print("yesss 2");
+		
 		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);
 		cache_get_value_name(0, "salt", PlayerInfo[playerid][pSalt], 11);
-		// printf("salt1:%s", PlayerInfo[playerid][pSalt]);	
+		cache_get_value_name(0, "lastIP", PlayerInfo[playerid][pLastIP], 16);
+		cache_get_value_name(0, "gugle_auth", PlayerInfo[playerid][pGugleAuth], 17);
+		cache_get_value_name_int(0, "gugle_settings", PlayerInfo[playerid][pGugleSettings]);
+		cache_get_value_name_int(0, "gugle_enabled", PlayerInfo[playerid][pGugleEnabled]);
 		ShowLoginDialog(playerid);
 	}
 	else ShowRegDialog(playerid);
@@ -857,6 +967,11 @@ stock ShowLoginDialog(playerid)
 	
 	return 1;	
 }
+stock GetCurrentTime() //! написать систему определения часового пояса сервера и часового пояса игрока
+{
+	return 1;
+}
+
 stock ShowRegDialog(playerid)
 {
 	fstring[0] = 0;
