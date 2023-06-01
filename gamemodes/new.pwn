@@ -100,7 +100,7 @@ AntiDeAMX()
 
 #pragma tabsize 0
 #define STREAMER_USAGE 
-#define MAILER_PHP_SCRIPT
+//#define MAILER_PHP_SCRIPT
 
 #if defined MAILER_PHP_SCRIPT
 	#define MAILER_URL "dimamins.beget.tech/mailer.php"
@@ -110,7 +110,7 @@ AntiDeAMX()
 
 
 // #define MALLOC_MEMORY (32768)
-// #define YSI_YES_HEAP_MALLOC
+// #define YSI_YES_HEAP_MALLOC //! усы да хеап малок
 
 //! появились ошибки при запуске сервака с библиотекой y_asi
 //! ну и хуй с ними 
@@ -242,7 +242,6 @@ enum pInfo {
 	pGugleEnabled,
 	pVkontakte,
 	pLanguage,
-	pGoogle,
 	pWantedLevel,
 	pPassport,
 	pDriveLic[5], // согласно спецификации 0 id -авто, 1 -судоходства, 2 -воздушные, 3-грузовой транспорт \ средн. 4 - оружие, 5 - бизнес
@@ -269,6 +268,7 @@ new
 
 
 new inadmcar[MAX_PLAYERS char];
+new PlayerBadAttempt[MAX_PLAYERS char];
 new PlayerAFK[MAX_PLAYERS char];
 //new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
@@ -344,7 +344,9 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason) {
 	if(!playerLoggedStatus{playerid}) return 1; 
 	else SavePlayer(playerid);
-	PlayerAFK[playerid] = -2;
+
+	PlayerAFK[playerid] 			= -2;
+	PlayerBadAttempt{playerid} 		= 0;
 
 	if(inadmcar[playerid] != -1) return DestroyVehicle(inadmcar[playerid]), inadmcar[playerid] = 0;
 	return 1;
@@ -393,7 +395,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[], params[], flags) {
 }
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
-		Error(playerid, !"{941000}[Ошибка]: {FFFFFF}Введена неверная команда. Для справки используйте '/help'");
+		Error(playerid, !"{941000}[Ошибка]: {FFFFFF}Введена неверная команда. Для справки используйте \"'/help'\"");
 	return 1;
 }
 
@@ -804,19 +806,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			}
 		}
-		//![===========================================[GUGLE AUTHENTICATOR]===========================================]
+		//![===========================================[GUGLE AUTHENTICATOR by ICBRK[ICEtheBreaker]]===========================================]
 		case Gugle: {			
 			if(response) {
 				switch listitem do {
 					case 0: {
 						fstring[0] = EOS;
+						new fstring2[256];
 						format(fstring, sizeof(fstring), "Состояние Google Authenticator		| %s", (PlayerInfo[playerid][pGugleEnabled] == 0) ? ("{F04245}[Неактивен]") : ("{8FC248}[Функционирует]"));
-						SHOW_PD(playerid, Gugle_Settings, DIALOG_STYLE_LIST, fstring, !"Установить Google Authenticator","Спрашивать Google Authenticator		| %s", 
-						(PlayerInfo[playerid][pGugleSettings] == 0) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]", "Выбрать", "Назад"));
+						format(fstring2, sizeof(fstring), 
+						"Установить Google Authenticator\n\
+						Спрашивать Google Authenticator\t\t| %s", 
+						(PlayerInfo[playerid][pGugleSettings] == 0) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]"));
+						SHOW_PD(playerid, Gugle_Settings, DIALOG_STYLE_LIST, fstring, fstring2, !"Выбрать", !"Назад");
+						fstring2[0] = 0;
 					}
 					case 1: {
 						if(PlayerInfo[playerid][pGugleEnabled] == 0) Error(playerid, !"[Ошибка]:{FFFFFF} На данном аккаунте не установлен Google Authenticator!");
-						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
+						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 					}
 				}
 			} 
@@ -827,8 +834,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case Gugle_Delete: {
 			if(response) {
 				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
-				if(strval(inputtext) == getcode && isnull(inputtext)) {
-					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"", "\n\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
+				if(strval(inputtext) == getcode) {
+					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"Подтверждение", "\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
+				}
+				else {
+					Error(playerid, !"[Ошибка]:{FFFFFF} Код введён неверно!");
+					SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 				}
 			}
 			else {
@@ -842,8 +853,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				PlayerInfo[playerid][pGugleEnabled] = 0;
 				PlayerInfo[playerid][pGugleAuth] = 0;
 				Log(playerid, !"[Уведомление]:{FFFFFF} Вы успешно отключили Google Authenticator.");
-				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `id` = '%d'", 
-				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pID]);
+				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `names` = '%s'", 
+				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 				mysql_tquery(db, query_string);
 			}
 			else cmd::menu(playerid); 
@@ -871,7 +882,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			else {
 				fstring[0] = EOS;
 				format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
-				SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
+				SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", !"Назад");
 			}
 		}
 		case GugleInfo: {
@@ -882,16 +893,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				fstring[0] = EOS;
 				PlayerInfo[playerid][pGugleAuth] = EOS;
 				for(new i; i < 16; i++) {
-					PlayerInfo[playerid][pGugleAuth] = random(27) + 65;
+					PlayerInfo[playerid][pGugleAuth][i] = random(25) + 65;
 					//strcat(PlayerInfo[playerid][pGugleAuth], AuthSymbols[random(sizeof(symbols))]);
 				}
 				format(fstring, sizeof(fstring), 
 				"{FFFFFF}Если на Вашем телефоне стоит ОС Android, то выберите \"Ввести ключ\"\n\
 				Если на Вашем телефоне стоит IOS, то выберите \"Ввод вручную\"\n\n\
 				В поле \"Аккаунт\" введите: {0093ff}%s@rppaurora\n\
-				В поле \"Ключ\" введите: {0093ff}%s\n\n\
-				Часовой пояс, установленный на телефоне, должен совпадать тому, что установлен на сервере (%s)", 
-				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleAuth], GetCurrentTime());
+				{FFFFFF}В поле \"Ключ\" введите: {0093ff}%s\n\n\
+				{FFFFFF}Часовой пояс, установленный на телефоне, должен совпадать тому, что установлен на сервере ", 
+				PlayerInfo[playerid][pNames], PlayerInfo[playerid][pGugleAuth]);
 				SHOW_PD(playerid, GugleInfo3, DIALOG_STYLE_MSGBOX, !"3-тий шаг", fstring, !"Дальше", !"Отмена");
 			}
 		}
@@ -907,15 +918,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case GugleInfo4: {
 			if(response) {
 				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
-				if(strval(inputtext) == getcode && isnull(inputtext)) { //! здесь проверка на пустоту, ибо были жалобы, что TOTP ложил сервер при пустой строке
+				if(strval(inputtext) == getcode) { //! здесь проверка на пустоту, ибо были жалобы, что TOTP ложил сервер при пустой строке
 					SHOW_PD(playerid, GugleInfo5, DIALOG_STYLE_MSGBOX, !"Успех", !"{FFFFFF}Вы успешно подключили Google Authenticator к своему аккаунту.\nТеперь Вы можете выбрать, когда будет запрашиваться Auth-код.", "Выход", "");
 					PlayerInfo[playerid][pGugleEnabled] = 1;
-					mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `id` = '%d'", 
-					PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pID]);
+					mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth` = '%e', `gugle_enabled` = '%d' WHERE `names` = '%e'", 
+					PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 					mysql_tquery(db, query_string);
 				}
 				else {
 					Error(playerid, !"[Ошибка]:{FFFFFF} Код введён неверно!");
+					fstring[0] = EOS;
+					format(fstring, sizeof(fstring), 
+					"{FFFFFF}Для завершения установки Google Authenticator, введите сгенерированный код из приложения\n\
+					в поле ниже:");
+					SHOW_PD(playerid, GugleInfo4, DIALOG_STYLE_INPUT, !"Финальный шаг", fstring, !"Дальше", !"Отмена");
 				}
 			}
 			else {
@@ -965,18 +981,16 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_IncorrectPassword(playerid) {
 	if(cache_num_rows() == 0) {
 		new ssstring[80];
-		// print("yesss 3");
+		PlayerBadAttempt{playerid} --;
 		format(ssstring,sizeof(ssstring),"\
 			{FF0000}Вы ввели неверный пароль!\n\
-			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 2 - GetPVarInt(playerid, "BadAttempt"));
+			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
 
 		SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
-		SetPVarInt(playerid, "BadAttempt", GetPVarInt(playerid, "BadAttempt") + 1);
 		ssstring[0] = EOS;
 	} else {LoginPlayer(playerid);}
 
-	if(GetPVarInt(playerid, "BadAttempt") >= 3) {
-		// print("yesss 444");
+	if(PlayerBadAttempt{playerid} <= 0) {
 		Error(playerid, SERVER_CLOSED);
 		return Kick(playerid);
 	}
@@ -987,10 +1001,11 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 stock ShowLoginDialog(playerid)
 {
 	fstring[0] = 0;
+	PlayerBadAttempt{playerid} --;
 	format(fstring, sizeof(fstring),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
 		{FFFFFF}Введите свой пароль\n\
-		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", 3 - GetPVarInt(playerid, "BadAttempt"));
+		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
 	SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", fstring, "Войти", "Отмена");
 	
 	return 1;	
@@ -1050,6 +1065,7 @@ stock restorePlayerData(playerid) {
 	pi[playerid][pHungryBar] 		=
 	pi[playerid][pWantedLevel]		=
 	pi[playerid][pEmailConfirmed] 	= 0;
+	PlayerBadAttempt{playerid} 		= 3;
 
 	printf("%d (%s) id освободил данные | thank you friend! you are gay!", playerid, GetName(playerid));
 
