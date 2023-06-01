@@ -278,6 +278,7 @@ enum {
 	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8,
 	Gugle = 9, Gugle_Settings = 10, GugleInfo = 11, 
 	GugleInfo2 = 12, GugleInfo3 = 13, GugleInfo4 = 14, GugleInfo5 = 15,
+	Gugle_Delete = 16, Gugle_Confirm = 17,
 }
 
 public OnGameModeInit()
@@ -813,19 +814,46 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SHOW_PD(playerid, Gugle_Settings, DIALOG_STYLE_LIST, fstring, !"Установить Google Authenticator","Спрашивать Google Authenticator		| %s", 
 						(PlayerInfo[playerid][pGugleSettings] == 0) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]", "Выбрать", "Назад"));
 					}
+					case 1: {
+						if(PlayerInfo[playerid][pGugleEnabled] == 0) Error(playerid, !"[Ошибка]:{FFFFFF} На данном аккаунте не установлен Google Authenticator!");
+						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
+					}
 				}
 			} 
 			else {
 				cmd::menu(playerid);
 			}
 		}
+		case Gugle_Delete: {
+			if(response) {
+				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
+				if(strval(inputtext) == getcode && isnull(inputtext)) {
+					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"", "\n\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
+				}
+			}
+			else {
+				fstring[0] = EOS;
+				format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
+				SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
+			}
+		}
+		case Gugle_Confirm: {
+			if(response) {
+				PlayerInfo[playerid][pGugleEnabled] = 0;
+				PlayerInfo[playerid][pGugleAuth] = 0;
+				Log(playerid, !"[Уведомление]:{FFFFFF} Вы успешно отключили Google Authenticator.");
+				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `id` = '%d'", 
+				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pID]);
+				mysql_tquery(db, query_string);
+			}
+			else cmd::menu(playerid); 
+		}
 		case Gugle_Settings: {
 			if(response) {
 				switch listitem do {
 					case 0: {
-						if(PlayerInfo[playerid][pGugleEnabled] == 1) {
-							Error(playerid, !"[Ошибка]:{FFFFFF} Google Authenticator уже установлен на аккаунте. Действия не требуются");
-						} else {
+						if(PlayerInfo[playerid][pGugleEnabled] == 1) Error(playerid, !"[Ошибка]:{FFFFFF} Google Authenticator уже установлен на аккаунте. Действие не требуется");
+						else {
 							SHOW_PD(playerid, GugleInfo, DIALOG_STYLE_MSGBOX, !"1-вый шаг", !"\n\n{FFFFFF}Начнем с того, что если у вас нет приложения, то его нужно\nзагрузить. Заходим в {FDC459}Play Market или App Store{FFFFFF} и ищем\nGoogle Authenticator.\n\n{B0FD59}Нашли? Нажимаем загрузить приложение.\n\nНажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
 						}
 					}
