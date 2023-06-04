@@ -1118,9 +1118,6 @@ stock CreateAccount(playerid)
 	return 1;
 }
 
-stock ResetVariables(playerid) { //! обнуление переменных
-	inadmcar{playerid} = -1;
-}
 function LoginPlayer(playerid) {
 	new getIP[16];
 
