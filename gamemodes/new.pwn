@@ -22,7 +22,7 @@
 
 		 _ _ _ _ _ _ _ 	    _ _ _ _ _ _ _ 
 		|  _ _ _ _ _ _|    |  _ _ _ _ _  |
-		| | 			   | |		   | | 
+		| | 			   | |		   | | 	
 		| |_ _ _ _ _ _	   | |		   | |
 		|  _ _ _ _ _ _|	   | |_ _ _ _ _| |
 		| |				   |  _ _ _ _ _  |
@@ -324,9 +324,7 @@ public OnPlayerConnect(playerid)
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
-	printf("%s", pi[playerid][pIP]);
-
-	// ResetVariables(playerid);
+	printf("%s", pi[playerid][pIP]); //! ?
 
 	//! здесь добавить фикс для последнего входа в бд
 
@@ -336,7 +334,7 @@ public OnPlayerConnect(playerid)
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
 
-	restorePlayerData(playerid);
+	ResetVariables(playerid);
 	/*new code = 999 + random(9000);
 	format(fstring, sizeof(fstring), "Код для подтверждения: %d", code);
 	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", fstring);
@@ -1012,12 +1010,8 @@ stock ShowRegDialog(playerid)
 	return 1;
 }
 stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
-<<<<<<< HEAD
-	fstring[0] = 0;
-=======
 	fstring[0] = EOS;
 	//! в связи с добавлением измеений в эту строку лучше оставить sizeof, чтоб в дальнейшем не заниматься подсчётом
->>>>>>> cdd073e69a190cb4f55b24bcca4afb763701161a
 	format(fstring, sizeof(fstring), "Система\tСостояние\n\
 	{AFAFAF}Ники:\t%s\n\
 	{AFAFAF}E-mail:\t%s\n\
@@ -1042,7 +1036,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", fstring, !"Выбор", "Отмена");
 }
 
-stock restorePlayerData(playerid) {
+stock ResetVariables(playerid) {
 	PlayerAFK{playerid} 			=
 	pi[playerid][pAdmin] 			= 
 	pi[playerid][pLevel] 			=
@@ -1184,13 +1178,8 @@ stock SavePlayer(playerid) {
 
 	format(pi[playerid][pDriveLics],20,"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
 
-<<<<<<< HEAD
-	query_string[0] = 0;
-	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDriveLics], PlayerInfo[playerid][pEmailConfirmed]);
-=======
 	query_string[0] = EOS;
 	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+4)), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDriveLics], PlayerInfo[playerid][pEmailConfirmed]);
->>>>>>> cdd073e69a190cb4f55b24bcca4afb763701161a
 	mysql_tquery(db, query_string, "", "");
 
 	return 1;
