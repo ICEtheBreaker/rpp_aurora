@@ -287,7 +287,7 @@ public OnGameModeInit()
 	AntiDeAMX();
 
 	new MySQLOpt: option_id = mysql_init_options();
-	new currenttime = GetTickCount();
+ 	new currenttime = GetTickCount();
 
 	mysql_set_option(option_id, AUTO_RECONNECT, true);
 	SetGameModeText(""#SERVER_VERSION""); 
@@ -323,7 +323,10 @@ public OnPlayerConnect(playerid)
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
-	ResetVariables(playerid);
+
+	printf("%s", pi[playerid][pIP]);
+
+	// ResetVariables(playerid);
 
 	//! здесь добавить фикс для последнего входа в бд
 
@@ -345,10 +348,10 @@ public OnPlayerDisconnect(playerid, reason) {
 	if(!playerLoggedStatus{playerid}) return 1; 
 	else SavePlayer(playerid);
 
-	PlayerAFK[playerid] 			= -2;
+	PlayerAFK{playerid} 			= -2;
 	PlayerBadAttempt{playerid} 		= 0;
 
-	if(inadmcar[playerid] != -1) return DestroyVehicle(inadmcar[playerid]), inadmcar[playerid] = 0;
+	if(inadmcar{playerid} != -1) return DestroyVehicle(inadmcar{playerid}), inadmcar{playerid} = 0;
 	return 1;
 }
 
@@ -410,9 +413,9 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
 	if(oldstate == PLAYER_STATE_DRIVER) {
-		if(inadmcar[playerid] != -1) {
-			DestroyVehicle(inadmcar[playerid]);
-			inadmcar[playerid] = 0;
+		if(inadmcar{playerid} != -1) {
+			DestroyVehicle(inadmcar{playerid});
+			inadmcar{playerid} = 0;
 		}
 	}
 	return 1;
@@ -490,7 +493,7 @@ public OnRconLoginAttempt(ip[], password[], success)
 }	
 public OnPlayerUpdate(playerid)
 {
-	PlayerAFK[playerid] = 0;
+	PlayerAFK{playerid} = 0;
 	return 1;
 }
 public OnPlayerStreamIn(playerid, forplayerid)
@@ -593,8 +596,8 @@ CMD:plvh(playerid, params[]) {
 	new Float:Angle;
 	GetPlayerPos(params[0], x, y, z);
 	GetPlayerFacingAngle(params[0], Angle);
-	inadmcar[params[0]] = CreateVehicle(params[1], x, y, z, Angle, params[2], params[3], -1);
-	PutPlayerInVehicle(params[0], inadmcar[params[0]], 0);
+	inadmcar{params[0]} = CreateVehicle(params[1], x, y, z, Angle, params[2], params[3], -1);
+	PutPlayerInVehicle(params[0], inadmcar{params[0]}, 0);
 	return 1;
 }
 CMD:makeadmin(playerid, params[]) {
@@ -768,7 +771,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			   	if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) {
 					query_string[0] = 0;
 					// print("12345:vishel pizdu pochesat");
-					mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
+					mysql_format(db, query_string, (68 + (-2+64) + (-2+65)), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "d", playerid);
 				} else @_IncorrectPassword(playerid);
 			}
@@ -982,7 +985,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	if(cache_num_rows() == 0) {
 		new ssstring[80];
 		PlayerBadAttempt{playerid} --;
-		format(ssstring,sizeof(ssstring),"\
+		format(ssstring, (92 + (-2+4)),"\
 			{FF0000}Вы ввели неверный пароль!\n\
 			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
 
@@ -1002,7 +1005,7 @@ stock ShowLoginDialog(playerid)
 {
 	fstring[0] = 0;
 	PlayerBadAttempt{playerid} --;
-	format(fstring, sizeof(fstring),"\
+	format(fstring, (142 + (-2+4)),"\
 		{FFFFFF}Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
 		{FFFFFF}Введите свой пароль\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
@@ -1018,7 +1021,7 @@ stock GetCurrentTime() //! написать систему определения часового пояса сервера и
 stock ShowRegDialog(playerid)
 {
 	fstring[0] = 0;
-	format(fstring, sizeof(fstring),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
+	format(fstring, (420 + (-2+66)),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
 		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
 		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
@@ -1030,6 +1033,7 @@ stock ShowRegDialog(playerid)
 }
 stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	fstring[0] = EOS;
+	//! в связи с добавлением измеений в эту строку лучше оставить sizeof, чтоб в дальнейшем не заниматься подсчётом
 	format(fstring, sizeof(fstring), "Система\tСостояние\n\
 	{AFAFAF}Ники:\t%s\n\
 	{AFAFAF}E-mail:\t%s\n\
@@ -1043,7 +1047,8 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
 	{AFAFAF}Привязка ВКонтакте:\t%s",
 	PlayerInfo[playerid][pShowName] ? ("{008000}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
-	PlayerInfo[playerid][pEmail],!PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
+	PlayerInfo[playerid][pEmail],
+	!PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
 	PlayerInfo[playerid][pShowDocuments] ? ("{9ACD32}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
 	PlayerInfo[playerid][pEmailAuth] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
 	PlayerInfo[playerid][pLanguage] ? ("русский") : ("английский"),
@@ -1054,7 +1059,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 }
 
 stock restorePlayerData(playerid) {
-	PlayerAFK[playerid] 			=
+	PlayerAFK{playerid} 			=
 	pi[playerid][pAdmin] 			= 
 	pi[playerid][pLevel] 			=
 	pi[playerid][pShowDocuments] 	=
@@ -1066,6 +1071,7 @@ stock restorePlayerData(playerid) {
 	pi[playerid][pWantedLevel]		=
 	pi[playerid][pEmailConfirmed] 	= 0;
 	PlayerBadAttempt{playerid} 		= 3;
+	inadmcar{playerid}				= -1;
 
 	printf("%d (%s) id освободил данные | thank you friend! you are gay!", playerid, GetName(playerid));
 
@@ -1084,17 +1090,17 @@ stock CreateAccount(playerid)
 	fstring[0] =
 	query_string[0] = EOS;
 
-	PlayerInfo[playerid][pMoney]	 = BONUS_MONEY;
-	PlayerInfo[playerid][pLevel] 	 = START_LEVEL;
-	PlayerInfo[playerid][pSkin] 	 = DEFAULT_SKIN;
+	PlayerInfo[playerid][pMoney]	 		= BONUS_MONEY;
+	PlayerInfo[playerid][pLevel] 			= START_LEVEL;
+	PlayerInfo[playerid][pSkin] 	 		= DEFAULT_SKIN;
 	PlayerInfo[playerid][pWantedLevel] 		= 0;
 
 	new Year, Month, Day;
 	getdate(Year, Month, Day);
 	new date[13];
-	format(date, sizeof(date), "%02d.%02d.%d", Day, Month, Year);
+	format(date, (13 + (-2+4) + (-2+4) + (-2+6)), "%02d.%02d.%d", Day, Month, Year);
 
-	mysql_format(db, query_string, sizeof(query_string),"INSERT INTO `accounts` (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d)", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel]);
+	mysql_format(db, query_string, (217 + (-2+66) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6)), "INSERT INTO `accounts` (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d)", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel]);
 	mysql_tquery(db, query_string, "", "");
 
 	printf("22 (%s) %s", strlen(query_string), query_string);
@@ -1105,7 +1111,7 @@ stock CreateAccount(playerid)
 }
 
 stock ResetVariables(playerid) { //! обнуление переменных
-	inadmcar[playerid] = -1;
+	inadmcar{playerid} = -1;
 }
 function LoginPlayer(playerid) {
 	new getIP[16];
@@ -1165,7 +1171,7 @@ stock SavePlayer(playerid) {
 	format(pi[playerid][pDriveLics],20,"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
 
 	query_string[0] = EOS;
-	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDriveLics], PlayerInfo[playerid][pEmailConfirmed]);
+	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+4)), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDriveLics], PlayerInfo[playerid][pEmailConfirmed]);
 	mysql_tquery(db, query_string, "", "");
 
 	return 1;
@@ -1177,9 +1183,10 @@ stock SavePlayer(playerid) {
 		if(!level) {
 			query_string[0] = EOS;
 			if(GetPlayerID(name) != INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = 0;
-			mysql_format(db, query_string, sizeof(query_string), "DELETE FROM `admin` WHERE names = '%e'", name);
+			mysql_format(db, query_string, (41 + (-2+66)), "DELETE FROM `admin` WHERE `names` = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = 0 WHERE names = '%e'", name);
+			query_string[0] = EOS;
+			mysql_format(db, query_string, (52 + (-2+4) + (-2+66)), "UPDATE `admin` SET `level` = 0 WHERE `names` = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
 			fstring[0] = EOS;
 			format(fstring, sizeof(fstring),"[Предупреждение ADM]:{FFFFFF} Администратор {0093ff}%s больше не имеет доступа к системе.", name);
