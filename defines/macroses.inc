@@ -15,7 +15,7 @@
 #define ADMLog(%0,%1)                   SendClientMessageToADM(%0, log_color, %1)
 #define ADMWarning(%0,%1)               SendClientMessageToADM(%0, warning_color, %1)
 #define ADMInfo(%0,%1)                  SendClientMessageToADM(%0, info_color, %1)
-*//! макросы для отправки конкретного смс в ADM-систему
+*/ //! макросы для отправки конкретного смс в ADM-систему
 
 #define Error(%0,%1)                    SendClientMessage(%0, error_color, %1)
 #define Log(%0,%1)                      SendClientMessage(%0, log_color, %1)
