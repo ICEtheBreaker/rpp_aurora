@@ -62,6 +62,11 @@ stock AFKSystemUpdates(playerid) {
 	}
 	return 1;
 }
+//TODO SendClientMessageToADM
+stock SendClientMessageToADM(playerid, params[], message) {
+	return 1;
+} 
+
 stock ProxDetector(Float:range, playerid, const string[], c1 = -1,c2 = -1,c3 = -1,c4 = -1,c5 = -1) {
     new
         Float: x,
