@@ -523,7 +523,7 @@ CMD:agivelic(playerid, params[]) {
 	if(!(1 <= params[1] <= 5)) return Error(playerid, LICENSE_INVALID);
 	if(!strlen(params[0])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID игрока");
 	if(!strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID лицензии");
-	if(!strlen(params[0] && params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
+	//if(!strlen(params[0] && params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
 
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
@@ -633,7 +633,7 @@ CMD:todo(playerid, params[]) {
 		fstring[0] = 0;
 		format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
 		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
-	} else return Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
+	} else return Error(playerid, !"[Ошибка]:{FFFFFF} Текст должен состоять из кириллицы и не содержать другие символы.");
 	return 1;
 }
 CMD:s(playerid, params[]) {
@@ -1118,9 +1118,6 @@ stock CreateAccount(playerid)
 	return 1;
 }
 
-stock ResetVariables(playerid) { //! обнуление переменных
-	inadmcar{playerid} = -1;
-}
 function LoginPlayer(playerid) {
 	new getIP[16];
 
