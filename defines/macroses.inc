@@ -12,18 +12,6 @@
 #define SEND_CM							SendClientMessage
 #define SCM_toAdm                       SendClientMessageToADM
 
-<<<<<<< HEAD
-/*#define ADMError(%0,%1)                 SendClientMessageToADM(%0, error_color, %1);
-#define ADMLog(%0,%1)                   SendClientMessageToADM(%0, log_color, %1)
-#define ADMWarning(%0,%1)               SendClientMessageToADM(%0, warning_color, %1)
-#define ADMInfo(%0,%1)                  SendClientMessageToADM(%0, info_color, %1)
-*/ //! макросы для отправки конкретного смс в ADM-систему
-
-#define Error(%0,%1)                    SendClientMessage(%0, error_color, %1)
-#define Log(%0,%1)                      SendClientMessage(%0, log_color, %1)
-#define Warning(%0,%1)                  SendClientMessage(%0, warning_color, %1)
-#define Info(%0,%1)                     SendClientMessage(%0, info_color, %1)
-=======
 /*#define ADMError(%0,%1)                 SCM_toAdm(%0, error_color, %1);
 #define ADMLog(%0,%1)                   SCM_toAdm(%0, log_color, %1)
 #define ADMWarning(%0,%1)               SCM_toAdm(%0, warning_color, %1)
@@ -35,7 +23,6 @@
 #define Log(%0,%1)                      SEND_CM(%0,log_color,%1)
 #define Warning(%0,%1)                  SEND_CM(%0, warning_color, %1)
 #define Info(%0,%1)                     SEND_CM(%0, info_color, %1)
->>>>>>> 0e9e01b (fix mod by 13.06)
 
 #define MYSQL_IS_LOCAL                  true
 

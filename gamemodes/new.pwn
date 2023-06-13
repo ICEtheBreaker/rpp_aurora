@@ -161,14 +161,14 @@ main(){}
 #define f(%0,							format(%0,
 //! f(%0(str),%1(ДЛИНА),%2(всё ост.))
 
-#define IsAdmin(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
+#define fADM(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
 #define GetName(%0)						pi[%0][pNames]
-#define randEx(%0,%1) 					(random(%1-%0)+%0)
-#define isConn(%0)						(!IsPlayerConnected(%0))
-#define isValidLicID(%0)				(!(1 <= (%0) <= 5))
+#define RandomEx(%0,%1) 					(random(%1-%0)+%0)
+#define CheckConnection(%0)						(!IsPlayerConnected(%0))
+#define IsLicenseValid(%0)				(!(1 <= (%0) <= 5))
 
-#define isRangeValid(%0,%1)				(strlen(%0) > %1)
-//! isRangeValid 
+#define IsRangeValid(%0,%1)				(strlen(%0) > %1)
+//! IsRangeValid 
 //! первый параметр %0 - строка, %1 - длина
 
 //===================================[SERVER CONFIG]==================================//
@@ -332,13 +332,6 @@ public OnPlayerConnect(playerid)
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
-<<<<<<< HEAD
-	printf("%s", pi[playerid][pIP]); //! ?
-
-	//! здесь добавить фикс для последнего входа в бд
-
-=======
->>>>>>> 0e9e01b (fix mod by 13.06)
 	if(IsLoginInvalid(GetName(playerid))) {
 		Error(playerid, !"[Ошибка]:{FFFFFF} Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		return Kick(playerid);
@@ -525,9 +518,6 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 //! отдельный путь \defines\systems\autoschool\main.inc
 //! а почему бы там сразу не делать
 //! и кстати есть и другие лицензии, например: рыболовство, охота и т.д
-<<<<<<< HEAD
-
-=======
 //! isempty функция из strlib.inc, очень удобно с целью избавиться от десяток строк в моде, заменив на обычную нативу
 
 
@@ -567,25 +557,25 @@ CMD:test1234(pl) {
 //! если шо уже потестил
 
 stock SendInfoMessage(player, const text[] = " ") {
-	if (isRangeValid(text, 64), isempty(text)) return false;
+	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
 	format(fstring, (43 + (-2+66)), ""Inf_color"[Информация]"Default": %s", text);
 	return SEND_CM(player, format_white, fstring), true;
 }
 stock SendErrorMessage(player, const text[] = " ") {
-	if (isRangeValid(text, 64), isempty(text)) return false;
+	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
 	format(fstring, (43 + (-2+66)), ""Err_color"[Ошибка]"Default": %s", text);
 	return SEND_CM(player, format_white, fstring), true;
 }
 stock SendDoneMessage(player, const text[] = " ") {
-	if (isRangeValid(text, 64), isempty(text)) return false;
+	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
 	format(fstring, (43 + (-2+66)), ""Log_color"[Успех]"Default": %s", text);
 	return SEND_CM(player, format_white, fstring), true;
 }
 stock SendWarningMessage(player, const text[] = " ") {
-	if (isRangeValid(text, 64), isempty(text)) return false;
+	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
 	format(fstring, (43 + (-2+66)), ""Warn_color"[Ворнинг]"Default": %s", text);
 	return SEND_CM(player, format_white, fstring), true;
@@ -602,20 +592,15 @@ CMD:editplayer(playerid) {
 }
 
 
->>>>>>> 0e9e01b (fix mod by 13.06)
 
 CMD:agivelic(playerid, params[]) {
-	IsAdmin(ADM_MODER);
+	fADM(ADM_MODER);
 	if(sscanf(params, "ii", params[0], params[1])) Info(playerid, !"[Информация]:{FFFFFF} /agivelic (playerid) (licid)");
-	if(isConn(params[0])) return Error(playerid, PLAYER_INVALID);
+	if(CheckConnection(params[0])) return Error(playerid, PLAYER_INVALID);
 	if(!(1 <= params[1] <= 5)) return Error(playerid, LICENSE_INVALID);
 	if(!strlen(params[0])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID игрока");
 	if(!strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID лицензии");
-<<<<<<< HEAD
-	if(!strlen(params[0] && params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
-=======
 	if(!strlen(params[0]) && !strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
->>>>>>> 0e9e01b (fix mod by 13.06)
 
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
@@ -628,7 +613,7 @@ CMD:agivelic(playerid, params[]) {
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
-	IsAdmin(ADM_CHIEF);
+	fADM(ADM_CHIEF);
 	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [ammoValue (0-999)]");
 	if(!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон weaponID: < 0 либо > 46!");
 	if(!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон ammoValue: < 0 либо > 999!");
@@ -638,7 +623,7 @@ CMD:giveweap(playerid, params[]) {
 
 CMD:plvh(playerid, params[]) {
 	fstring[0] = 0;
-	IsAdmin(ADM_OLDER_MODER);
+	fADM(ADM_OLDER_MODER);
 	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Info(playerid, !"[Информация]:{FFFFFF} /plvh [playerid] [vehicleid] [1 color] [2 color]");
 	if(!playerLoggedStatus[params[0]]) return Error(playerid, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
@@ -664,7 +649,7 @@ CMD:plvh(playerid, params[]) {
 }
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
-	IsAdmin(ADM_FOUNDER);
+	fADM(ADM_FOUNDER);
 	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [степень доступа]");
 	else if(CheckExceptionName(playername)) return 0;
 	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Диапазон доступа к системе: не меньше 1 не больше 6");
@@ -993,7 +978,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case GugleInfo4: {
 			if(response) {
 				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
-				if(strval(inputtext) == getcode) { //! здесь проверка на пустоту, ибо были жалобы, что TOTP ложил сервер при пустой строке
+				if(strval(inputtext) == getcode) { 
 					SHOW_PD(playerid, GugleInfo5, DIALOG_STYLE_MSGBOX, !"Успех", !"{FFFFFF}Вы успешно подключили Google Authenticator к своему аккаунту.\nТеперь Вы можете выбрать, когда будет запрашиваться Auth-код.", "Выход", "");
 					PlayerInfo[playerid][pGugleEnabled] = 1;
 					mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth` = '%e', `gugle_enabled` = '%d' WHERE `names` = '%e'", 
@@ -1157,10 +1142,6 @@ stock ResetVariables(playerid) {
 
 	return 1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 0e9e01b (fix mod by 13.06)
 stock LicType(id) {
 	new type[16];
 	switch(id) {
@@ -1174,7 +1155,7 @@ stock LicType(id) {
 	return type;
 }
 stock GiveLic(playerid,id) {
-	if (isValidLicID(id)) return 1;
+	if (IsLicenseValid(id)) return 1;
 
 	pi[playerid][pDriveLic][id] = 1;
 
@@ -1189,10 +1170,6 @@ stock GiveLic(playerid,id) {
 
 	return 1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 0e9e01b (fix mod by 13.06)
 stock CreateAccount(playerid)
 {
 	fstring[0] =
@@ -1217,10 +1194,6 @@ stock CreateAccount(playerid)
 	SpawnPlayer(playerid);
 	return 1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 0e9e01b (fix mod by 13.06)
 function LoginPlayer(playerid) {
 	new getIP[16];
 
