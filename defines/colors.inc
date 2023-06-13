@@ -4,10 +4,12 @@
 //
 //!=====================================================================================================//
 
-#define format_black 0xFF
-#define format_white 0xFFFFFFFF
-#define format_red 0xFF0000FF
-#define format_orange 0xffde26AA  
+#define format_black    0xFF
+#define Default         "{FFFFFF}" //! ?????? ???? ?????? ???????????? ? ????????????? ??????? (??? ??????????? ???? ????? ? ????? hex)
+
+#define format_white    0xFFFFFFFF
+#define format_red      0xFF0000FF
+#define format_orange   0xffde26AA  
 
 
 #define COLOR_SEA 						(0x00808000)
@@ -54,9 +56,16 @@
 #define COLOR_GREN  					(0x97B96CAA)
 
 
-// macro
+// macro scm
 #define error_color 0xF04245FF
 #define log_color 0x8DB600FF
 #define warning_color 0xCFB53BFF
 #define info_color 0x8FC248FF
+
+// macro (originally)
+
+#define Err_color       "{F04245}"
+#define Log_color       "{8DB600}"
+#define Warn_color      "{CFB53B}"
+#define Inf_color       "{8FC248}"
 

@@ -37,6 +37,10 @@
 
 
 
+//? насчёт id игрока нет, не уверен. потому что если связать игрока, который зашел под id = 0, и в бд рандомный чел с id = 0,
+
+//? то я думаю что это было совсем не верно.
+
 //! даня смс для тебя:
 //! если в команде имеется ввод ид игрока то это всегда будет playerid
 //! ничего другое
@@ -141,27 +145,31 @@ main(){}
 #include <dc_cmd>
 #include <Pawn.Regex>
 #include <TOTP>
+#include <strlib> //! очень полезная штука
 
 //==========================[DIRECTORY | SYSTEMS | INCLUDES]==========================//
 
 #include "../../defines/colors" 
 #include "../../defines/systems/capture_natives/natives" 
-#include "../../defines/objs/autoLoader.inc"
+#include "../../defines/objs/autoLoader.inc" //! начать вскоре работу
 // #include "../../defines/systems/autoschool/main"
 
 //===================================[NATIVE CONFIG]==================================//
 #define function%0(%1)					forward%0(%1); public%0(%1)
 #define pi 								PlayerInfo
-#define f%0%1							format(%0,sizeof(%0), %1
+
+#define f(%0,							format(%0,
+//! f(%0(str),%1(ДЛИНА),%2(всё ост.))
+
 #define IsAdmin(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
 #define GetName(%0)						pi[%0][pNames]
 #define randEx(%0,%1) 					(random(%1-%0)+%0)
 #define isConn(%0)						(!IsPlayerConnected(%0))
 #define isValidLicID(%0)				(!(1 <= (%0) <= 5))
 
-// #define gettypelicense(%0)				do{\
-// 	for(new i = 5; i > 0; i--) pi[%0][pDriveLic][i] \
-// }while(false)
+#define isRangeValid(%0,%1)				(strlen(%0) > %1)
+//! isRangeValid 
+//! первый параметр %0 - строка, %1 - длина
 
 //===================================[SERVER CONFIG]==================================//
 #define SERVER_NAME 					"Aurora RolePlay"
@@ -324,10 +332,13 @@ public OnPlayerConnect(playerid)
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
+<<<<<<< HEAD
 	printf("%s", pi[playerid][pIP]); //! ?
 
 	//! здесь добавить фикс для последнего входа в бд
 
+=======
+>>>>>>> 0e9e01b (fix mod by 13.06)
 	if(IsLoginInvalid(GetName(playerid))) {
 		Error(playerid, !"[Ошибка]:{FFFFFF} Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		return Kick(playerid);
@@ -381,7 +392,7 @@ public OnPlayerText(playerid, text[]) {
 	
 	fstring[0] = 0;
 	if(strlen(text) < 64) {
-		format(fstring, sizeof(fstring), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
+		format(fstring, (20 + (-2+66) + (-2+4) + (-2+66)), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
 		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
@@ -514,7 +525,84 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 //! отдельный путь \defines\systems\autoschool\main.inc
 //! а почему бы там сразу не делать
 //! и кстати есть и другие лицензии, например: рыболовство, охота и т.д
+<<<<<<< HEAD
 
+=======
+//! isempty функция из strlib.inc, очень удобно с целью избавиться от десяток строк в моде, заменив на обычную нативу
+
+
+
+//! потестить отдельно, довести до нормы и вынести в свой отдельный инклуд
+stock debugger(const func[], iter_count_start = 1, iter_count_end = 1000, step = 1, {_,Float,bool}:...) {
+	// func(...) ... - параметры
+
+	new	
+		_counter = GetTickCount(),
+		i = iter_count_start, // по умолч. = 1, указать своё любое другое значение
+		idx_start = 4, // начать поиск параметров после парам step
+		params = numargs();
+
+	for (;i<iter_count_end;i+=step) {
+		for (new idx = idx_start;++idx<params;) {
+			CallLocalFunction(func, "sfdc", getarg(idx, 0));
+		}
+	}
+
+	return 
+		(GetTickCount() - _counter);
+}
+
+CMD:test1234(pl) {
+
+	printf("%d ms", debugger("SendInfoMessage", _, _, _, pl, "test test test"));
+
+	return 1;
+}
+//!
+
+
+
+//! Дим, тоже вынесешь окс) в отдельный инклуд системы чата
+
+//! если шо уже потестил
+
+stock SendInfoMessage(player, const text[] = " ") {
+	if (isRangeValid(text, 64), isempty(text)) return false;
+	fstring[0] = 0;
+	format(fstring, (43 + (-2+66)), ""Inf_color"[Информация]"Default": %s", text);
+	return SEND_CM(player, format_white, fstring), true;
+}
+stock SendErrorMessage(player, const text[] = " ") {
+	if (isRangeValid(text, 64), isempty(text)) return false;
+	fstring[0] = 0;
+	format(fstring, (43 + (-2+66)), ""Err_color"[Ошибка]"Default": %s", text);
+	return SEND_CM(player, format_white, fstring), true;
+}
+stock SendDoneMessage(player, const text[] = " ") {
+	if (isRangeValid(text, 64), isempty(text)) return false;
+	fstring[0] = 0;
+	format(fstring, (43 + (-2+66)), ""Log_color"[Успех]"Default": %s", text);
+	return SEND_CM(player, format_white, fstring), true;
+}
+stock SendWarningMessage(player, const text[] = " ") {
+	if (isRangeValid(text, 64), isempty(text)) return false;
+	fstring[0] = 0;
+	format(fstring, (43 + (-2+66)), ""Warn_color"[Ворнинг]"Default": %s", text);
+	return SEND_CM(player, format_white, fstring), true;
+}
+
+
+
+
+//! Дим насчёт этой cmd, в стоке написать функционал для определенных действий, что выдать \ изменить, связать
+//! также ввести возможность управлять статистикой игрока через Tab, но в рамках админа всё
+CMD:editplayer(playerid) {
+	//! тут проверка на адм и дальнейшая хня
+	return 1;
+}
+
+
+>>>>>>> 0e9e01b (fix mod by 13.06)
 
 CMD:agivelic(playerid, params[]) {
 	IsAdmin(ADM_MODER);
@@ -523,7 +611,11 @@ CMD:agivelic(playerid, params[]) {
 	if(!(1 <= params[1] <= 5)) return Error(playerid, LICENSE_INVALID);
 	if(!strlen(params[0])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID игрока");
 	if(!strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID лицензии");
+<<<<<<< HEAD
 	if(!strlen(params[0] && params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
+=======
+	if(!strlen(params[0]) && !strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
+>>>>>>> 0e9e01b (fix mod by 13.06)
 
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
@@ -814,8 +906,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case Gugle_Delete: {
 			if(response) {
-				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
-				if(strval(inputtext) == getcode) {
+				new getcode = GoogleAuthenticatorCode(pi[playerid][pGugleAuth], gettime());
+				if(isempty(inputtext)) 
+					return false;
+				else if(strval(inputtext) == getcode) {
 					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"Подтверждение", "\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
 				}
 				else {
@@ -1048,12 +1142,12 @@ stock ResetVariables(playerid) {
 	pi[playerid][pHungryBar] 		=
 	pi[playerid][pWantedLevel]		=
 	pi[playerid][pEmailConfirmed] 	= 0;
-	PlayerBadAttempt{playerid} 		= 3;
+	PlayerBadAttempt{playerid} 		= 4;
 	inadmcar{playerid}				= -1;
 
 	printf("%d (%s) id освободил данные | thank you friend! you are gay!", playerid, GetName(playerid));
 
-	for(new i = 5; i > 0; i--) {
+	for(new i = 5; --i > 0;) {
     	pi[playerid][pDriveLic][i] = 0;
 	}
 
@@ -1063,7 +1157,10 @@ stock ResetVariables(playerid) {
 
 	return 1;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0e9e01b (fix mod by 13.06)
 stock LicType(id) {
 	new type[16];
 	switch(id) {
@@ -1092,7 +1189,10 @@ stock GiveLic(playerid,id) {
 
 	return 1;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0e9e01b (fix mod by 13.06)
 stock CreateAccount(playerid)
 {
 	fstring[0] =
@@ -1117,7 +1217,10 @@ stock CreateAccount(playerid)
 	SpawnPlayer(playerid);
 	return 1;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0e9e01b (fix mod by 13.06)
 function LoginPlayer(playerid) {
 	new getIP[16];
 
