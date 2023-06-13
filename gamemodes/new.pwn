@@ -152,6 +152,7 @@ main(){}
 #include "../../defines/colors" 
 #include "../../defines/systems/capture_natives/natives" 
 #include "../../defines/objs/autoLoader.inc" //! начать вскоре работу
+#include "../../defines/systems/chat/chatmsg.inc"
 // #include "../../defines/systems/autoschool/main"
 
 //===================================[NATIVE CONFIG]==================================//
@@ -514,84 +515,11 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 {
 	return 1;
 }
-//! все эти стеки вынести в инклуд по завершении 
-//! отдельный путь \defines\systems\autoschool\main.inc
-//! а почему бы там сразу не делать
-//! и кстати есть и другие лицензии, например: рыболовство, охота и т.д
-//! isempty функция из strlib.inc, очень удобно с целью избавиться от десяток строк в моде, заменив на обычную нативу
 
-
-
-//! потестить отдельно, довести до нормы и вынести в свой отдельный инклуд
-stock debugger(const func[], iter_count_start = 1, iter_count_end = 1000, step = 1, {_,Float,bool}:...) {
-	// func(...) ... - параметры
-
-	new	
-		_counter = GetTickCount(),
-		i = iter_count_start, // по умолч. = 1, указать своё любое другое значение
-		idx_start = 4, // начать поиск параметров после парам step
-		params = numargs();
-
-	for (;i<iter_count_end;i+=step) {
-		for (new idx = idx_start;++idx<params;) {
-			CallLocalFunction(func, "sfdc", getarg(idx, 0));
-		}
-	}
-
-	return 
-		(GetTickCount() - _counter);
-}
-
-CMD:test1234(pl) {
-
-	printf("%d ms", debugger("SendInfoMessage", _, _, _, pl, "test test test"));
-
-	return 1;
-}
-//!
-
-
-
-//! Дим, тоже вынесешь окс) в отдельный инклуд системы чата
-
-//! если шо уже потестил
-
-stock SendInfoMessage(player, const text[] = " ") {
-	if (IsRangeValid(text, 64), isempty(text)) return false;
-	fstring[0] = 0;
-	format(fstring, (43 + (-2+66)), ""Inf_color"[Информация]"Default": %s", text);
-	return SEND_CM(player, format_white, fstring), true;
-}
-stock SendErrorMessage(player, const text[] = " ") {
-	if (IsRangeValid(text, 64), isempty(text)) return false;
-	fstring[0] = 0;
-	format(fstring, (43 + (-2+66)), ""Err_color"[Ошибка]"Default": %s", text);
-	return SEND_CM(player, format_white, fstring), true;
-}
-stock SendDoneMessage(player, const text[] = " ") {
-	if (IsRangeValid(text, 64), isempty(text)) return false;
-	fstring[0] = 0;
-	format(fstring, (43 + (-2+66)), ""Log_color"[Успех]"Default": %s", text);
-	return SEND_CM(player, format_white, fstring), true;
-}
-stock SendWarningMessage(player, const text[] = " ") {
-	if (IsRangeValid(text, 64), isempty(text)) return false;
-	fstring[0] = 0;
-	format(fstring, (43 + (-2+66)), ""Warn_color"[Ворнинг]"Default": %s", text);
-	return SEND_CM(player, format_white, fstring), true;
-}
-
-
-
-
-//! Дим насчёт этой cmd, в стоке написать функционал для определенных действий, что выдать \ изменить, связать
-//! также ввести возможность управлять статистикой игрока через Tab, но в рамках админа всё
 CMD:editplayer(playerid) {
 	//! тут проверка на адм и дальнейшая хня
 	return 1;
 }
-
-
 
 CMD:agivelic(playerid, params[]) {
 	fADM(ADM_MODER);
@@ -710,7 +638,7 @@ CMD:todo(playerid, params[]) {
 		fstring[0] = 0;
 		format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
 		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
-	} else return Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
+	} else return Error(playerid, !"[Ошибка]:{FFFFFF} Текст должен состоять из кириллицы и не содержать другие символы.");
 	return 1;
 }
 CMD:s(playerid, params[]) {

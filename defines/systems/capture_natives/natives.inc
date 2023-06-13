@@ -1,6 +1,6 @@
 //!============>> Copyright (c) 2017-2023 Darkside Interactive, Ltd. All rights reserved. <<============//
 //
-//? Р¦РµР»СЊ: СЃРёСЃС‚РµРјС‹ Рё РїСЂРѕРІРµСЂРєРё
+//? Цель: системы и проверки
 //
 //!=====================================================================================================//
 
@@ -26,7 +26,7 @@ stock ValidChar(mailchar)
 stock TextFind(const text[],const findtext[]) return strfind(text, findtext) != -1;
 stock IsValidEmail(const email[])
 {
-	new bool:Succes = true;
+	new bool:Success = true;
 	new bool:Good;
 	for(new i; i < strlen(email); i++)
 	{
@@ -37,12 +37,30 @@ stock IsValidEmail(const email[])
 		    	break;
 			}
 		}
-	    if(!ValidChar(email[i])) Succes = false;
+	    if(!ValidChar(email[i])) Success = false;
 	}
-	if(!Good) Succes = false;
-	if(!TextFind(email,".ru") && !TextFind(email,".com") && !TextFind(email,".ua") && !TextFind(email,".su")) Succes = false;
-	if(!TextFind(email,"@")) Succes = false;
-  	return Succes;
+	if(!Good) Success = false;
+	if(!TextFind(email,".ru") && !TextFind(email,".com") && !TextFind(email,".ua") && !TextFind(email,".su")) Success = false;
+	if(!TextFind(email,"@")) Success = false;
+  	return Success;
+}
+stock debugger(const func[], iter_count_start = 1, iter_count_end = 1000, step = 1, {_,Float,bool}:...) {
+	// func(...) ... - параметры
+
+	new	
+		_counter = GetTickCount(),
+		i = iter_count_start, // по умолч. = 1, указать своё любое другое значение
+		idx_start = 4, // начать поиск параметров после парам step
+		params = numargs();
+
+	for (;i<iter_count_end;i+=step) {
+		for (new idx = idx_start;++idx<params;) {
+			CallLocalFunction(func, "sfdc", getarg(idx, 0));
+		}
+	}
+
+	return 
+		(GetTickCount() - _counter);
 }
 //? afk system
 stock AFKSystemUpdates(playerid) {
@@ -50,13 +68,13 @@ stock AFKSystemUpdates(playerid) {
 		PlayerAFK[i]++;
 		if(++PlayerAFK[i] > 3) {
 			new string[] = "{FFFFFF}AFK: ";
-			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d СЃРµРє.", string, PlayerAFK[i]);
+			if(PlayerAFK[i] < 60) format(string, sizeof(string),"%s%d сек.", string, PlayerAFK[i]);
 
 		}else{
 			new minute = floatround(PlayerAFK[i]/60, floatround_floor);
 			new second = PlayerAFK[i] % 60;
 			string[0] = EOS;
-			format(string, sizeof(string),"%s%d РјРёРЅ. %d СЃРµРє.", string, minute, second);
+			format(string, sizeof(string),"%s%d мин. %d сек.", string, minute, second);
 		}
 		SetPlayerChatBubble(i, string, -1, 20, 1000)
 	}
