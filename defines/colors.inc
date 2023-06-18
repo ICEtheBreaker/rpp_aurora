@@ -64,6 +64,7 @@
 
 // macro (originally)
 
+#define ADM_color       "{99CC00}"
 #define Err_color       "{F04245}"
 #define Log_color       "{8DB600}"
 #define Warn_color      "{CFB53B}"

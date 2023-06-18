@@ -84,6 +84,7 @@ AntiDeAMX()
    	//#pragma disablerecursion
 }
 
+
 //=============================[PREPROCESSOR DIRECTIVES]==============================//
 #include "../../defines/macroses" 
 #if !defined IsValidVehicle
@@ -134,8 +135,6 @@ AntiDeAMX()
 #if defined STREAMER_USAGE 
 	#tryinclude <streamer> 
 #endif	
-	
-main(){}
 //=================================[THIS IS INCLUDES]=================================//
 
 #include <sscanf2>
@@ -145,6 +144,7 @@ main(){}
 #include <dc_cmd>
 #include <Pawn.Regex>
 #include <TOTP>
+#include <YALP>
 #include <strlib> //! очень полезная штука
 
 //==========================[DIRECTORY | SYSTEMS | INCLUDES]==========================//
@@ -152,7 +152,6 @@ main(){}
 #include "../../defines/colors" 
 #include "../../defines/systems/capture_natives/natives" 
 #include "../../defines/objs/autoLoader.inc" //! начать вскоре работу
-#include "../../defines/systems/chat/chatmsg.inc"
 // #include "../../defines/systems/autoschool/main"
 
 //===================================[NATIVE CONFIG]==================================//
@@ -162,10 +161,10 @@ main(){}
 #define f(%0,							format(%0,
 //! f(%0(str),%1(ДЛИНА),%2(всё ост.))
 
-#define fADM(%0) 					if(PlayerInfo[playerid][pAdmin] < %0) return 1
+#define fADM(%0) 						if(PlayerInfo[playerid][pAdmin] < %0) return 1
 #define GetName(%0)						pi[%0][pNames]
-#define RandomEx(%0,%1) 					(random(%1-%0)+%0)
-#define CheckConnection(%0)						(!IsPlayerConnected(%0))
+#define RandomEx(%0,%1) 				(random(%1-%0)+%0)
+#define CheckConnection(%0)				(!IsPlayerConnected(%0))
 #define IsLicenseValid(%0)				(!(1 <= (%0) <= 5))
 
 #define IsRangeValid(%0,%1)				(strlen(%0) > %1)
@@ -175,7 +174,7 @@ main(){}
 //===================================[SERVER CONFIG]==================================//
 #define SERVER_NAME 					"Aurora RolePlay"
 #define SERVER_VERSION 					"Aurora [v."MODE_VERS"]"
-#define MODE_VERS						"0.1.1.0"
+#define MODE_VERS						"0.1.1.8"
 #define SERVER_MAP                      "South Ural"
 #define SERVER_WEBSITE 					"rpp-aurora.ru/"
 #define PRIME_HOST_PAGE 				"prime-host.pro/"
@@ -195,17 +194,29 @@ main(){}
 
 //==================================[ADM | ICBRK CONFIG]==============================//
 #define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не в системе. Используйте {33CCFF}/alog"
-#define ADMIN_ALREADY_LOGGED 	        "[Ошибка ADM]: {FFFFFF}Вы уже в системе!"
-#define PLAYER_INVALID 					"[Ошибка ADM]: {FFFFFF}Игрок не активен."
-#define PLAYER_NOT_LOGGED 				"[Ошибка ADM]: {FFFFFF}Игрок не авторизован."
-#define LICENSE_INVALID					"[Ошибка ADM]: {FFFFFF}Диапазон лицензий: не меньше 0 не больше 5"
+#define ADMIN_ALREADY_LOGGED 	        "{FFFFFF}Вы уже в системе!"
+#define PLAYER_INVALID 					"{FFFFFF}Игрок не активен."
+#define PLAYER_NOT_LOGGED 				"{FFFFFF}Игрок не авторизован."
+#define LICENSE_INVALID					"{FFFFFF}Диапазон лицензий: не меньше 0 не больше 5"
 
 //====================================[PLAYER CONFIG]=================================//
-#define NOT_AVAILABLE 					"[Ошибка]: {FFFFFF}Вам недоступна данная возможность!"
-#define NOT_ENOUGH_MONEY                "[Ошибка]: {FFFFFF}У вас недостаточно средств на счету."
-#define SERVER_CLOSED 					"{F04245}[Ошибка]: {FFFFFF}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
-#define LOG_TIMED_OUT					"{F04245}[Ошибка]: {FFFFFF}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
+#define NOT_AVAILABLE 					"Вам недоступна данная возможность!"
+#define NOT_ENOUGH_MONEY                "У вас недостаточно средств на счету."
+#define SERVER_CLOSED 					"{F04245}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
+#define LOG_TIMED_OUT					"{F04245}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
+main(){
+	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
+	printf("\t|--------------------------------");
+	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
+	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
+	printf("");
+	printf("");
+	printf("");
+	printf("\t| Compiled: %s at %s", __date, __time);
+	printf("\t|--------------------------------------------------------------");
+	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
+}
 
 new 
 	query_string[800], // mysql string
@@ -281,6 +292,9 @@ new PlayerBadAttempt[MAX_PLAYERS char];
 new PlayerAFK[MAX_PLAYERS char];
 //new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
+
+new Iterator:ADM_LIST<MAX_PLAYERS>; //! ахуеная вещь слюшай
+#include "../../defines/systems/chat/chatmsg.inc"
 enum {
 	dNull = 0, 
 	dLogin = 1, dReg1 = 2, dReg2 = 3, dReg3 = 4, d_Log = 5,
@@ -297,11 +311,16 @@ public OnGameModeInit()
 
 	new MySQLOpt: option_id = mysql_init_options();
  	new currenttime = GetTickCount();
+	new Lua:test = lua_newstate();
 
 	mysql_set_option(option_id, AUTO_RECONNECT, true);
 	SetGameModeText(""#SERVER_VERSION""); 
 	SendRconCommand("hostname "#SERVER_NAME"");
 	SendRconCommand("mapname "#SERVER_MAP"");
+
+	if(lua_loadfile(test, "../../lua/test.lua")) return lua_stackdump(test);
+	lua_bind(test);
+	lua_stackdump(test);
 
 	printf("OnGameModeInit загрузился за %i ms", GetTickCount() - currenttime);
 	gettime(timedata[0], timedata[1]);
@@ -334,11 +353,11 @@ public OnPlayerConnect(playerid)
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		Error(playerid, !"[Ошибка]:{FFFFFF} Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
+		Error(playerid, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		return Kick(playerid);
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
-
+	SEND_CM(playerid, COLOR_WHITE, !"Development build "MODE_VERS"");
 	ResetVariables(playerid);
 	/*new code = 999 + random(9000);
 	format(fstring, sizeof(fstring), "Код для подтверждения: %d", code);
@@ -391,7 +410,7 @@ public OnPlayerText(playerid, text[]) {
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else Warning(playerid, "[Предупреждение]:{FFFFFF} Слишком длинное сообщение!");
+	} else Warning(playerid, "Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandText(playerid, cmdtext[]) return 0;
@@ -401,7 +420,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[], params[], flags) {
 }
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
-		Error(playerid, !"{941000}[Ошибка]: {FFFFFF}Введена неверная команда. Для справки используйте \"'/help'\"");
+		Error(playerid, !"{941000}Введена неверная команда. Для справки используйте \"'/help'\"");
 	return 1;
 }
 
@@ -523,28 +542,34 @@ CMD:editplayer(playerid) {
 
 CMD:agivelic(playerid, params[]) {
 	fADM(ADM_MODER);
-	if(sscanf(params, "ii", params[0], params[1])) Info(playerid, !"[Информация]:{FFFFFF} /agivelic (playerid) (licid)");
+	if(sscanf(params, "ii", params[0], params[1])) Info(playerid, !"/agivelic (playerid) (licid)");
 	if(CheckConnection(params[0])) return Error(playerid, PLAYER_INVALID);
 	if(!(1 <= params[1] <= 5)) return Error(playerid, LICENSE_INVALID);
-	if(!strlen(params[0])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID игрока");
-	if(!strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы не указали ID лицензии");
-	if(!strlen(params[0]) && !strlen(params[1])) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Вы ничего не указали");
+	if(!strlen(params[0])) return Error(playerid, !"Вы не указали ID игрока");
+	if(!strlen(params[1])) return Error(playerid, !"Вы не указали ID лицензии");
+	if(!strlen(params[0]) && !strlen(params[1])) return Error(playerid, !"Вы ничего не указали");
 
 	fstring[0] = 0;
-	format(fstring, sizeof(fstring), "[Информация]:{FFFFFF} Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
+	format(fstring, sizeof(fstring), "Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
 	Info(playerid, fstring);
 
 	GiveLic(params[0], params[1]);
 
 	return 1;
 }
+/*CMD:a(playerid, params[])
+{
+    if(sscanf(params, "s[150]", params[0])) return Error(playerid, !"/a [текст]");
+    return ADMLog("%s[%d]: %s", GetName(playerid), playerid, params[0]);
+	return 1;
+}*///! ADMMessage нужно доработать, чтобы он мог получать имя игрока и его ид. а так он получает только текст
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
 	fADM(ADM_CHIEF);
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"[Информация]:{FFFFFF} /giveweap [playerid] [weaponid] [ammoValue (0-999)]");
-	if(!(0 <= (weaponID) <= 46)) return Info(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон weaponID: < 0 либо > 46!");
-	if(!(0 <= (ammoValue) <= 999)) return Info(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон ammoValue: < 0 либо > 999!");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"/giveweap [playerid] [weaponid] [ammoValue (0-999)]");
+	if(!(0 <= (weaponID) <= 46)) return Info(playerid, !"Диапазон weaponID: < 0 либо > 46!");
+	if(!(0 <= (ammoValue) <= 999)) return Info(playerid, !"Диапазон ammoValue: < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
@@ -552,19 +577,19 @@ CMD:giveweap(playerid, params[]) {
 CMD:plvh(playerid, params[]) {
 	fstring[0] = 0;
 	fADM(ADM_OLDER_MODER);
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Info(playerid, !"[Информация]:{FFFFFF} /plvh [playerid] [vehicleid] [1 color] [2 color]");
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Info(playerid, !"/plvh [playerid] [vehicleid] [1 color] [2 color]");
 	if(!playerLoggedStatus[params[0]]) return Error(playerid, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
-		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
 		fstring[0] = 0;
 	}
 	if(GetPlayerVirtualWorld(params[0]) != 0)  {
-		format(fstring,sizeof(fstring), !"[Ошибка ADM]:{FFFFFF} Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Error(playerid, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Error(playerid, fstring); 
 		fstring[0] = 0;
 	}
-	if(!(400 <= params[1] <= 611)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон ID автомобилей: не меньше 400 не больше 611");
-	if(!(0 <= params[2] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон первого цвета: не меньше 0 не больше 255");
-	if(!(0 <= params[3] <= 255)) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Диапазон второго цвета: не меньше 0 не больше 255");
+	if(!(400 <= params[1] <= 611)) return Error(playerid, !"Диапазон ID автомобилей: не меньше 400 не больше 611");
+	if(!(0 <= params[2] <= 255)) return Error(playerid, !"Диапазон первого цвета: не меньше 0 не больше 255");
+	if(!(0 <= params[3] <= 255)) return Error(playerid, !"Диапазон второго цвета: не меньше 0 не больше 255");
 	new Float:x,
 		Float:y,
 		Float:z;
@@ -578,9 +603,9 @@ CMD:plvh(playerid, params[]) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	fADM(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"[Информация]:{FFFFFF} Введите: /makeadmin [ник игрока] [степень доступа]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"Введите: /makeadmin [ник игрока] [степень доступа]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"[Информация]:{FFFFFF} Диапазон доступа к системе: не меньше 1 не больше 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"Диапазон доступа к системе: не меньше 1 не больше 6");
 	query_string[0] = 0;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -589,9 +614,9 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /me [действие]");
-	if(strlen(params[0]) > 32) Error(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
+	if(sscanf(params, "s[118]", params[0])) Info(playerid, !"/me [действие]");
+	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -599,16 +624,16 @@ CMD:me(playerid, params[]) {
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /ame [действие]");
-	if(strlen(params[0]) > 32) Error(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
+	if(sscanf(params, "s[144]", params[0])) Info(playerid, !"/ame [действие]");
+	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /do [текст]");
-	if(strlen(params[0]) > 32) Error(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
+	if(sscanf(params, "s[116]", params[0])) Info(playerid, !"/do [текст]");
+	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -616,17 +641,17 @@ CMD:do(playerid, params[]) {
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /try [текст]");
-	if(strlen(params[0]) > 32) Error(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
+	if(sscanf(params, "s[99]", params[0])) Info(playerid, !"/try [текст]");
+	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }
 CMD:todo(playerid, params[]) {
-	if(sscanf(params, "s[95]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /todo [текст*действие]");
-	if(strlen(params[0]) > 95) Error(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 95!");
+	if(sscanf(params, "s[95]", params[0])) Info(playerid, !"/todo [текст*действие]");
+	if(strlen(params[0]) > 95) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 95!");
 	new message[96];
 	strmid(message, params, 0, sizeof(message));
 	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
@@ -638,15 +663,15 @@ CMD:todo(playerid, params[]) {
 		fstring[0] = 0;
 		format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
 		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
-	} else return Error(playerid, !"[Ошибка]:{FFFFFF} Текст должен состоять из кириллицы и не содержать другие символы.");
+	} else return Error(playerid, !"Текст должен состоять из кириллицы и не содержать другие символы.");
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"[Информация]:{FFFFFF} /s [текст]");
-	if(!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"[Ошибка]:{FFFFFF} Диапазон длины текста: не меньше 0 не больше 105");
-	if(!strlen(params[0])) return Warning(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели!");
+	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"/s [текст]");
+	if(!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"Диапазон длины текста: не меньше 0 не больше 105");
+	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
 	fstring[0] = 0;
-	format(fstring, sizeof(fstring), "%s [%d] крикнул %s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
+	format(fstring, sizeof(fstring), "%s [%d] крикнул%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.00, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "ON_LOOKERS", "shout_01", 4.1,0,0,0,0,0);
 	SetPlayerChatBubble(playerid, params[0], format_white, 25, 7500);
@@ -678,8 +703,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg1: 
 		{
 			if(response) {
-				if(!strlen(inputtext)) return Error(playerid, !"[Ошибка]:{FFFFFF} Вы ничего не ввели."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return Warning(playerid, !"[Предупреждение]:{FFFFFF} Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
+				if(!strlen(inputtext)) return Error(playerid, !"Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return Warning(playerid, !"Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -693,7 +718,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(fstring, sizeof(fstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				} else {
-					ShowRegDialog(playerid), Error(playerid, !"[Ошибка]:{FFFFFF} Пароль может состоять только из чисел и латинских символов любого регистра.");
+					ShowRegDialog(playerid), Error(playerid, !"Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
 				Regex_Delete(rg_passwordcheck);
 			} else {
@@ -709,11 +734,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			else {
 				if(!IsValidEmail(inputtext)) {
-					Error(playerid, !"[Ошибка]:{FFFFFF} Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
+					Error(playerid, !"Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
-					Error(playerid, !"[Ошибка]:{FFFFFF} Вы не указали почту.");
+					Error(playerid, !"Вы не указали почту.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
@@ -784,7 +809,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 5: return Warning(playerid, "В разработке");
 					case 6: return Warning(playerid, "В разработке");
 					case 7: {
-						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, "[Ошибка]: {FFFFFF} Установить Google Authenticator могут только игроки старше первого уровня!");
+						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, " Установить Google Authenticator могут только игроки старше первого уровня!");
 						fstring[0] = 0;
 						format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
 						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
@@ -808,7 +833,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						fstring2[0] = 0;
 					}
 					case 1: {
-						if(PlayerInfo[playerid][pGugleEnabled] == 0) Error(playerid, !"[Ошибка]:{FFFFFF} На данном аккаунте не установлен Google Authenticator!");
+						if(PlayerInfo[playerid][pGugleEnabled] == 0) Error(playerid, !"На данном аккаунте не установлен Google Authenticator!");
 						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 					}
 				}
@@ -826,7 +851,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"Подтверждение", "\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
 				}
 				else {
-					Error(playerid, !"[Ошибка]:{FFFFFF} Код введён неверно!");
+					Error(playerid, !"Код введён неверно!");
 					SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 				}
 			}
@@ -840,7 +865,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				PlayerInfo[playerid][pGugleEnabled] = 0;
 				PlayerInfo[playerid][pGugleAuth] = 0;
-				Log(playerid, !"[Уведомление]:{FFFFFF} Вы успешно отключили Google Authenticator.");
+				Log(playerid, !"Вы успешно отключили Google Authenticator.");
 				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `names` = '%s'", 
 				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 				mysql_tquery(db, query_string);
@@ -851,7 +876,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				switch listitem do {
 					case 0: {
-						if(PlayerInfo[playerid][pGugleEnabled] == 1) Error(playerid, !"[Ошибка]:{FFFFFF} Google Authenticator уже установлен на аккаунте. Действие не требуется");
+						if(PlayerInfo[playerid][pGugleEnabled] == 1) Error(playerid, !"Google Authenticator уже установлен на аккаунте. Действие не требуется");
 						else {
 							SHOW_PD(playerid, GugleInfo, DIALOG_STYLE_MSGBOX, !"1-вый шаг", !"\n\n{FFFFFF}Начнем с того, что если у вас нет приложения, то его нужно\nзагрузить. Заходим в {FDC459}Play Market или App Store{FFFFFF} и ищем\nGoogle Authenticator.\n\n{B0FD59}Нашли? Нажимаем загрузить приложение.\n\nНажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
 						}
@@ -859,10 +884,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 1: {
 						if(PlayerInfo[playerid][pGugleSettings] == 0) {
 							PlayerInfo[playerid][pGugleSettings] = 1;
-							Log(playerid, !"[Уведомление]:{FFFFFF} Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
+							Log(playerid, !"Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
 						} else {
 							PlayerInfo[playerid][pGugleSettings] = 0;
-							Log(playerid, !"[Уведомление]:{FFFFFF} Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
+							Log(playerid, !"Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
 						}
 					}
 				}
@@ -914,7 +939,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					mysql_tquery(db, query_string);
 				}
 				else {
-					Error(playerid, !"[Ошибка]:{FFFFFF} Код введён неверно!");
+					Error(playerid, !"Код введён неверно!");
 					fstring[0] = 0;
 					format(fstring, sizeof(fstring), 
 					"{FFFFFF}Для завершения установки Google Authenticator, введите сгенерированный код из приложения\n\
@@ -978,8 +1003,9 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 		ssstring[0] = 0;
 	} else {LoginPlayer(playerid);}
 
-	if(PlayerBadAttempt{playerid} <= 0) {
+	if(++PlayerBadAttempt{playerid} <= 0) {
 		Error(playerid, SERVER_CLOSED);
+		PlayerBadAttempt{playerid} = 0;
 		return Kick(playerid);
 	}
 
@@ -1143,8 +1169,7 @@ function LoginPlayer(playerid) {
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(PlayerInfo[playerid][pAdmin] > 0) SEND_CM(playerid, COLOR_WHITE, ADMIN_NOT_LOGGED);
-	
+	if(PlayerInfo[playerid][pAdmin] > 0) return Iter_Add(ADM_LIST, playerid);
 	// SavePlayer(playerid);
 
 	playerLoggedStatus{playerid} = true;
@@ -1198,7 +1223,7 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, (52 + (-2+4) + (-2+66)), "UPDATE `admin` SET `level` = 0 WHERE `names` = '%e'", name);
 			mysql_tquery(db, query_string, "", "");
 			fstring[0] = 0;
-			format(fstring, sizeof(fstring),"[Предупреждение ADM]:{FFFFFF} Администратор {0093ff}%s больше не имеет доступа к системе.", name);
+			format(fstring, sizeof(fstring),"Администратор {0093ff}%s больше не имеет доступа к системе.", name);
 			Warning(playerid, fstring);
 		}
 		else {
@@ -1209,13 +1234,13 @@ stock SavePlayer(playerid) {
 			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
 			mysql_tquery(db, query_string, "", "");
 			fstring[0] = 0;
-			format(fstring, sizeof(fstring), "[Информация ADM]:{FFFFFF} Администратор {0093ff}%s получил повышение до %i уровня доступа.", name, level);
+			format(fstring, sizeof(fstring), "Администратор {0093ff}%s получил повышение до %i уровня доступа.", name, level);
 			Info(playerid, fstring);
 		}
 	}
 	else {
 		query_string[0] = 0;
-		if(!level) return Error(playerid, !"[Ошибка ADM]:{FFFFFF} Указанный игрок не имеет доступа к системе!");
+		if(!level) return Error(playerid, !"Указанный игрок не имеет доступа к системе!");
 		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', %d, CURDATE())", name, level);
 		mysql_tquery(db, query_string, "", "");
 		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);

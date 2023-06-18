@@ -23,6 +23,7 @@ stock ValidChar(mailchar)
 	|| (mailchar == '@') || (mailchar == '.')) return 1;
 	return 0;
 }
+
 stock TextFind(const text[],const findtext[]) return strfind(text, findtext) != -1;
 stock IsValidEmail(const email[])
 {
@@ -84,6 +85,7 @@ stock AFKSystemUpdates(playerid) {
 stock SendClientMessageToADM(playerid, params[], message) {
 	return 1;
 } 
+
 
 stock ProxDetector(Float:range, playerid, const string[], c1 = -1,c2 = -1,c3 = -1,c4 = -1,c5 = -1) {
     new
