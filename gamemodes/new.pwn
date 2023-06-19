@@ -865,7 +865,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				PlayerInfo[playerid][pGugleEnabled] = 0;
 				PlayerInfo[playerid][pGugleAuth] = 0;
-				Log(playerid, !"Вы успешно отключили Google Authenticator.");
+				Notification(playerid, !"Вы успешно отключили Google Authenticator.");
 				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `names` = '%s'", 
 				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 				mysql_tquery(db, query_string);
@@ -884,10 +884,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 1: {
 						if(PlayerInfo[playerid][pGugleSettings] == 0) {
 							PlayerInfo[playerid][pGugleSettings] = 1;
-							Log(playerid, !"Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
+							Notification(playerid, !"Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
 						} else {
 							PlayerInfo[playerid][pGugleSettings] = 0;
-							Log(playerid, !"Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
+							Notification(playerid, !"Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
 						}
 					}
 				}
