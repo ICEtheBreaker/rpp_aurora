@@ -301,7 +301,7 @@ enum {
 	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8,
 	Gugle = 9, Gugle_Settings = 10, GugleInfo = 11, 
 	GugleInfo2 = 12, GugleInfo3 = 13, GugleInfo4 = 14, GugleInfo5 = 15,
-	Gugle_Delete = 16, Gugle_Confirm = 17,
+	Gugle_Delete = 16, Gugle_Confirm = 17, PASS_CHANGE = 18,
 }
 
 public OnGameModeInit()
