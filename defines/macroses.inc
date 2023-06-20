@@ -11,7 +11,18 @@
 #define SHOW_PD							ShowPlayerDialog
 #define SEND_CM							SendClientMessage
 #define ADMNOTIF                        ADMMessage
-
+/*
+ * ADM system macroses, that sends some messages to admins.
+ *
+ * Parameters:
+ *   ADMError - send error message to ADM
+ *   ADMLog - send log message to ADM
+ *   ADMWarning - send warning message to ADM
+ *   ADMInfo - send info message to ADM
+ *
+ * Returns:
+ *   no returns
+ */
 #define ADMError(%0,%1)                 ADMNOTIF(%0, error_color, %1);
 #define ADMLog(%0,%1)                   ADMNOTIF(%0, log_color, %1)
 #define ADMWarning(%0,%1)               ADMNOTIF(%0, warning_color, %1)

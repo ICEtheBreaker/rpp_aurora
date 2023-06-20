@@ -4,7 +4,15 @@
 //
 //!=====================================================================================================//
 
-
+/*
+ * Отправить информационное сообщение в чат игроку.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан игроку.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Info(playerid, const text[] = " ") {
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
@@ -12,6 +20,15 @@ stock Info(playerid, const text[] = " ") {
 	(PlayerInfo[playerid][pLanguage]) ? ("Информация") : (PlayerInfo[playerid][pLanguage]) ? ("Information") : ("Інфармацыя"), text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить ошибку в чат игроку.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан игроку.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Error(playerid, const text[] = " ") {
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
@@ -19,6 +36,15 @@ stock Error(playerid, const text[] = " ") {
 	(PlayerInfo[playerid][pLanguage]) ? ("Ошибка") : (PlayerInfo[playerid][pLanguage]) ? ("Error") : ("Памылка"), text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить сообщение об успехе в чат игроку.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан игроку.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Success(playerid, const text[] = " ") {
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
@@ -26,6 +52,15 @@ stock Success(playerid, const text[] = " ") {
 	(PlayerInfo[playerid][pLanguage]) ? ("Успешно") : (PlayerInfo[playerid][pLanguage]) ? ("Success") : ("Паспяхова"), text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить предупреждение в чат игроку.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан игроку.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Warning(playerid, const text[] = " ") {
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
@@ -33,6 +68,15 @@ stock Warning(playerid, const text[] = " ") {
 	(PlayerInfo[playerid][pLanguage]) ? ("Предупреждение") : (PlayerInfo[playerid][pLanguage]) ? ("Warning") : ("Папярэджанне"), text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить уведомление в чат игроку.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан игроку.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Notification(playerid, const text[] = " ") {
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
@@ -40,12 +84,30 @@ stock Notification(playerid, const text[] = " ") {
 	(PlayerInfo[playerid][pLanguage]) ? ("Уведомление") : (PlayerInfo[playerid][pLanguage]) ? ("Notification") : ("Паведамленне"), text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить лог в дебаг разработчику.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан разработчику.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock Log(playerid, const text[] = " ") { //! только для 9 уровня
 	if (IsRangeValid(text, 64), isempty(text)) return false;
 	fstring[0] = 0;
 	format(fstring, (43 + (-2+66)), ""Log_color"[DEBUG]"Default": %s", text);
 	return SEND_CM(playerid, format_white, fstring), true;
 }
+/*
+ * Отправить сообщение в систему ADM | ICBRK.
+ *
+ * Параметры:
+ *   text[] = " " - текст, который будет показан админам.
+ *
+ * Возвраты кода:
+ *   Истина если пусто, иначе ложь.
+ */
 stock ADMMessage(const text[] = " ") {
 	foreach(new i:ADM_LIST); {
 		if (IsRangeValid(text, 64), isempty(text)) return false; 

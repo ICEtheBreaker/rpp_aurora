@@ -45,6 +45,17 @@ stock IsValidEmail(const email[])
 	if(!TextFind(email,"@")) Success = false;
   	return Success;
 }
+/*
+ * Функция дебагера. 
+ * Позволяет проводить дебаг конкретной функции. 
+ *
+ * Параметры:
+ *   func[] - имя функции, которой необходим дебаг
+ *   
+ *
+ * Возвраты кода:
+ *   без возвратов
+ */
 stock debugger(const func[], iter_count_start = 1, iter_count_end = 1000, step = 1, {_,Float,bool}:...) {
 	// func(...) ... - параметры
 
@@ -81,11 +92,6 @@ stock AFKSystemUpdates(playerid) {
 	}
 	return 1;
 }
-//TODO SendClientMessageToADM
-stock SendClientMessageToADM(playerid, params[], message) {
-	return 1;
-} 
-
 
 stock ProxDetector(Float:range, playerid, const string[], c1 = -1,c2 = -1,c3 = -1,c4 = -1,c5 = -1) {
     new

@@ -803,7 +803,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						foreach(new i: Player) ShowPlayerNameTagForPlayer(playerid, i, PlayerInfo[playerid][pShowName]);
 					} 
 					case 1: return Warning(playerid, "В разработке");
-					case 2: return Warning(playerid, "В разработке");
+					case 2: {
+						if(PlayerInfo[playerid][pGugleEnabled] == 1) {
+							SHOW_PD(playerid, PASS_CHANGE, DIALOG_STYLE_INPUT, "Google Authenticator", 
+							"\n\n{FFFFFF}К этому аккаунту подключено подтверждение {F1FC4C}Google Authenticator.\n\
+							{FFFFFF}Введите код подтверждения для входа в игру.\n\n{FC4C4C}Если вы потеряли телефон/удалили приложение или потеряли\n\
+							идентификационный код, то при условии того что у вас\nправильно привязана почта, вы можете\n\
+							отключить Google Authenticator на сайте:\n\n{FFFFFF}"SERVER_WEBSITE"/profile/in\n", !"Принять", !"Отмена");
+						}
+					}
 					case 3: return Warning(playerid, "В разработке");
 					case 4: return Warning(playerid, "В разработке");
 					case 5: return Warning(playerid, "В разработке");
@@ -814,6 +822,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
 						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
 					}
+				}
+			}
+		}
+		case PASS_CHANGE: {
+			if(response) {
+				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
+				if(strval(inputtext) == getcode && !isempty(inputtext)) {
+					
 				}
 			}
 		}
@@ -1296,7 +1312,7 @@ stock CheckExceptionName(const string[]) {
 }
 
 stock GetPlayerID(const string[]) {
-    new testname[MAX_PLAYER_NAME];
+    new testname[MAX_PLAYER_NAME];ц
 	foreach(new i:Player) {
 		GetPlayerName(i, testname, sizeof(testname));
 		if(!strcmp(testname, string, true)) return i;
