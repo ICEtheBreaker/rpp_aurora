@@ -1312,7 +1312,7 @@ stock CheckExceptionName(const string[]) {
 }
 
 stock GetPlayerID(const string[]) {
-    new testname[MAX_PLAYER_NAME];ö
+    new testname[MAX_PLAYER_NAME];
 	foreach(new i:Player) {
 		GetPlayerName(i, testname, sizeof(testname));
 		if(!strcmp(testname, string, true)) return i;
