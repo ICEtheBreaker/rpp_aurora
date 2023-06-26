@@ -201,20 +201,20 @@ AntiDeAMX() {
 #define SERVER_CLOSED 					"{F04245}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
-// main(){
-// 	printf("");
-// 	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
-// 	printf("\t|--------------------------------");
-// 	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
-// 	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
-// 	printf("");
-// 	printf("");
-// 	printf("");
-// 	printf("\t| Compiled: %s at %s", __date, __time);
-// 	printf("\t|--------------------------------------------------------------");
-// 	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
-// 	printf("");
-// }
+main(){
+	printf("");
+ 	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
+ 	printf("\t|--------------------------------");
+ 	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
+ 	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
+ 	printf("");
+ 	printf("");
+ 	printf("");
+ 	printf("\t| Compiled: %s at %s", __date, __time);
+ 	printf("\t|--------------------------------------------------------------");
+	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
+	printf("");
+}
 
 
 new 
