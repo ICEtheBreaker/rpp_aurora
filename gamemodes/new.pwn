@@ -103,6 +103,10 @@ AntiDeAMX() {
 	#define MAX_ADMINS 15 //! пока 15 будет потом увеличим
 #endif
 
+
+#pragma warning disable 213 //! внимание! это отключает варнинг 213, но его нужно обязательно исправить.
+
+
 // #define MALLOC_MEMORY (32768)
 // #define YSI_YES_HEAP_MALLOC //! усы да хеап малок
 
@@ -201,20 +205,20 @@ AntiDeAMX() {
 #define SERVER_CLOSED 					"{F04245}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
-// main(){
-// 	printf("");
-// 	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
-// 	printf("\t|--------------------------------");
-// 	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
-// 	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
-// 	printf("");
-// 	printf("");
-// 	printf("");
-// 	printf("\t| Compiled: %s at %s", __date, __time);
-// 	printf("\t|--------------------------------------------------------------");
-// 	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
-// 	printf("");
-// }
+main(){
+	printf("");
+ 	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
+ 	printf("\t|--------------------------------");
+ 	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
+ 	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
+ 	printf("");
+ 	printf("");
+ 	printf("");
+ 	printf("\t| Compiled: %s at %s", __date, __time);
+ 	printf("\t|--------------------------------------------------------------");
+ 	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
+ 	printf("");
+}
 
 
 new 
@@ -401,7 +405,7 @@ public OnPlayerConnect(playerid)
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		SendMess(playerid, T_ERROR, "Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
+		Msg(playerid, ERROR, "Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		return Kick(playerid);
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
@@ -424,7 +428,7 @@ public OnPlayerDisconnect(playerid, reason) {
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus{playerid}) return SendMess(playerid, T_ERROR, SERVER_CLOSED), Kick(playerid);
+	if(!playerLoggedStatus{playerid}) return Msg(playerid, ERROR, SERVER_CLOSED), Kick(playerid);
 
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
 	SetPlayerScore(playerid, pi[playerid][pLevel]);
@@ -456,7 +460,7 @@ public OnPlayerText(playerid, text[]) {
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else SendMess(playerid, T_WARN, "Слишком длинное сообщение!");
+	} else Msg(playerid, WARNING, "Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandText(playerid, cmdtext[]) return 0;
@@ -466,7 +470,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[], params[], flags) {
 }
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
-		SendMess(playerid, T_ERROR, "Введена неверная команда. Для справки используйте \"'/help'\"");
+		Msg(playerid, ERROR, "Введена неверная команда. Для справки используйте \"'/help'\"");
 	return 1;
 }
 
@@ -561,9 +565,9 @@ public OnRconLoginAttempt(ip[], password[], success)
 }
 
 CMD:testtesttest(player, params[]) {
-	if(sscanf(params, "s[24]", params[0])) return SendMess(player, T_NOTIF, "/testtesttest [text]");
+	if(sscanf(params, "s[24]", params[0])) return Msg(player, NOTIFICATION, "/testtesttest [text]");
 	// if(!(1 <= params[0] <= 24)) return false;
-	printf("(%s = это тип) : (%s = это текст)", (setLocalization(player, T_WARN)), params[0]);
+	printf("(%s = это тип) : (%s = это текст)", (SetLocalization(player, WARNING)), params[0]);
 	return 1;
 }
 
@@ -617,16 +621,16 @@ CMD:editplayer(playerid) {
 
 CMD:agivelic(playerid, params[]) {
 	fADM(ADM_MODER);
-	if(sscanf(params, "ii", params[0], params[1])) SendMess(playerid, T_NOTIF, "/agivelic (playerid) (licid)");
-	if(CheckConnection(params[0])) return SendMess(playerid, T_ERROR, PLAYER_INVALID);
-	if(!(1 <= params[1] <= 5)) return SendMess(playerid, T_ERROR, LICENSE_INVALID);
-	if(!strlen(params[0])) return SendMess(playerid, T_ERROR, "Вы не указали ID игрока");
-	if(!strlen(params[1])) return SendMess(playerid, T_ERROR, "Вы не указали ID лицензии");
-	if(!strlen(params[0]) && !strlen(params[1])) return SendMess(playerid, T_ERROR, "Вы ничего не указали");
+	if(sscanf(params, "ii", params[0], params[1])) Msg(playerid, NOTIFICATION, "/agivelic (playerid) (licid)");
+	if(CheckConnection(params[0])) return Msg(playerid, ERROR, PLAYER_INVALID);
+	if(!(1 <= params[1] <= 5)) return Msg(playerid, ERROR, LICENSE_INVALID);
+	if(!strlen(params[0])) return Msg(playerid, ERROR, "Вы не указали ID игрока");
+	if(!strlen(params[1])) return Msg(playerid, ERROR, "Вы не указали ID лицензии");
+	if(!strlen(params[0]) && !strlen(params[1])) return Msg(playerid, ERROR, "Вы ничего не указали");
 
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
-	SendMess(playerid, T_NOTIF, fstring);
+	Msg(playerid, NOTIFICATION, fstring);
 
 	GiveLic(params[0], params[1]);
 
@@ -635,7 +639,7 @@ CMD:agivelic(playerid, params[]) {
 CMD:a(playerid, params[])
 {
 	fADM(ADM_HELPER);
-    if(sscanf(params, "s[150]", params[0])) return SendMess(playerid, T_ERROR, "/a [текст]");
+    if(sscanf(params, "s[150]", params[0])) return Msg(playerid, ERROR, "/a [текст]");
     //ADMMessage("%s[%d]: %s", GetName(playerid), playerid, params[0]);
 	return 1;
 }
@@ -643,9 +647,9 @@ CMD:a(playerid, params[])
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
 	fADM(ADM_CHIEF);
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SendMess(playerid, T_NOTIF, "/giveweap [playerid] [weaponid] [ammoValue (0-999)]");
-	if(!(0 <= (weaponID) <= 46)) return SendMess(playerid, T_NOTIF, "Диапазон weaponID: < 0 либо > 46!");
-	if(!(0 <= (ammoValue) <= 999)) return SendMess(playerid, T_NOTIF, "Диапазон ammoValue: < 0 либо > 999!");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Msg(playerid, NOTIFICATION, "/giveweap [playerid] [weaponid] [ammoValue (0-999)]");
+	if(!(0 <= (weaponID) <= 46)) return Msg(playerid, NOTIFICATION, "Диапазон weaponID: < 0 либо > 46!");
+	if(!(0 <= (ammoValue) <= 999)) return Msg(playerid, NOTIFICATION, "Диапазон ammoValue: < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
@@ -653,19 +657,19 @@ CMD:giveweap(playerid, params[]) {
 CMD:plvh(playerid, params[]) {
 	fstring[0] = 0;
 	fADM(ADM_OLDER_MODER);
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return SendMess(playerid, T_NOTIF, "/plvh [playerid] [vehicleid] [1 color] [2 color]");
-	if(!playerLoggedStatus[params[0]]) return SendMess(playerid, T_ERROR, PLAYER_NOT_LOGGED);
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Msg(playerid, NOTIFICATION, "/plvh [playerid] [vehicleid] [1 color] [2 color]");
+	if(!playerLoggedStatus[params[0]]) return Msg(playerid, ERROR, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
-		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),SendMess(playerid, T_ERROR, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Msg(playerid, ERROR, fstring); 
 		fstring[0] = 0;
 	}
 	if(GetPlayerVirtualWorld(params[0]) != 0)  {
-		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),SendMess(playerid, T_ERROR, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Msg(playerid, ERROR, fstring); 
 		fstring[0] = 0;
 	}
-	if(!(400 <= params[1] <= 611)) return SendMess(playerid, T_ERROR, "Диапазон ID автомобилей: не меньше 400 не больше 611");
-	if(!(0 <= params[2] <= 255)) return SendMess(playerid, T_ERROR, "Диапазон первого цвета: не меньше 0 не больше 255");
-	if(!(0 <= params[3] <= 255)) return SendMess(playerid, T_ERROR, "Диапазон второго цвета: не меньше 0 не больше 255");
+	if(!(400 <= params[1] <= 611)) return Msg(playerid, ERROR, "Диапазон ID автомобилей: не меньше 400 не больше 611");
+	if(!(0 <= params[2] <= 255)) return Msg(playerid, ERROR, "Диапазон первого цвета: не меньше 0 не больше 255");
+	if(!(0 <= params[3] <= 255)) return Msg(playerid, ERROR, "Диапазон второго цвета: не меньше 0 не больше 255");
 	new Float:x,
 		Float:y,
 		Float:z;
@@ -679,9 +683,9 @@ CMD:plvh(playerid, params[]) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	fADM(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) SendMess(playerid, T_NOTIF, "Введите: /makeadmin [ник игрока] [степень доступа]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) Msg(playerid, NOTIFICATION, "Введите: /makeadmin [ник игрока] [степень доступа]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SendMess(playerid, T_NOTIF, "Диапазон доступа к системе: не меньше 1 не больше 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Msg(playerid, NOTIFICATION, "Диапазон доступа к системе: не меньше 1 не больше 6");
 	query_string[0] = 0;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -690,9 +694,9 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) SendMess(playerid, T_NOTIF, "/me [действие]");
-	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
+	if(sscanf(params, "s[118]", params[0])) Msg(playerid, NOTIFICATION, "/me [действие]");
+	if(strlen(params[0]) > 32) Msg(playerid, ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Msg(playerid, WARNING, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -700,16 +704,16 @@ CMD:me(playerid, params[]) {
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) SendMess(playerid, T_NOTIF, "/ame [действие]");
-	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
+	if(sscanf(params, "s[144]", params[0])) Msg(playerid, NOTIFICATION, "/ame [действие]");
+	if(strlen(params[0]) > 32) Msg(playerid, ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Msg(playerid, WARNING, "Вы ничего не ввели!");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) SendMess(playerid, T_NOTIF, "/do [текст]");
-	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
+	if(sscanf(params, "s[116]", params[0])) Msg(playerid, NOTIFICATION, "/do [текст]");
+	if(strlen(params[0]) > 32) Msg(playerid, ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Msg(playerid, WARNING, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -717,36 +721,36 @@ CMD:do(playerid, params[]) {
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) SendMess(playerid, T_NOTIF, "/try [текст]");
-	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
+	if(sscanf(params, "s[99]", params[0])) Msg(playerid, NOTIFICATION, "/try [текст]");
+	if(strlen(params[0]) > 32) Msg(playerid, ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return Msg(playerid, WARNING, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
 }/*SENDNMSG*/
 CMD:todo(playerid, params[]) {
-	if(strlen(params) > 95) return SendMess(playerid, T_NOTIF, "Слишком длинный текст и действие.");
+	if(strlen(params) > 95) return Msg(playerid, NOTIFICATION, "Слишком длинный текст и действие.");
 	new message[48],
 		action[49];
-	if(sscanf(params, "p<*>s[47]s[48]", message, action)) return SendMess(playerid, T_NOTIF, "/todo [текст*действие]");
-	if(strlen(message) < 2 || strlen(action) < 2) return SendMess(playerid, T_NOTIF, "/todo [текст*действие]");
+	if(sscanf(params, "p<*>s[47]s[48]", message, action)) return Msg(playerid, NOTIFICATION, "/todo [текст*действие]");
+	if(strlen(message) < 2 || strlen(action) < 2) return Msg(playerid, NOTIFICATION, "/todo [текст*действие]");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
 	ProxDetector(20.0, playerid, fstring, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE); 
 	return 1;
 }
 CMD:n(playerid, params[]) {
-	if(sscanf(params, "s[107]", params[0])) return SendMess(playerid, T_NOTIF, "/n [сообщение]");
+	if(sscanf(params, "s[107]", params[0])) return Msg(playerid, NOTIFICATION, "/n [сообщение]");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "(( %s[%d]: %s ))", PlayerInfo[playerid][pNames], playerid, params[0]);
 	ProxDetector(20.0, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) SendMess(playerid, T_NOTIF, "/s [текст]");
-	if(!(0 <= strlen(params[0]) <= 105)) return SendMess(playerid, T_WARN, "Диапазон длины текста: не меньше 0 не больше 105");
-	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
+	if(sscanf(params, "s[105]", params[0])) Msg(playerid, NOTIFICATION, "/s [текст]");
+	if(!(0 <= strlen(params[0]) <= 105)) return Msg(playerid, WARNING, "Диапазон длины текста: не меньше 0 не больше 105");
+	if(!strlen(params[0])) return Msg(playerid, WARNING, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s [%d] крикнул%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.00, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
@@ -780,8 +784,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg1: 
 		{
 			if(response) {
-				if(!strlen(inputtext)) return SendMess(playerid, T_ERROR, "Вы ничего не ввели."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return SendMess(playerid, T_WARN, "Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
+				if(!strlen(inputtext)) return Msg(playerid, ERROR, "Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return Msg(playerid, WARNING, "Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -795,27 +799,27 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(fstring, sizeof(fstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				} else {
-					ShowRegDialog(playerid), SendMess(playerid, T_ERROR, "Пароль может состоять только из чисел и латинских символов любого регистра.");
+					ShowRegDialog(playerid), Msg(playerid, ERROR, "Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
 				Regex_Delete(rg_passwordcheck);
 			} else {
-				SendMess(playerid, T_ERROR, SERVER_CLOSED);
+				Msg(playerid, ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 		}
 		case dReg2:
 		{
 			if(!response){
-				SendMess(playerid, T_ERROR, SERVER_CLOSED);
+				Msg(playerid, ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
 				if(!IsValidEmail(inputtext)) {
-					SendMess(playerid, T_ERROR, "Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
+					Msg(playerid, ERROR, "Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
-					SendMess(playerid, T_ERROR, "Вы не указали почту.");
+					Msg(playerid, ERROR, "Вы не указали почту.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
@@ -827,7 +831,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg3: 
 		{
 			if(!response) {
-				SendMess(playerid, T_ERROR, SERVER_CLOSED);
+				Msg(playerid, ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
@@ -879,7 +883,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						PlayerInfo[playerid][pShowName] = !PlayerInfo[playerid][pShowName];
 						foreach(new i: Player) ShowPlayerNameTagForPlayer(playerid, i, PlayerInfo[playerid][pShowName]);
 					} 
-					case 1: return SendMess(playerid, T_WARN, "В разработке");
+					case 1: return Msg(playerid, WARNING, "В разработке");
 					case 2: {
 						if(PlayerInfo[playerid][pGugleEnabled] == 1) {
 							SHOW_PD(playerid, PASS_CHANGE, DIALOG_STYLE_INPUT, "Google Authenticator", 
@@ -890,19 +894,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						}
 						else SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
 					}
-					case 3: return SendMess(playerid, T_WARN, "В разработке");
-					case 4: return SendMess(playerid, T_WARN, "В разработке");
-					case 5: return SendMess(playerid, T_WARN, "В разработке");
-					case 6: return SendMess(playerid, T_WARN, "В разработке");
+					case 3: return Msg(playerid, WARNING, "В разработке");
+					case 4: return Msg(playerid, WARNING, "В разработке");
+					case 5: return Msg(playerid, WARNING, "В разработке");
+					case 6: return Msg(playerid, WARNING, "В разработке");
 					case 7: {
-						if(PlayerInfo[playerid][pLevel] < 2) return SendMess(playerid, T_ERROR, " Установить Google Authenticator могут только игроки старше первого уровня!");
+						if(PlayerInfo[playerid][pLevel] < 2) return Msg(playerid, ERROR, " Установить Google Authenticator могут только игроки старше первого уровня!");
 						fstring[0] = 0;
 						format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
 						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
 					}
-					case 8: return SendMess(playerid, T_NOTIF, "В разработке");
-					case 9: setLanguage(playerid, pi[playerid][pLanguage]),printf("(%d = playerid) ; (pLanguage = %d)", playerid, pi[playerid][pLanguage]);
-					case 10: return SendMess(playerid, T_NOTIF, "В разработке");
+					case 8: return Msg(playerid, NOTIFICATION, "В разработке");
+					case 9: SetLanguage(playerid, pi[playerid][pLanguage]),printf("(%d = playerid) ; (pLanguage = %d)", playerid, pi[playerid][pLanguage]);
+					case 10: return Msg(playerid, NOTIFICATION, "В разработке");
 				}
 			}
 			else {
@@ -914,7 +918,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
 				if(strval(inputtext) == getcode && !isempty(inputtext)) SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
 				else {
-					SendMess(playerid, T_NOTIF, "Введён неверный Auth-код");
+					Msg(playerid, NOTIFICATION, "Введён неверный Auth-код");
 					return SHOW_PD(playerid, PASS_CHANGE, DIALOG_STYLE_INPUT, "Google Authenticator", 
 					"\n\n{FFFFFF}К этому аккаунту подключено подтверждение {F1FC4C}Google Authenticator.\n\
 					{FFFFFF}Введите код подтверждения для входа в игру.\n\n{FC4C4C}Если вы потеряли телефон/удалили приложение или потеряли\n\
@@ -927,13 +931,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			new checkpass[65];
 			SHA256_PassHash(inputtext, PlayerInfo[playerid][pSalt], checkpass, 65);
 			if(!strlen(inputtext)) return SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
-			if(!(6 <= strlen(inputtext) <= 22)) SendMess(playerid, T_ERROR, "Диапазон длины пароля: от 6 до 22-х символов"), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
+			if(!(6 <= strlen(inputtext) <= 22)) Msg(playerid, ERROR, "Диапазон длины пароля: от 6 до 22-х символов"), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
 			if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) SHOW_PD(playerid, NEW_PASS, DIALOG_STYLE_INPUT, "Ввод нового пароля","\n\n{FFFFFF} Введите ваш новый пароль в поле ниже:", !"Далее", !"Закрыть"), Log(playerid, "password correct");
-			else SendMess(playerid, T_NOTIF, "Введён неверный пароль."), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
+			else Msg(playerid, NOTIFICATION, "Введён неверный пароль."), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
 		}
 		case NEW_PASS: {
-			if(!strlen(inputtext)) return SendMess(playerid, T_NOTIF, "Вы ничего не ввели.");
-			if(!(6 <= strlen(inputtext) <= 22)) SendMess(playerid, T_NOTIF, "Диапазон длины пароля: от 6 до 22-х символов");
+			if(!strlen(inputtext)) return Msg(playerid, NOTIFICATION, "Вы ничего не ввели.");
+			if(!(6 <= strlen(inputtext) <= 22)) Msg(playerid, NOTIFICATION, "Диапазон длины пароля: от 6 до 22-х символов");
 			new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 			if(Regex_Check(inputtext, rg_passwordcheck)){ 
 				new salt[11];
@@ -943,11 +947,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				strmid(PlayerInfo[playerid][pSalt], salt, 0, 11, 11);
 				fstring[0] = 0;
 				format(fstring, sizeof(fstring), "Вы успешно изменили пароль. Новый пароль: {0093ff}%s", inputtext);
-				SendMess(playerid, T_NOTIF, fstring);
-				SendMess(playerid, T_NOTIF, "Запишите свой новый пароль или сделайте скриншот кнопкой {0093ff}F8");
+				Msg(playerid, NOTIFICATION, fstring);
+				Msg(playerid, NOTIFICATION, "Запишите свой новый пароль или сделайте скриншот кнопкой {0093ff}F8");
 				@ChangePassword(playerid);
 			}
-			else return SendMess(playerid, T_NOTIF, "Пароль может состоять только из чисел и латинских символов любого регистра.");
+			else return Msg(playerid, NOTIFICATION, "Пароль может состоять только из чисел и латинских символов любого регистра.");
 			Regex_Delete(rg_passwordcheck); 
 		}
 		//![===========================================[GUGLE AUTHENTICATOR by ICBRK[ICEtheBreaker]]===========================================]
@@ -966,7 +970,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						fstring2[0] = 0;
 					}
 					case 1: {
-						if(!PlayerInfo[playerid][pGugleEnabled]) SendMess(playerid, T_NOTIF, "На данном аккаунте не установлен Google Authenticator!");
+						if(!PlayerInfo[playerid][pGugleEnabled]) Msg(playerid, NOTIFICATION, "На данном аккаунте не установлен Google Authenticator!");
 						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 					}
 				}
@@ -984,7 +988,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"Подтверждение", "\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
 				}
 				else {
-					SendMess(playerid, T_ERROR, "Код введён неверно!");
+					Msg(playerid, ERROR, "Код введён неверно!");
 					SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 				}
 			}
@@ -998,7 +1002,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				PlayerInfo[playerid][pGugleEnabled] = 0;
 				PlayerInfo[playerid][pGugleAuth] = 0;
-				SendMess(playerid, T_NOTIF, "Вы успешно отключили Google Authenticator.");
+				Msg(playerid, NOTIFICATION, "Вы успешно отключили Google Authenticator.");
 				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `names` = '%s'", 
 				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 				mysql_tquery(db, query_string);
@@ -1009,7 +1013,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				switch listitem do {
 					case 0: {
-						if(PlayerInfo[playerid][pGugleEnabled]) SendMess(playerid, T_NOTIF, "Google Authenticator уже установлен на аккаунте. Действие не требуется");
+						if(PlayerInfo[playerid][pGugleEnabled]) Msg(playerid, NOTIFICATION, "Google Authenticator уже установлен на аккаунте. Действие не требуется");
 						else {
 							SHOW_PD(playerid, GugleInfo, DIALOG_STYLE_MSGBOX, !"1-вый шаг", !"\n\n{FFFFFF}Начнем с того, что если у вас нет приложения, то его нужно\nзагрузить. Заходим в {FDC459}Play Market или App Store{FFFFFF} и ищем\nGoogle Authenticator.\n\n{B0FD59}Нашли? Нажимаем загрузить приложение.\n\nНажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
 						}
@@ -1017,10 +1021,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 1: {
 						if(!PlayerInfo[playerid][pGugleSettings]) {
 							PlayerInfo[playerid][pGugleSettings] = 1;
-							SendMess(playerid, T_NOTIF, "Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
+							Msg(playerid, NOTIFICATION, "Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
 						} else {
 							PlayerInfo[playerid][pGugleSettings] = 0;
-							SendMess(playerid, T_NOTIF, "Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
+							Msg(playerid, NOTIFICATION, "Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
 						}
 					}
 				}
@@ -1072,7 +1076,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					mysql_tquery(db, query_string);
 				}
 				else {
-					SendMess(playerid, T_ERROR, "Код введён неверно!");
+					Msg(playerid, ERROR, "Код введён неверно!");
 					fstring[0] = 0;
 					format(fstring, sizeof(fstring), 
 					"{FFFFFF}Для завершения установки Google Authenticator, введите сгенерированный код из приложения\n\
@@ -1137,7 +1141,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	} else {LoginPlayer(playerid);}
 
 	if(++PlayerBadAttempt{playerid} <= 0) {
-		SendMess(playerid, T_NOTIF, SERVER_CLOSED);
+		Msg(playerid, NOTIFICATION, SERVER_CLOSED);
 		PlayerBadAttempt{playerid} = 0;
 		return Kick(playerid);
 	}
@@ -1186,7 +1190,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
 	fstring[0] = 0;
 
 	new 
-		lang = getLanguage(playerid);
+		lang = GetLanguage(playerid);
 
 	format(fstring, sizeof(fstring), "Система\tСостояние\n\
 		{AFAFAF}Ники:\t%s\n\
@@ -1492,7 +1496,7 @@ stock SavePlayer(playerid) {
 
 			fstring[0] = 0;
 			format(fstring, sizeof(fstring),"Администратор {0093ff}%s"Default" больше не имеет доступа к системе.", name);
-			SendMess(playerid, T_NOTIF, fstring);
+			Msg(playerid, NOTIFICATION, fstring);
 		}
 		else {
 			if(name_of_id != INVALID_PLAYER_ID) pi[name_of_id][pAdmin] = level;
@@ -1505,13 +1509,13 @@ stock SavePlayer(playerid) {
 
 			fstring[0] = 0;
 			format(fstring, sizeof(fstring), "Администратор {0093ff}%s"Default" получил повышение до {0093ff}%i"Default" уровня доступа.", name, level);
-			SendMess(playerid, T_NOTIF, fstring);
+			Msg(playerid, NOTIFICATION, fstring);
 		}
 	}
 	else {
 		query_string[0] = 0;
 
-		if(!level) return SendMess(playerid, T_NOTIF, "Указанный игрок не имеет доступа к системе!");
+		if(!level) return Msg(playerid, NOTIFICATION, "Указанный игрок не имеет доступа к системе!");
 
 		mysql_format(db, query_string, (77 + (-2+(MAX_PLAYER_NAME)) + (-2+6)), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', '%d', CURDATE())", name, level);
 		mysql_tquery(db, query_string);
@@ -1521,7 +1525,7 @@ stock SavePlayer(playerid) {
 
 		fstring[0] = 0;
 		format(fstring, sizeof(fstring),"{0093ff}%s"Default" теперь имеет доступ к системе и занесён в базу данных. Указанный уровень доступа: %i", name, level);
-		SendMess(playerid, T_ERROR, fstring);
+		Msg(playerid, ERROR, fstring);
 
 		if(name_of_id != INVALID_PLAYER_ID) {
 			pi[name_of_id][pAdmin] = level;

@@ -4,9 +4,11 @@
 //
 //!=====================================================================================================//
 
+//! в запросах вместо %s нужно использовать %e ибо это экранирует запрос от инъекций.
+
 stock UpdateINTData(playerid, const field[], data) {
 	query_string[0] = 0;
-	mysql_format(db, query_string, (60 + (-2+32) + (-2+6) + (-2+6)), "UPDATE `accounts` SET `%s` = '%d' WHERE `id` = '%d' LIMIT 1", field, data, pi[playerid][pID]);
+	mysql_format(db, query_string, (60 + (-2+32) + (-2+6) + (-2+6)), "UPDATE `accounts` SET `%e` = '%d' WHERE `id` = '%d' LIMIT 1", field, data, pi[playerid][pID]);
 	mysql_tquery(db, query_string);
     query_string[0] = EOS;
 	return mysql_errno();
