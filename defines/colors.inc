@@ -5,12 +5,11 @@
 //!=====================================================================================================//
 
 #define format_black    0xFF
-#define Default         "{FFFFFF}" //! ?????? ???? ?????? ???????????? ? ????????????? ??????? (??? ??????????? ???? ????? ? ????? hex)
+#define Default         "{FFFFFF}"
 
-#define format_white    0xFFFFFFFF
-#define format_red      0xFF0000FF
-#define format_orange   0xffde26AA  
-
+#define format_white    (0xFF)
+#define format_red      (0xFF0000FF)
+#define format_orange   (0xffde26AA)  
 
 #define COLOR_SEA 						(0x00808000)
 #define COLOR_REL                       (0xff634700)
@@ -55,7 +54,6 @@
 #define COLOR_SYSTEM 					(0xEFEFF7AA)
 #define COLOR_GREN  					(0x97B96CAA)
 
-
 // macro scm
 #define error_color 0xF04245FF
 #define log_color 0x8DB600FF
@@ -64,9 +62,10 @@
 
 // macro (originally)
 
-#define ADM_color       "{99CC00}"
-#define Err_color       "{F04245}"
-#define Log_color       "{8DB600}"
-#define Warn_color      "{CFB53B}"
-#define Inf_color       "{8FC248}"
-
+#define LightGreen_color    "{9ACD32}"
+#define ADM_color           "{99CC00}"
+#define Done_color          "{3AC937}"
+#define Err_color           "{F04245}"
+#define Log_color           "{8DB600}"
+#define Warn_color          "{CFB53B}"
+#define Inf_color           "{8FC248}"

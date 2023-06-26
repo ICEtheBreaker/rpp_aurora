@@ -11,6 +11,7 @@
 #define SHOW_PD							ShowPlayerDialog
 #define SEND_CM							SendClientMessage
 #define ADMNOTIF                        ADMMessage
+#define DIALOG_STH                      DIALOG_STYLE_TABLIST_HEADERS
 /*
  * ADM system macroses, that sends some messages to admins.
  *

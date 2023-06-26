@@ -5,9 +5,6 @@
 //*
 //!=====================================================================================================//
 
-
-
-
 /*
            _ _ _ _ _ _		_ _ _ _ _ _ _		__ 					   __
 		 _|	 _ _ _ _ _|    |  _ _ _ _ _  |	   |_ |_   			 	 _|  |
@@ -28,23 +25,7 @@
 		| |				   |  _ _ _ _ _  |
 		| |_ _ _ _ _ _	   | |		   | |
 		|_ _ _ _ _ _ _|	   |_|		   |_|
-*/	
-
-
-
-
-
-
-
-
-//? насчёт id игрока нет, не уверен. потому что если связать игрока, который зашел под id = 0, и в бд рандомный чел с id = 0,
-
-//? то я думаю что это было совсем не верно.
-
-//! даня смс для тебя:
-//! если в команде имеется ввод ид игрока то это всегда будет playerid
-//! ничего другое
-//! стереть после прочтения
+*/
 
 //=================================[ANTIDEMAMX PROC]==================================//
 @___If_u_can_read_this_u_r_nerd();
@@ -67,8 +48,7 @@
 		#emit jump L1
 		#emit zero cellmin
 }
-AntiDeAMX()
-{
+AntiDeAMX() {
 	new a[][] = {
 		"Unarmed (Fist)",
 		"Brass K"
@@ -86,22 +66,28 @@ AntiDeAMX()
 
 
 //=============================[PREPROCESSOR DIRECTIVES]==============================//
-#include "../../defines/macroses" 
+#include "../defines/macroses" 
 #if !defined IsValidVehicle
      native IsValidVehicle(vehicleid);
 #endif
 #include <a_samp>
 
 #if MYSQL_IS_LOCAL == true
-	#include "../../defines/sql/local_sql_conn"
+	#tryinclude "../defines/sql/local_sql_conn"
 	#include <a_mysql>
 #else
-	#tryinclude "../../defines/sql/sql_conn"
+	#tryinclude "../defines/sql/sql_conn"
 	#include <a_mysql>
 #endif
 
+//! еще предварительно рассчитать под квестовых персонажей 
+//! и позатирать с целью оптимизации нативные макросы (с больших на разумные значения)
+
 #undef MAX_PLAYERS
 #define MAX_PLAYERS (6)
+#undef MAX_VEHICLES
+#define MAX_VEHICLES (1000)
+
 
 #pragma tabsize 0
 #define STREAMER_USAGE 
@@ -113,28 +99,32 @@ AntiDeAMX()
 	#include "mailer"
 #endif
 
+#if !defined MAX_ADMINS
+	#define MAX_ADMINS 15 //! пока 15 будет потом увеличим
+#endif
 
 // #define MALLOC_MEMORY (32768)
 // #define YSI_YES_HEAP_MALLOC //! усы да хеап малок
 
 //! появились ошибки при запуске сервака с библиотекой y_asi
-//! ну и хуй с ними 
+//! ну и хуй с ними
 
-#if defined YSI_YES_HEAP_MALLOC
-	#define jitter_use
-	#include "YSI_Coding\y_malloc"
-#endif //! а тут он просто напросто не нужен
+//! к фиксу 
+// #if defined YSI_YES_HEAP_MALLOC
+// 	#define jitter_use
+// 	#include "YSI_Coding\y_malloc"
+// #endif //! а тут он просто напросто не нужен
 
-#if defined jitter_use
-	#if defined YSI_NO_HEAP_MALLOC
-		#undef jitter_use
-		#include "YSI_Coding\y_malloc"
-		#tryinclude "YSI\jit.inc"
-	#endif
-#endif //! без __no_heap_mal. не работает jitter.inc
-#if defined STREAMER_USAGE 
-	#tryinclude <streamer> 
-#endif	
+// #if defined jitter_use
+// 	#if defined YSI_NO_HEAP_MALLOC
+// 		#undef jitter_use
+// 		#include "YSI_Coding\y_malloc"
+// 		#tryinclude "YSI\jit.inc"
+// 	#endif
+// #endif //! без __no_heap_mal. не работает jitter.inc
+// #if defined STREAMER_USAGE 
+// 	#tryinclude <streamer> 
+// #endif	
 //=================================[THIS IS INCLUDES]=================================//
 
 #include <sscanf2>
@@ -149,23 +139,30 @@ AntiDeAMX()
 
 //==========================[DIRECTORY | SYSTEMS | INCLUDES]==========================//
 
-#include "../../defines/colors" 
-#include "../../defines/systems/capture_natives/natives" 
-#include "../../defines/objs/autoLoader.inc" //! начать вскоре работу
+#include "../defines/colors" 
+#include "../defines/systems/capture_natives/natives" 
+// #include "../../defines/objs/autoLoader" //! начать вскоре работу
+
 // #include "../../defines/systems/autoschool/main"
 
 //===================================[NATIVE CONFIG]==================================//
 #define function%0(%1)					forward%0(%1); public%0(%1)
 #define pi 								PlayerInfo
 
-#define f(%0,							format(%0,
-//! f(%0(str),%1(ДЛИНА),%2(всё ост.))
+// f:%0(									%0[0] = 0,format(%0,sizeof(%0),
 
 #define fADM(%0) 						if(PlayerInfo[playerid][pAdmin] < %0) return 1
 #define GetName(%0)						pi[%0][pNames]
 #define RandomEx(%0,%1) 				(random(%1-%0)+%0)
 #define CheckConnection(%0)				(!IsPlayerConnected(%0))
-#define IsLicenseValid(%0)				(!(1 <= (%0) <= 5))
+
+//! под вынос в инклуд
+
+#define MIN_LIC_COUNT					(1)
+#define MAX_LIC_COUNT					(5)
+#define IsLicenseValid(%0)				(!(MIN_LIC_COUNT <= (%0) <= MAX_LIC_COUNT))
+
+//!
 
 #define IsRangeValid(%0,%1)				(strlen(%0) > %1)
 //! IsRangeValid 
@@ -174,7 +171,7 @@ AntiDeAMX()
 //===================================[SERVER CONFIG]==================================//
 #define SERVER_NAME 					"Aurora RolePlay"
 #define SERVER_VERSION 					"Aurora [v."MODE_VERS"]"
-#define MODE_VERS						"0.1.1.8"
+#define MODE_VERS						"0.1.1.9"
 #define SERVER_MAP                      "South Ural"
 #define SERVER_WEBSITE 					"rpp-aurora.ru/"
 #define PRIME_HOST_PAGE 				"prime-host.pro/"
@@ -191,7 +188,6 @@ AntiDeAMX()
 #define NAME_FULL_ACCESS_3				"Name_Subname"
 #define NAME_FULL_ACCESS_4				"Name_Subname"
 
-
 //==================================[ADM | ICBRK CONFIG]==============================//
 #define ADMIN_NOT_LOGGED       		    "{0093ff}[ADM]: {FFFFFF}Вы не в системе. Используйте {33CCFF}/alog"
 #define ADMIN_ALREADY_LOGGED 	        "{FFFFFF}Вы уже в системе!"
@@ -205,37 +201,27 @@ AntiDeAMX()
 #define SERVER_CLOSED 					"{F04245}Сервер закрыл соединение! Для выхода из игры, введите {0093ff}/q(uit)"
 #define LOG_TIMED_OUT					"{F04245}Время на авторизацию истекло! Для выхода из игры, введите {0093ff}/q(uit)"
 
-main(){
-	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
-	printf("\t|--------------------------------");
-	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
-	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
-	printf("");
-	printf("");
-	printf("");
-	printf("\t| Compiled: %s at %s", __date, __time);
-	printf("\t|--------------------------------------------------------------");
-	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
-}
+// main(){
+// 	printf("");
+// 	printf("\t| RPP_"#SERVER_VERSION" | %s", __date);
+// 	printf("\t|--------------------------------");
+// 	printf("\t| Creators and maintainers: "#NAME_FULL_ACCESS_2"| "#NAME_FULL_ACCESS_1"");
+// 	printf("\t| Project managed by Darkside Interactive, Ltd. All rights reserved. ");
+// 	printf("");
+// 	printf("");
+// 	printf("");
+// 	printf("\t| Compiled: %s at %s", __date, __time);
+// 	printf("\t|--------------------------------------------------------------");
+// 	printf("\t| Repository: https://github.com/ICEtheBreaker/rpp_aurora");
+// 	printf("");
+// }
+
 
 new 
 	query_string[800], // mysql string
 	fstring[4097]; // format string
 	//GlobalTime;
 	//AuthSymbols[32][] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "2", "3", "4", "5", "6", "7"};
-
-// система лицензий
-
-
-//
-
-// enum lICS {
-// 	CARL = 0,
-// 	TRUCKL = 1,
-// 	TRAINL = 2,
-// 	AEROL = 3
-// }
-//! этот енум нужно допилить поск. нужно сделать прямую зависимость от нужной категории прав
 
 enum pInfo {
 	pID,
@@ -254,7 +240,7 @@ enum pInfo {
 	pLevel,
 	pShowName,
 	pHungryBar,
-	pShowDocuments,
+	pShowDocuments, //! соотнести к системе документов
 	sdTrade,
 	pEmailAuth,
 	pGugleAuth[17],
@@ -263,12 +249,68 @@ enum pInfo {
 	pVkontakte,
 	pLanguage,
 	pWantedLevel,
+
 	pPassport,
-	pDriveLic[5], // согласно спецификации 0 id -авто, 1 -судоходства, 2 -воздушные, 3-грузовой транспорт \ средн. 4 - оружие, 5 - бизнес
-	pDriveLics[20], // хранит в себе массив информации о лицензиях (внутри контекста и запросы бд)
+	pFIO[64],
+	pPassportID,
+
+	 //! проверка есть ли паспорт?
+	// система лицензий
+	pDrivingCategories[5],
+	pDrivingQuery[20],
+	pDrivingLic, //! есть ли права?
+	//
+	
 
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
+
+//--
+#include "../defines/systems/capture_natives/mysql_customs"
+//--
+
+/*
+	//! что касаемо pDriveCategories:
+	1 - права на судоходства
+	2 - воздушные
+	3 - грузовые
+	4 - оружие
+	5 - бизнес
+
+	//? pDriveQuery хранит в себе массив 
+*/
+
+//! ВАЖНЫЙ пункт
+
+#include "../defines/systems/textdraws/TextDrawsInit"	//! здесь выносим все текстдравы в стоки и подгружаем, целью не засорять код
+#include "../defines/systems/chat/chatmsg"	//! система чата
+
+//! диман смотри в chatmsg произошел конфликт имён (решилось всё переопределением), и возможно что такие как Log, Warning, Error
+//! они или где-то зареганы уже в системе, или есть конфликтный инклуд, надо поискать хз
+
+//====================================================================================//
+
+//! система паспорта
+//! доработать принцип и вынести его в инклуд
+
+enum passport {
+	ID,
+	FIO[64],
+	ID_IN_REGISTER,
+	NOMER[8],
+	SERIAL[6],
+	PROPISKA[64],
+	SEX[8],
+	IFCHANGEDSEX,
+	ISSUED,
+	WHOMISSUED,
+	DATEOFBIRTHDAY,
+	OTHER_DOCUMENTS[4] //! здесь будет массив остальных документов
+}
+new 
+	passport_info[MAX_PLAYERS][passport];
+
+//!
 
 enum  {
     ADM_NONE = 0,
@@ -290,18 +332,23 @@ new
 new inadmcar[MAX_PLAYERS char];
 new PlayerBadAttempt[MAX_PLAYERS char];
 new PlayerAFK[MAX_PLAYERS char];
+
+new 
+	time_update,
+	time_update_max;
+
 //new oldhour; //? переменная реального времени
 new timedata[5]; //? переменные времени и даты
 
-new Iterator:ADM_LIST<MAX_PLAYERS>; //! ахуеная вещь слюшай
-#include "../../defines/systems/chat/chatmsg.inc"
+new Iterator:ADM_LIST<MAX_ADMINS>; //! ахуеная вещь слюшай
+
 enum {
 	dNull = 0, 
 	dLogin = 1, dReg1 = 2, dReg2 = 3, dReg3 = 4, d_Log = 5,
 	dMM = 6, dSECURE_SETTINGS = 7, d_PLAYER_SETTINGS = 8,
 	Gugle = 9, Gugle_Settings = 10, GugleInfo = 11, 
 	GugleInfo2 = 12, GugleInfo3 = 13, GugleInfo4 = 14, GugleInfo5 = 15,
-	Gugle_Delete = 16, Gugle_Confirm = 17, PASS_CHANGE = 18,
+	Gugle_Delete = 16, Gugle_Confirm = 17, PASS_CHANGE = 18, OLD_PASS = 19, NEW_PASS = 20,
 }
 
 public OnGameModeInit()
@@ -313,10 +360,11 @@ public OnGameModeInit()
  	new currenttime = GetTickCount();
 	new Lua:test = lua_newstate();
 
-	mysql_set_option(option_id, AUTO_RECONNECT, true);
+	mysql_set_option(option_id, AUTO_RECONNECT, true); //! опция автореконнектится к серверу в случае потери связи или неправильной работы
 	SetGameModeText(""#SERVER_VERSION""); 
 	SendRconCommand("hostname "#SERVER_NAME"");
 	SendRconCommand("mapname "#SERVER_MAP"");
+	Iter_Clear(ADM_LIST);
 
 	if(lua_loadfile(test, "../../lua/test.lua")) return lua_stackdump(test);
 	lua_bind(test);
@@ -353,12 +401,10 @@ public OnPlayerConnect(playerid)
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
 	if(IsLoginInvalid(GetName(playerid))) {
-		Error(playerid, !"Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
+		SendMess(playerid, T_ERROR, "Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
 		return Kick(playerid);
 	}
 	SEND_CM(playerid, COLOR_DBLUE, !"Добро пожаловать на "SERVER_NAME"!");
-	SEND_CM(playerid, COLOR_WHITE, !"Development build "MODE_VERS"");
-	ResetVariables(playerid);
 	/*new code = 999 + random(9000);
 	format(fstring, sizeof(fstring), "Код для подтверждения: %d", code);
 	SendMail(TEST_EMAIL, SERVER_MAIL_ADDRESS, SERVER_NAME, "Код для подтверждения регистрации", fstring);
@@ -368,17 +414,17 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason) {
 	if(!playerLoggedStatus{playerid}) return 1; 
-	else SavePlayer(playerid);
+	else SavePlayer(playerid), ResetVariables(playerid);
+	if(PlayerInfo[playerid][pAdmin] > 0) Iter_Remove(ADM_LIST, playerid);
 
 	PlayerAFK{playerid} 			= -2;
-	PlayerBadAttempt{playerid} 		= 0;
 
 	if(inadmcar{playerid} != -1) return DestroyVehicle(inadmcar{playerid}), inadmcar{playerid} = 0;
 	return 1;
 }
 
 public OnPlayerSpawn(playerid) {
-	if(!playerLoggedStatus{playerid}) return Error(playerid, SERVER_CLOSED), Kick(playerid);
+	if(!playerLoggedStatus{playerid}) return SendMess(playerid, T_ERROR, SERVER_CLOSED), Kick(playerid);
 
 	SetPlayerSkin(playerid, pi[playerid][pSkin]);
 	SetPlayerScore(playerid, pi[playerid][pLevel]);
@@ -405,12 +451,12 @@ public OnPlayerText(playerid, text[]) {
 	
 	fstring[0] = 0;
 	if(strlen(text) < 64) {
-		format(fstring, (20 + (-2+66) + (-2+4) + (-2+66)), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
+		format(fstring, (20 + (-2+MAX_PLAYER_NAME) + (-2+4) + (-2+MAX_PLAYER_NAME)), "%s [%d] говорит: %s", GetName(playerid), playerid, text);
 		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
 	 	SetPlayerChatBubble(playerid, text, format_white, 20.0, 7500);
 		
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) ApplyAnimation(playerid, "PED", "IDLE_chat", 4.1, 0, 1, 1, 1, 1), SetTimerEx("@StopAnimation", 3200, false, "d", playerid);
-	} else Warning(playerid, "Слишком длинное сообщение!");
+	} else SendMess(playerid, T_WARN, "Слишком длинное сообщение!");
 	return 0;
 }
 public OnPlayerCommandText(playerid, cmdtext[]) return 0;
@@ -420,7 +466,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[], params[], flags) {
 }
 public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	if (!success || success == -1) 
-		Error(playerid, !"{941000}Введена неверная команда. Для справки используйте \"'/help'\"");
+		SendMess(playerid, T_ERROR, "Введена неверная команда. Для справки используйте \"'/help'\"");
 	return 1;
 }
 
@@ -512,12 +558,41 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 public OnRconLoginAttempt(ip[], password[], success)
 {
 	return 1;
-}	
-public OnPlayerUpdate(playerid)
-{
-	PlayerAFK{playerid} = 0;
+}
+
+CMD:testtesttest(player, params[]) {
+	if(sscanf(params, "s[24]", params[0])) return SendMess(player, T_NOTIF, "/testtesttest [text]");
+	// if(!(1 <= params[0] <= 24)) return false;
+	printf("(%s = это тип) : (%s = это текст)", (setLocalization(player, T_WARN)), params[0]);
 	return 1;
 }
+
+public OnPlayerUpdate(playerid) {
+	new tc = GetTickCount();
+	if(!playerLoggedStatus{playerid}) return false;
+
+	PlayerAFK{playerid} = 0;
+
+	time_update = GetTickCount() - tc;
+	if(time_update > time_update_max) time_update_max = time_update;
+
+	return 1;
+}
+CMD:timestat(playerid) {
+	fADM(ADM_DEPUTY_CHIEF || CheckExceptionName(GetName(playerid)));
+
+	fstring[0] = 0;
+	format(fstring, (85 + (-2+6) + (-2+6)),"последние данные "LightGreen_color"`OnPlayerUpdate`"Default": (%d ms). пик: (%d ms).", time_update, time_update_max);
+	SHOW_PD(playerid, dNull, DIALOG_M, ""LightGreen_color"Нагрузка на мод", fstring, "Закрыть", "");
+
+	/*
+		\nПоследнее время прокрутки \"newkeys\": (%d ms). пик: (%d ms).\nПоследнее время прокрутки \"second_timer\": (%d ms). пик: (%d ms).
+		,time_newkeys,time_newkeys_max,time_second,time_second_max
+	*/
+
+	return 1;
+}
+
 public OnPlayerStreamIn(playerid, forplayerid)
 {
 	return 1;
@@ -542,34 +617,35 @@ CMD:editplayer(playerid) {
 
 CMD:agivelic(playerid, params[]) {
 	fADM(ADM_MODER);
-	if(sscanf(params, "ii", params[0], params[1])) Info(playerid, !"/agivelic (playerid) (licid)");
-	if(CheckConnection(params[0])) return Error(playerid, PLAYER_INVALID);
-	if(!(1 <= params[1] <= 5)) return Error(playerid, LICENSE_INVALID);
-	if(!strlen(params[0])) return Error(playerid, !"Вы не указали ID игрока");
-	if(!strlen(params[1])) return Error(playerid, !"Вы не указали ID лицензии");
-	if(!strlen(params[0]) && !strlen(params[1])) return Error(playerid, !"Вы ничего не указали");
+	if(sscanf(params, "ii", params[0], params[1])) SendMess(playerid, T_NOTIF, "/agivelic (playerid) (licid)");
+	if(CheckConnection(params[0])) return SendMess(playerid, T_ERROR, PLAYER_INVALID);
+	if(!(1 <= params[1] <= 5)) return SendMess(playerid, T_ERROR, LICENSE_INVALID);
+	if(!strlen(params[0])) return SendMess(playerid, T_ERROR, "Вы не указали ID игрока");
+	if(!strlen(params[1])) return SendMess(playerid, T_ERROR, "Вы не указали ID лицензии");
+	if(!strlen(params[0]) && !strlen(params[1])) return SendMess(playerid, T_ERROR, "Вы ничего не указали");
 
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "Вы успешно выдали игроку %s (%d) лицензию (LicID: %d)",GetName(params[0]),params[0],params[1],LicType(params[1]));
-	Info(playerid, fstring);
+	SendMess(playerid, T_NOTIF, fstring);
 
 	GiveLic(params[0], params[1]);
 
 	return 1;
 }
-/*CMD:a(playerid, params[])
+CMD:a(playerid, params[])
 {
-    if(sscanf(params, "s[150]", params[0])) return Error(playerid, !"/a [текст]");
-    return ADMLog("%s[%d]: %s", GetName(playerid), playerid, params[0]);
+	fADM(ADM_HELPER);
+    if(sscanf(params, "s[150]", params[0])) return SendMess(playerid, T_ERROR, "/a [текст]");
+    //ADMMessage("%s[%d]: %s", GetName(playerid), playerid, params[0]);
 	return 1;
-}*///! ADMMessage нужно доработать, чтобы он мог получать имя игрока и его ид. а так он получает только текст
+}
 
 CMD:giveweap(playerid, params[]) {
 	new weaponID, ammoValue;
 	fADM(ADM_CHIEF);
-	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) Info(playerid, !"/giveweap [playerid] [weaponid] [ammoValue (0-999)]");
-	if(!(0 <= (weaponID) <= 46)) return Info(playerid, !"Диапазон weaponID: < 0 либо > 46!");
-	if(!(0 <= (ammoValue) <= 999)) return Info(playerid, !"Диапазон ammoValue: < 0 либо > 999!");
+	if(sscanf(params, "iii", params[0], weaponID, ammoValue)) SendMess(playerid, T_NOTIF, "/giveweap [playerid] [weaponid] [ammoValue (0-999)]");
+	if(!(0 <= (weaponID) <= 46)) return SendMess(playerid, T_NOTIF, "Диапазон weaponID: < 0 либо > 46!");
+	if(!(0 <= (ammoValue) <= 999)) return SendMess(playerid, T_NOTIF, "Диапазон ammoValue: < 0 либо > 999!");
 	GivePlayerWeapon(params[0], weaponID, ammoValue);
 	return 1;
 }
@@ -577,19 +653,19 @@ CMD:giveweap(playerid, params[]) {
 CMD:plvh(playerid, params[]) {
 	fstring[0] = 0;
 	fADM(ADM_OLDER_MODER);
-	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Info(playerid, !"/plvh [playerid] [vehicleid] [1 color] [2 color]");
-	if(!playerLoggedStatus[params[0]]) return Error(playerid, PLAYER_NOT_LOGGED);
+	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return SendMess(playerid, T_NOTIF, "/plvh [playerid] [vehicleid] [1 color] [2 color]");
+	if(!playerLoggedStatus[params[0]]) return SendMess(playerid, T_ERROR, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
-		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Error(playerid, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),SendMess(playerid, T_ERROR, fstring); 
 		fstring[0] = 0;
 	}
 	if(GetPlayerVirtualWorld(params[0]) != 0)  {
-		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Error(playerid, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),SendMess(playerid, T_ERROR, fstring); 
 		fstring[0] = 0;
 	}
-	if(!(400 <= params[1] <= 611)) return Error(playerid, !"Диапазон ID автомобилей: не меньше 400 не больше 611");
-	if(!(0 <= params[2] <= 255)) return Error(playerid, !"Диапазон первого цвета: не меньше 0 не больше 255");
-	if(!(0 <= params[3] <= 255)) return Error(playerid, !"Диапазон второго цвета: не меньше 0 не больше 255");
+	if(!(400 <= params[1] <= 611)) return SendMess(playerid, T_ERROR, "Диапазон ID автомобилей: не меньше 400 не больше 611");
+	if(!(0 <= params[2] <= 255)) return SendMess(playerid, T_ERROR, "Диапазон первого цвета: не меньше 0 не больше 255");
+	if(!(0 <= params[3] <= 255)) return SendMess(playerid, T_ERROR, "Диапазон второго цвета: не меньше 0 не больше 255");
 	new Float:x,
 		Float:y,
 		Float:z;
@@ -603,9 +679,9 @@ CMD:plvh(playerid, params[]) {
 CMD:makeadmin(playerid, params[]) {
 	new playername[24], adm_level;
 	fADM(ADM_FOUNDER);
-	if(sscanf(params, "s[24]i", playername, adm_level)) Info(playerid, !"Введите: /makeadmin [ник игрока] [степень доступа]");
+	if(sscanf(params, "s[24]i", playername, adm_level)) SendMess(playerid, T_NOTIF, "Введите: /makeadmin [ник игрока] [степень доступа]");
 	else if(CheckExceptionName(playername)) return 0;
-	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) Info(playerid, !"Диапазон доступа к системе: не меньше 1 не больше 6");
+	else if(!(ADM_NONE <= adm_level <= ADM_DEPUTY_CHIEF)) SendMess(playerid, T_NOTIF, "Диапазон доступа к системе: не меньше 1 не больше 6");
 	query_string[0] = 0;
 	mysql_format(db, query_string, sizeof(query_string), "SELECT * FROM `admin` WHERE name = '%e'", playername);
 	mysql_tquery(db, query_string , "@MakeAdmin", "isi", playerid, playername, adm_level);
@@ -614,9 +690,9 @@ CMD:makeadmin(playerid, params[]) {
 
 //? /me /todo /do /try /n /s /b /ame
 CMD:me(playerid, params[]) {
-	if(sscanf(params, "s[118]", params[0])) Info(playerid, !"/me [действие]");
-	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
+	if(sscanf(params, "s[118]", params[0])) SendMess(playerid, T_NOTIF, "/me [действие]");
+	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s", PlayerInfo[playerid][pNames], params[0]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -624,16 +700,16 @@ CMD:me(playerid, params[]) {
 	return 1;
 }
 CMD:ame(playerid, params[]) {
-	if(sscanf(params, "s[144]", params[0])) Info(playerid, !"/ame [действие]");
-	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
+	if(sscanf(params, "s[144]", params[0])) SendMess(playerid, T_NOTIF, "/ame [действие]");
+	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
 	SetPlayerChatBubble(playerid, params[0], 0x00F76193, 20, 7500);
 	return 1;
 }
 CMD:do(playerid, params[]) {
-	if(sscanf(params, "s[116]", params[0])) Info(playerid, !"/do [текст]");
-	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
+	if(sscanf(params, "s[116]", params[0])) SendMess(playerid, T_NOTIF, "/do [текст]");
+	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s (%s)", params[0], PlayerInfo[playerid][pNames]);
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
@@ -641,35 +717,36 @@ CMD:do(playerid, params[]) {
 	return 1;
 }
 CMD:try(playerid, params[]) {
-	if(sscanf(params, "s[99]", params[0])) Info(playerid, !"/try [текст]");
-	if(strlen(params[0]) > 32) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 32!");
-	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
+	if(sscanf(params, "s[99]", params[0])) SendMess(playerid, T_NOTIF, "/try [текст]");
+	if(strlen(params[0]) > 32) SendMess(playerid, T_ERROR, "Диапазон длины текста: не меньше 0 не больше 32!");
+	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s %s | %s", PlayerInfo[playerid][pNames], params[0], (!random(2)) ? ("{FF0000}Неудачно") : ("{32CD32}Удачно"));
 	ProxDetector(20.00, playerid, fstring, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193, 0x00F76193);
 	return 1;
-}
+}/*SENDNMSG*/
 CMD:todo(playerid, params[]) {
-	if(sscanf(params, "s[95]", params[0])) Info(playerid, !"/todo [текст*действие]");
-	if(strlen(params[0]) > 95) Error(playerid, !"Диапазон длины текста: не меньше 0 не больше 95!");
-	new message[96];
-	strmid(message, params, 0, sizeof(message));
-	new Regex:rg_todocheck = Regex_New("^[a-zA-Za-яА-Я.-_,\\s]{2,48}\\*[a-zA-Za-яА-Я.-_,\\s]{2,48}$");
-	if(Regex_Check(message, rg_todocheck)) {
-		new star = strfind(message, "*");
-		new action[50];
-		strmid(action, message, star+1, sizeof(message));
-		strdel(message, star, sizeof(message));
-		fstring[0] = 0;
-		format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
-		ProxDetector(20.00, playerid, fstring, format_white, format_white, format_white, format_white, format_white);
-	} else return Error(playerid, !"Текст должен состоять из кириллицы и не содержать другие символы.");
+	if(strlen(params) > 95) return SendMess(playerid, T_NOTIF, "Слишком длинный текст и действие.");
+	new message[48],
+		action[49];
+	if(sscanf(params, "p<*>s[47]s[48]", message, action)) return SendMess(playerid, T_NOTIF, "/todo [текст*действие]");
+	if(strlen(message) < 2 || strlen(action) < 2) return SendMess(playerid, T_NOTIF, "/todo [текст*действие]");
+	fstring[0] = 0;
+	format(fstring, sizeof(fstring), "- '%s' - {DE92FF}сказал%s %s, %s", message, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), PlayerInfo[playerid][pNames], action);
+	ProxDetector(20.0, playerid, fstring, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE); 
+	return 1;
+}
+CMD:n(playerid, params[]) {
+	if(sscanf(params, "s[107]", params[0])) return SendMess(playerid, T_NOTIF, "/n [сообщение]");
+	fstring[0] = 0;
+	format(fstring, sizeof(fstring), "(( %s[%d]: %s ))", PlayerInfo[playerid][pNames], playerid, params[0]);
+	ProxDetector(20.0, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
 	return 1;
 }
 CMD:s(playerid, params[]) {
-	if(sscanf(params, "s[105]", params[0])) Info(playerid, !"/s [текст]");
-	if(!(0 <= strlen(params[0]) <= 105)) return Warning(playerid, !"Диапазон длины текста: не меньше 0 не больше 105");
-	if(!strlen(params[0])) return Warning(playerid, !"Вы ничего не ввели!");
+	if(sscanf(params, "s[105]", params[0])) SendMess(playerid, T_NOTIF, "/s [текст]");
+	if(!(0 <= strlen(params[0]) <= 105)) return SendMess(playerid, T_WARN, "Диапазон длины текста: не меньше 0 не больше 105");
+	if(!strlen(params[0])) return SendMess(playerid, T_WARN, "Вы ничего не ввели!");
 	fstring[0] = 0;
 	format(fstring, sizeof(fstring), "%s [%d] крикнул%s: %s", PlayerInfo[playerid][pNames], playerid, (PlayerInfo[playerid][pSex] == 1) ? ("") : ("а"), params[0]);
 	ProxDetector(20.00, playerid, fstring, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF, 0xCCCC99FF);
@@ -703,8 +780,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg1: 
 		{
 			if(response) {
-				if(!strlen(inputtext)) return Error(playerid, !"Вы ничего не ввели."), ShowRegDialog(playerid);
-				if(!(6 <= strlen(inputtext) <= 22)) return Warning(playerid, !"Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
+				if(!strlen(inputtext)) return SendMess(playerid, T_ERROR, "Вы ничего не ввели."), ShowRegDialog(playerid);
+				if(!(6 <= strlen(inputtext) <= 22)) return SendMess(playerid, T_WARN, "Диапазон длины пароля: от 6 до 22 символов."), ShowRegDialog(playerid);
 				new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
 
 				if(Regex_Check(inputtext, rg_passwordcheck)){ 
@@ -718,27 +795,27 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(fstring, sizeof(fstring), "{FFFFFF}Введите Ваш {FFA500}e-mail{FFFFFF} адрес, за которым будет закреплён данный аккаунт.\nЕсли Вы потеряете доступ к своему аккаунту, то с помощью {FFA500}e-mail{FFFFFF} Вы сможете восстановить его.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				} else {
-					ShowRegDialog(playerid), Error(playerid, !"Пароль может состоять только из чисел и латинских символов любого регистра.");
+					ShowRegDialog(playerid), SendMess(playerid, T_ERROR, "Пароль может состоять только из чисел и латинских символов любого регистра.");
 				}
 				Regex_Delete(rg_passwordcheck);
 			} else {
-				Error(playerid, SERVER_CLOSED);
+				SendMess(playerid, T_ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 		}
 		case dReg2:
 		{
 			if(!response){
-				Error(playerid, SERVER_CLOSED);
+				SendMess(playerid, T_ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
 				if(!IsValidEmail(inputtext)) {
-					Error(playerid, !"Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
+					SendMess(playerid, T_ERROR, "Неверный тип электронной почты. Примеры: [@gmail.com, @yandex.ru, @mail.ru, @vk.ru]");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				if(!strlen(inputtext)) {
-					Error(playerid, !"Вы не указали почту.");
+					SendMess(playerid, T_ERROR, "Вы не указали почту.");
 					SHOW_PD(playerid, dReg2, DIALOG_I, !"{FFFFFF}[2/4]{FFA500} Почта", fstring, !"Далее", !"Отмена");	
 				}
 				else if(IsValidEmail(inputtext) && strlen(inputtext)) {
@@ -750,7 +827,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case dReg3: 
 		{
 			if(!response) {
-				Error(playerid, SERVER_CLOSED);
+				SendMess(playerid, T_ERROR, SERVER_CLOSED);
 				return Kick(playerid);
 			}
 			else {
@@ -779,7 +856,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			   	if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) {
 					query_string[0] = 0;
 					// print("12345:vishel pizdu pochesat");
-					mysql_format(db, query_string, (68 + (-2+64) + (-2+65)), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
+					mysql_format(db, query_string, (68 + (-2+MAX_PLAYER_NAME) + (-2+67)), "SELECT * FROM `accounts` WHERE `names` = '%e' AND `password` = '%e'", GetName(playerid), PlayerInfo[playerid][pPassword]);
 					mysql_tquery(db, query_string, "LoginPlayer", "d", playerid);
 				} else @_IncorrectPassword(playerid);
 			}
@@ -802,7 +879,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						PlayerInfo[playerid][pShowName] = !PlayerInfo[playerid][pShowName];
 						foreach(new i: Player) ShowPlayerNameTagForPlayer(playerid, i, PlayerInfo[playerid][pShowName]);
 					} 
-					case 1: return Warning(playerid, "В разработке");
+					case 1: return SendMess(playerid, T_WARN, "В разработке");
 					case 2: {
 						if(PlayerInfo[playerid][pGugleEnabled] == 1) {
 							SHOW_PD(playerid, PASS_CHANGE, DIALOG_STYLE_INPUT, "Google Authenticator", 
@@ -811,27 +888,67 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							идентификационный код, то при условии того что у вас\nправильно привязана почта, вы можете\n\
 							отключить Google Authenticator на сайте:\n\n{FFFFFF}"SERVER_WEBSITE"/profile/in\n", !"Принять", !"Отмена");
 						}
+						else SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
 					}
-					case 3: return Warning(playerid, "В разработке");
-					case 4: return Warning(playerid, "В разработке");
-					case 5: return Warning(playerid, "В разработке");
-					case 6: return Warning(playerid, "В разработке");
+					case 3: return SendMess(playerid, T_WARN, "В разработке");
+					case 4: return SendMess(playerid, T_WARN, "В разработке");
+					case 5: return SendMess(playerid, T_WARN, "В разработке");
+					case 6: return SendMess(playerid, T_WARN, "В разработке");
 					case 7: {
-						if(PlayerInfo[playerid][pLevel] < 2) return Error(playerid, " Установить Google Authenticator могут только игроки старше первого уровня!");
+						if(PlayerInfo[playerid][pLevel] < 2) return SendMess(playerid, T_ERROR, " Установить Google Authenticator могут только игроки старше первого уровня!");
 						fstring[0] = 0;
 						format(fstring, sizeof(fstring), "Настройки Google Authenticator\nОтключение Google Authenticator");
 						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
 					}
+					case 8: return SendMess(playerid, T_NOTIF, "В разработке");
+					case 9: setLanguage(playerid, pi[playerid][pLanguage]),printf("(%d = playerid) ; (pLanguage = %d)", playerid, pi[playerid][pLanguage]);
+					case 10: return SendMess(playerid, T_NOTIF, "В разработке");
+				}
+			}
+			else {
+				cmd::menu(playerid);
+			}
+		}
+	  	case PASS_CHANGE: {
+			if(response) {
+				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
+				if(strval(inputtext) == getcode && !isempty(inputtext)) SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
+				else {
+					SendMess(playerid, T_NOTIF, "Введён неверный Auth-код");
+					return SHOW_PD(playerid, PASS_CHANGE, DIALOG_STYLE_INPUT, "Google Authenticator", 
+					"\n\n{FFFFFF}К этому аккаунту подключено подтверждение {F1FC4C}Google Authenticator.\n\
+					{FFFFFF}Введите код подтверждения для входа в игру.\n\n{FC4C4C}Если вы потеряли телефон/удалили приложение или потеряли\n\
+					идентификационный код, то при условии того что у вас\nправильно привязана почта, вы можете\n\
+					отключить Google Authenticator на сайте:\n\n{FFFFFF}"SERVER_WEBSITE"/profile/in\n", !"Принять", !"Отмена");
 				}
 			}
 		}
-		case PASS_CHANGE: {
-			if(response) {
-				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
-				if(strval(inputtext) == getcode && !isempty(inputtext)) {
-					
-				}
+		case OLD_PASS: {
+			new checkpass[65];
+			SHA256_PassHash(inputtext, PlayerInfo[playerid][pSalt], checkpass, 65);
+			if(!strlen(inputtext)) return SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
+			if(!(6 <= strlen(inputtext) <= 22)) SendMess(playerid, T_ERROR, "Диапазон длины пароля: от 6 до 22-х символов"), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
+			if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) SHOW_PD(playerid, NEW_PASS, DIALOG_STYLE_INPUT, "Ввод нового пароля","\n\n{FFFFFF} Введите ваш новый пароль в поле ниже:", !"Далее", !"Закрыть"), Log(playerid, "password correct");
+			else SendMess(playerid, T_NOTIF, "Введён неверный пароль."), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
+		}
+		case NEW_PASS: {
+			if(!strlen(inputtext)) return SendMess(playerid, T_NOTIF, "Вы ничего не ввели.");
+			if(!(6 <= strlen(inputtext) <= 22)) SendMess(playerid, T_NOTIF, "Диапазон длины пароля: от 6 до 22-х символов");
+			new Regex:rg_passwordcheck = Regex_New("^[a-zA-Z0-9]{1,}$");
+			if(Regex_Check(inputtext, rg_passwordcheck)){ 
+				new salt[11];
+				for(new i = 11; --i >= 0;) salt[i] = random(79) + 47;
+            	salt[10] = 0;
+				SHA256_PassHash(inputtext, salt, PlayerInfo[playerid][pPassword], 65);					
+				strmid(PlayerInfo[playerid][pSalt], salt, 0, 11, 11);
+				fstring[0] = 0;
+				format(fstring, sizeof(fstring), "Вы успешно изменили пароль. Новый пароль: {0093ff}%s", inputtext);
+				SendMess(playerid, T_NOTIF, fstring);
+				SendMess(playerid, T_NOTIF, "Запишите свой новый пароль или сделайте скриншот кнопкой {0093ff}F8");
+				@ChangePassword(playerid);
 			}
+			else return SendMess(playerid, T_NOTIF, "Пароль может состоять только из чисел и латинских символов любого регистра.");
+			Regex_Delete(rg_passwordcheck); 
 		}
 		//![===========================================[GUGLE AUTHENTICATOR by ICBRK[ICEtheBreaker]]===========================================]
 		case Gugle: {			
@@ -844,12 +961,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						format(fstring2, sizeof(fstring2), 
 						"Установить Google Authenticator\n\
 						Спрашивать Google Authenticator\t\t| %s", 
-						(PlayerInfo[playerid][pGugleSettings] == 0) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]"));
+						(!PlayerInfo[playerid][pGugleSettings]) ? ("{0093ff}[При смене IP]") : ("{0089ff}[Всегда]"));
 						SHOW_PD(playerid, Gugle_Settings, DIALOG_STYLE_LIST, fstring, fstring2, !"Выбрать", !"Назад");
 						fstring2[0] = 0;
 					}
 					case 1: {
-						if(PlayerInfo[playerid][pGugleEnabled] == 0) Error(playerid, !"На данном аккаунте не установлен Google Authenticator!");
+						if(!PlayerInfo[playerid][pGugleEnabled]) SendMess(playerid, T_NOTIF, "На данном аккаунте не установлен Google Authenticator!");
 						else SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 					}
 				}
@@ -867,7 +984,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SHOW_PD(playerid, Gugle_Confirm, DIALOG_STYLE_MSGBOX, !"Подтверждение", "\nВы уверены, что хотите отключить Google Authenticator от своего аккаунта?\nРекомендуем оставить его, чтобы избежать дальнейших взломов.", "Да", "Нет");
 				}
 				else {
-					Error(playerid, !"Код введён неверно!");
+					SendMess(playerid, T_ERROR, "Код введён неверно!");
 					SHOW_PD(playerid, Gugle_Delete, DIALOG_STYLE_INPUT, !"Подтверждение Google Authenticator", !"\n{FFFFFF}Для подтверждения, введите сгенерированный код из приложения в поле ниже:", "Ввод", "Отмена");
 				}
 			}
@@ -881,7 +998,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				PlayerInfo[playerid][pGugleEnabled] = 0;
 				PlayerInfo[playerid][pGugleAuth] = 0;
-				Notification(playerid, !"Вы успешно отключили Google Authenticator.");
+				SendMess(playerid, T_NOTIF, "Вы успешно отключили Google Authenticator.");
 				mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `gugle_auth`, `gugle_enabled` = '%s', '%d' WHERE `names` = '%s'", 
 				PlayerInfo[playerid][pGugleAuth], PlayerInfo[playerid][pGugleEnabled], PlayerInfo[playerid][pNames]);
 				mysql_tquery(db, query_string);
@@ -892,18 +1009,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(response) {
 				switch listitem do {
 					case 0: {
-						if(PlayerInfo[playerid][pGugleEnabled] == 1) Error(playerid, !"Google Authenticator уже установлен на аккаунте. Действие не требуется");
+						if(PlayerInfo[playerid][pGugleEnabled]) SendMess(playerid, T_NOTIF, "Google Authenticator уже установлен на аккаунте. Действие не требуется");
 						else {
 							SHOW_PD(playerid, GugleInfo, DIALOG_STYLE_MSGBOX, !"1-вый шаг", !"\n\n{FFFFFF}Начнем с того, что если у вас нет приложения, то его нужно\nзагрузить. Заходим в {FDC459}Play Market или App Store{FFFFFF} и ищем\nGoogle Authenticator.\n\n{B0FD59}Нашли? Нажимаем загрузить приложение.\n\nНажмите: 'Enter', чтобы пройти к следующему этапу.\n\n", !"Дальше", !"Отмена");
 						}
 					}
 					case 1: {
-						if(PlayerInfo[playerid][pGugleSettings] == 0) {
+						if(!PlayerInfo[playerid][pGugleSettings]) {
 							PlayerInfo[playerid][pGugleSettings] = 1;
-							Notification(playerid, !"Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
+							SendMess(playerid, T_NOTIF, "Код Google Auth теперь будет запрашиваться при каждом входе в игру.");
 						} else {
 							PlayerInfo[playerid][pGugleSettings] = 0;
-							Notification(playerid, !"Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
+							SendMess(playerid, T_NOTIF, "Код Google Auth теперь будет запрашиваться при смене Вашего IP-адреса.");
 						}
 					}
 				}
@@ -955,7 +1072,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					mysql_tquery(db, query_string);
 				}
 				else {
-					Error(playerid, !"Код введён неверно!");
+					SendMess(playerid, T_ERROR, "Код введён неверно!");
 					fstring[0] = 0;
 					format(fstring, sizeof(fstring), 
 					"{FFFFFF}Для завершения установки Google Authenticator, введите сгенерированный код из приложения\n\
@@ -990,7 +1107,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	SetPlayerColor(playerid, 0xFF);
 
 	if(cache_num_rows() != 0) {
-		
+		PlayerBadAttempt{playerid} = 4;
 		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);
 		cache_get_value_name(0, "salt", PlayerInfo[playerid][pSalt], 11);
 		cache_get_value_name(0, "lastIP", PlayerInfo[playerid][pLastIP], 16);
@@ -1009,24 +1126,31 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 @_IncorrectPassword(playerid);
 @_IncorrectPassword(playerid) {
 	if(cache_num_rows() == 0) {
-		new ssstring[80];
-		PlayerBadAttempt{playerid} --;
-		format(ssstring, (92 + (-2+4)),"\
+		PlayerBadAttempt{playerid} -= 1;
+		fstring[0] = 0;
+		format(fstring, (92 + (-2+6)),"\
 			{FF0000}Вы ввели неверный пароль!\n\
 			{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
 
-		SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", ssstring, "Войти", "Отмена");
-		ssstring[0] = 0;
+		SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", fstring, "Войти", "Отмена");
+		fstring[0] = EOS;
 	} else {LoginPlayer(playerid);}
 
 	if(++PlayerBadAttempt{playerid} <= 0) {
-		Error(playerid, SERVER_CLOSED);
+		SendMess(playerid, T_NOTIF, SERVER_CLOSED);
 		PlayerBadAttempt{playerid} = 0;
 		return Kick(playerid);
 	}
 
 	return 1; 
 }
+@ChangePassword(playerid);
+@ChangePassword(playerid) {
+	query_string[0] = 0;
+	mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET `password` = '%e', `salt` = '%e' WHERE `id` = '%d'", PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pID]);
+	mysql_tquery(db, query_string);
+	return 1;
+} 
 
 stock ShowLoginDialog(playerid)
 {
@@ -1048,7 +1172,7 @@ stock GetCurrentTime() //! написать систему определения часового пояса сервера и
 stock ShowRegDialog(playerid)
 {
 	fstring[0] = 0;
-	format(fstring, (420 + (-2+66)),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
+	format(fstring, (420 + (-2+MAX_PLAYER_NAME)),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
 		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
 		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
@@ -1059,32 +1183,43 @@ stock ShowRegDialog(playerid)
 	return 1;
 }
 stock ShowUpdateSettings(playerid, vkontakte[] = " ") {
-	fstring[0] = EOS;
-	//! в связи с добавлением измеений в эту строку лучше оставить sizeof, чтоб в дальнейшем не заниматься подсчётом
-	format(fstring, sizeof(fstring), "Система\tСостояние\n\
-	{AFAFAF}Ники:\t%s\n\
-	{AFAFAF}E-mail:\t%s\n\
-	{AFAFAF}Сменить пароль\t{0093ff}[ Аккаунт ]\n\
-	{AFAFAF}Сменить пароль\t{0093ff}[ Банковская карта ]\n\
-	{AFAFAF}Показывать голод:\t%s\n\
-	{AFAFAF}Изменить\t{0093ff}[ Место спавна ]\n\
-	{AFAFAF}Отмена показа документов:\t%s\n\
-	{AFAFAF}Google Authenticator\t{0093ff}Анти-взлом система\n\
-	{AFAFAF}Вход через почту:\t%s\n\
-	{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
-	{AFAFAF}Привязка ВКонтакте:\t%s",
-	PlayerInfo[playerid][pShowName] ? ("{008000}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
-	PlayerInfo[playerid][pEmail],
-	!PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
-	PlayerInfo[playerid][pShowDocuments] ? ("{9ACD32}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
-	PlayerInfo[playerid][pEmailAuth] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
-	PlayerInfo[playerid][pLanguage] ? ("русский") : ("английский"),
-	strlen(vkontakte) > 2 ? vkontakte: ("{B83434}Не привязан"));
-	
-	//if(PlayerInfo[playerid][pVkontakte]) && strlen(vkontakte) < 2 return GetVKName(playerid);
-	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, !"Настройки персонажа", fstring, !"Выбор", "Отмена");
-}
+	fstring[0] = 0;
 
+	new 
+		lang = getLanguage(playerid);
+
+	format(fstring, sizeof(fstring), "Система\tСостояние\n\
+		{AFAFAF}Ники:\t%s\n\
+		{AFAFAF}E-mail:\t%s\n\
+		{AFAFAF}Сменить пароль\t{0093ff}[ Аккаунт ]\n\
+		{AFAFAF}Сменить пароль\t{0093ff}[ Банковская карта ]\n\
+		{AFAFAF}Показывать голод:\t%s\n\
+		{AFAFAF}Изменить\t{0093ff}[ Место спавна ]\n\
+		{AFAFAF}Отмена показа документов:\t%s\n\
+		{AFAFAF}Google Authenticator\t{0093ff}Анти-взлом система\n\
+		{AFAFAF}Вход через почту:\t%s\n\
+		{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
+		{AFAFAF}Привязка ВКонтакте:\t%s",
+		PlayerInfo[playerid][pShowName] ? ("{008000}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
+		PlayerInfo[playerid][pEmail],
+		!PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
+		PlayerInfo[playerid][pShowDocuments] ? ("{9ACD32}[ВКЛ]") : ("{FF0000}[ВЫКЛ]"),
+		PlayerInfo[playerid][pEmailAuth] ? ("{9ACD32}[ВКЛ]") : ("{B83434}[ВЫКЛ]"),
+		((lang) ? ("русский") : ((lang == 2) ? ("англ") : (lang == 3) ? ("беларусский") : (""))),
+		// ((lang == 1) ? ("{9ACD32}русский") : (lang == 2)) ? ("{9ACD32}англ")) : (lang == 3) ? ("{9ACD32}беларусский") : 0)),
+		strlen(vkontakte) > 2 ? vkontakte : ("{B83434}Не привязан")
+	);
+	
+
+
+	// ((language == 1) ? 1 : ((language == 2) ? 2 : (language == 3) ? 3 : 0));
+/*
+	((PlayerInfo[playerid][pLanguage] == 1) ? ("русский") : ((PlayerInfo[playerid][pLanguage] == 2) ? ("английский")) : ((PlayerInfo[playerid][pLanguage] == 3) ? ("беларусский") : 0)))),
+	*/
+
+	//if(PlayerInfo[playerid][pVkontakte]) && strlen(vkontakte) < 2 return GetVKName(playerid);
+	return SHOW_PD(playerid, d_PLAYER_SETTINGS, DIALOG_STH, !"Настройки персонажа", fstring, !"Выбор", "Отмена");
+}
 stock ResetVariables(playerid) {
 	PlayerAFK{playerid} 			=
 	pi[playerid][pAdmin] 			= 
@@ -1096,55 +1231,60 @@ stock ResetVariables(playerid) {
 	pi[playerid][pMoney] 			=
 	pi[playerid][pHungryBar] 		=
 	pi[playerid][pWantedLevel]		=
-	pi[playerid][pEmailConfirmed] 	= 0;
-	PlayerBadAttempt{playerid} 		= 4;
+	pi[playerid][pEmailConfirmed] 	=
+	pi[playerid][pLanguage]			=
+	PlayerBadAttempt{playerid} 		= 0;
 	inadmcar{playerid}				= -1;
 
-	printf("%d (%s) id освободил данные | thank you friend! you are gay!", playerid, GetName(playerid));
+	printf("(ID: %d) (NAME: %s) id освободил данные", playerid, GetName(playerid));
 
 	for(new i = 5; --i > 0;) {
-    	pi[playerid][pDriveLic][i] = 0;
+    	pi[playerid][pDrivingCategories][i] = 0;
 	}
 
-	strmid(pi[playerid][pNames], "None", 0, 5, 24);
-	strmid(pi[playerid][pPassword], "", 0, strlen(pi[playerid][pPassword]), 32);
-	strmid(pi[playerid][pEmail], "", 0, strlen(pi[playerid][pEmail]), 32);
+	pi[playerid][pNames] = 0;
+	pi[playerid][pPassword] = 0;
+	pi[playerid][pEmail] = 0;
 
 	return 1;
 }
+
+
 stock LicType(id) {
-	new type[16];
+	new type[13];
+
 	switch(id) {
-		case 1: {type="Авто";}
-		case 2: {type="Судоходство";}
-		case 3: {type="Грузовое";}
-		case 4: {type="Оружие";}
-		case 5: {type="Бизнес";}
+		case 0: {type="Авто";}
+		case 1: {type="Судоходство";}
+		case 2: {type="Грузовое";}
+		case 3: {type="Оружие";}
+		case 4: {type="Бизнес";}
 		default: {type="None";}
 	}
+
 	return type;
 }
-stock GiveLic(playerid,id) {
-	if (IsLicenseValid(id)) return 1;
+stock GiveLic(playerid, lic_id) {
+	if (IsLicenseValid(lic_id)) return 1;
 
-	pi[playerid][pDriveLic][id] = 1;
+	pi[playerid][pDrivingCategories][lic_id] = 1;
 
 	fstring[0] = 0;
 	query_string[0] = 0;
+	
+	format(fstring, (15 + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+6)),"%i,%i,%i,%i,%i", pi[playerid][pDrivingCategories][0], pi[playerid][pDrivingCategories][1], pi[playerid][pDrivingCategories][2], pi[playerid][pDrivingCategories][3], pi[playerid][pDrivingCategories][4]);
+	
+	mysql_format(db, query_string, (97 + (-2+38) + (-2+MAX_PLAYER_NAME)),"UPDATE `accounts` SET `licenses`='%s' WHERE `names`='%e'", fstring, GetName(playerid));
+	mysql_tquery(db, query_string);
 
-	format(fstring, sizeof(fstring),"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
-	mysql_format(db, query_string, sizeof(query_string),"UPDATE `accounts` SET `licenses`='%s' WHERE `names`='%e'",fstring,GetName(playerid));
-	mysql_tquery(db, query_string, "", "");
-
-	printf("%s(%d) успешно получил права с licid %d и с типом %s", GetName(playerid), playerid, id, LicType(id));
+	printf("%s (%d) успешно получил права с licid %d и с типом %s", GetName(playerid), playerid, lic_id, LicType(lic_id));
 
 	return 1;
 }
+
+
 stock CreateAccount(playerid)
 {
-	fstring[0] =
-	query_string[0] = 0;
-
 	PlayerInfo[playerid][pMoney]	 		= BONUS_MONEY;
 	PlayerInfo[playerid][pLevel] 			= START_LEVEL;
 	PlayerInfo[playerid][pSkin] 	 		= DEFAULT_SKIN;
@@ -1155,37 +1295,75 @@ stock CreateAccount(playerid)
 	new date[13];
 	format(date, (13 + (-2+4) + (-2+4) + (-2+6)), "%02d.%02d.%d", Day, Month, Year);
 
-	mysql_format(db, query_string, (217 + (-2+66) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6)), "INSERT INTO `accounts` (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d)", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel]);
-	mysql_tquery(db, query_string, "", "");
+	//! для системы документов
+	static 
+		firstName[16],
+		lastName[16];
+
+	splitName(GetName(playerid));
+
+	fstring[0] = 0;
+	format(fstring, (11 + (-2+32) + (-2+32)), "%s %s None", firstName, lastName);
+	
+	query_string[0] = 0;
+	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO `accounts` (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`fio`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFIO]);
+	mysql_tquery(db, query_string);
+	query_string[0] = EOS;
+	fstring[0] = EOS;
 
 	printf("22 (%s) %s", strlen(query_string), query_string);
 
 	playerLoggedStatus{playerid} = true;
+
 	SpawnPlayer(playerid);
 	return 1;
 }
+
+function LoadAdmins() {
+	//! здесь написать загрузку админов с под системы и связать с pi[playerid][pID] на каждого авторизованого
+	return 1;
+}
+
 function LoginPlayer(playerid) {
 	new getIP[16];
 
-	cache_get_value_name(0, "email", PlayerInfo[playerid][pEmail], 32);
-	cache_get_value_name_int(0, "sex", PlayerInfo[playerid][pSex]);
-	cache_get_value_name_int(0, "admin", PlayerInfo[playerid][pAdmin]);
-	cache_get_value_name_int(0, "currentskin", PlayerInfo[playerid][pSkin]);
-	cache_get_value_name_int(0, "money", PlayerInfo[playerid][pMoney]);
-	cache_get_value_name_int(0, "level", PlayerInfo[playerid][pLevel]);
+	cache_get_value_name(0, "email", pi[playerid][pEmail], 32);
+	cache_get_value_name_int(0, "sex", pi[playerid][pSex]);
+	cache_get_value_name_int(0, "admin", pi[playerid][pAdmin]);
+	cache_get_value_name_int(0, "currentskin", pi[playerid][pSkin]);
+	cache_get_value_name_int(0, "money", pi[playerid][pMoney]);
+	cache_get_value_name_int(0, "level", pi[playerid][pLevel]);
 
-	cache_get_value_name(0, "licenses", PlayerInfo[playerid][pDriveLics]); // licenses
-	sscanf(PlayerInfo[playerid][pDriveLics], "p<,>a<i>[5]",PlayerInfo[playerid][pDriveLics]);
+	cache_get_value_name_int(0, "language", pi[playerid][pLanguage]);
+	pi[playerid][pLanguage] ^= LANG_RU ^ ((pi[playerid][pLanguage] == 2) ? LANG_USA : LANG_BELARUS);
 
-	SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
-	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
-	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	//! здесь я подгружаю данные в pi и выгружаю (поскольку запрос идёт именно на эту таблицу passports) 
+	//? загрузка системы документов
+	cache_get_value_name_int(0, "idPassportInRegister", pi[playerid][pPassportID]);
+	cache_get_value_name(0, "fio", pi[playerid][pFIO]);
 
-	PlayerInfo[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
+	query_string[0] = 0;
+	mysql_format(db, query_string, (47 + (-2+6)), "SELECT * FROM `passports` WHERE `player_id`=%d", pi[playerid][pID]);
+	mysql_tquery(db, query_string, "@LoadDocumentSystem", "d", playerid);
+	query_string[0] = EOS;
+	// --
+
+
+	cache_get_value_name(0, "licenses", pi[playerid][pDrivingQuery]); //! load licenses 1
+	sscanf(pi[playerid][pDrivingQuery], "p<,>a<i>[5]", pi[playerid][pDrivingQuery]); //! load licenses 2
+	printf("debug: pDriveQuery %s", pi[playerid][pDrivingQuery]); //! debug loading 3
+
+	// --
+
+	SetPlayerScore(playerid, pi[playerid][pLevel]);
+	GivePlayerMoney(playerid, pi[playerid][pMoney]);
+	SetPlayerSkin(playerid, pi[playerid][pSkin]);
+
+	pi[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(PlayerInfo[playerid][pAdmin] > 0) return Iter_Add(ADM_LIST, playerid);
+	if(pi[playerid][pAdmin] > 0) Iter_Add(ADM_LIST, playerid);
 	// SavePlayer(playerid);
 
 	playerLoggedStatus{playerid} = true;
@@ -1193,86 +1371,168 @@ function LoginPlayer(playerid) {
 
 	return 1;
 }
+/*
+enum passport {
+	ID,
+	FIO[64],
+	ID_IN_REGISTER,
+	NOMER[8],
+	SERIAL[6],
+	PROPISKA[64],
+	SEX,
+	IFCHANGEDSEX,
+	ISSUED,
+	WHOMISSUED,
+	DATEOFBIRTHDAY,
+	OTHER_DOCUMENTS[4] //! здесь будет массив остальных документов
+}
+new 
+	passport_info[MAX_PLAYERS][passport];*/
+
+// select * from `passports` WHERE id=%d
+@LoadDocumentSystem(player);
+@LoadDocumentSystem(player) {
+	if(cache_num_rows() != 0) {
+		if (pi[player][pPassport]) return 1;
+		else {
+			passport_info[player][NOMER] = GenerateRandNomerOfDocument();
+			passport_info[player][SERIAL] = GenerateRandSerialOfDocument();
+			@LoadDocumentSystem(player);
+		}
+
+		//! запросы будут с применением JOIN sql (связка параллельных таблиц и сверка значений)
+		//! pi[playerid][pPassportID] == passport_info[player][ID_IN_REGISTER]
+	
+		cache_get_value_name_int(0, "idRegister", passport_info[player][ID_IN_REGISTER]);
+		strcat(pi[player][pFIO], passport_info[player][FIO]);
+
+		printf("%s fio", passport_info[player][FIO]);
+
+		switch (pi[player][pSex]) {
+			case 0: passport_info[player][SEX] = "Мужчина";
+			case 1: passport_info[player][SEX] = "Женщина";
+		}
+
+		cache_get_value_name_int(0, "p_ifchangedsex", passport_info[player][IFCHANGEDSEX]); //! если была смена пола
+		cache_get_value_name(0, "p_issued", passport_info[player][ISSUED]); //! выдано дата
+		cache_get_value_name(0, "p_issuedbywhom", passport_info[player][WHOMISSUED]); //! кто выдал 
+		cache_get_value_name(0, "p_dateofbirthday", passport_info[player][DATEOFBIRTHDAY]); //! при регистрации паспорта
+	} else print("[LoadDocumentSystem]: failed!");
+
+	return 1;
+}
+stock SaveDocuments() {
+	//! здесь будет сохранение документов
+
+	return 1;
+}
+stock GenerateRandNomerOfDocument() {
+	
+	return 1;
+}
+stock GenerateRandSerialOfDocument() {
+
+	return 1;
+}
+
+
 stock ShowStats(playerid) {
 	fstring[0] = 0;
 
 	format(fstring, sizeof(fstring), "Система\tИнфо\n\
-	{AFAFAF}Ваш ID:\t {0093ff}%d\n\
-	{AFAFAF}Ваш игровой псевдоним:\t {0093ff}%s\n\
-	{AFAFAF}Ваша почта:\t {0093ff}%s\n\
-	{AFAFAF}Уровень розыска:\t {0093ff}%d\n\
-	{AFAFAF}Паспорт:\t [ {0093ff}%s ]\n\
-	{AFAFAF}Вод. удостоверение:\t [ {0093ff}%s, тип: %s{ffffff} ]",
+		{AFAFAF}Ваш ID:\t {0093ff} %d\n\
+		{AFAFAF}Ваш игровой псевдоним:\t {0093ff} %s\n\
+		{AFAFAF}Ваша почта:\t {0093ff} %s\n\
+		{AFAFAF}Уровень розыска:\t {0093ff} %d\n\
+		{AFAFAF}Паспорт:\t %s\n\
+		{AFAFAF}Удостоверение на транспорт:\t %s",
 		playerid, //! pi[playerid][pID] это ид ячейки в базе
 		pi[playerid][pNames],
 		pi[playerid][pEmail],
 		pi[playerid][pWantedLevel],
-		pi[playerid][pPassport] ? ("{9ACD32}[есть]") : ("{B83434}[нет]"),
-		pi[playerid][pDriveLic] ? ("{9ACD32}[есть]") : ("{B83434}[нет]"),
-		pi[playerid][pDriveLics]
+		pi[playerid][pPassport] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]"),
+		pi[playerid][pDrivingLic] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]")
 	);
 
-	return SHOW_PD(playerid, dNull, DIALOG_STYLE_TABLIST_HEADERS, !"Статистика игрока", fstring, !"Выбор", "Отмена");
+	return SHOW_PD(playerid, dNull, DIALOG_STH, !"Статистика игрока", fstring, !"Выбор", "Отмена");
 }
 
 stock SavePlayer(playerid) {
 	if(!playerLoggedStatus{playerid}) return 0;
 
-	format(pi[playerid][pDriveLics],20,"%i,%i,%i,%i,%i", pi[playerid][pDriveLic][0], pi[playerid][pDriveLic][1], pi[playerid][pDriveLic][2], pi[playerid][pDriveLic][3], pi[playerid][pDriveLic][4]);
+	//? обнуление и выгрузка данных для дальнейшего сохранения в бд (удостоверения)
+	pi[playerid][pDrivingQuery][0] = 0;
+	format(pi[playerid][pDrivingQuery], 20, "%i,%i,%i,%i,%i", pi[playerid][pDrivingCategories][0], pi[playerid][pDrivingCategories][1], pi[playerid][pDrivingCategories][2], pi[playerid][pDrivingCategories][3], pi[playerid][pDrivingCategories][4]);
+	// SaveDocuments();
 
 	query_string[0] = EOS;
-	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+4)), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDriveLics], PlayerInfo[playerid][pEmailConfirmed]);
-	mysql_tquery(db, query_string, "", "");
+	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+66) + (-2+4)), "UPDATE `accounts` SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d, `fio` = '%e', `language`='%d' WHERE `id` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDrivingQuery], PlayerInfo[playerid][pEmailConfirmed], pi[playerid][pFIO], pi[playerid][pLanguage], playerid);
+	mysql_tquery(db, query_string);
 
 	return 1;
 }
 
 @MakeAdmin(playerid, const name[], level);
 @MakeAdmin(playerid, const name[], level) {
+	static name_of_id;
+	name_of_id = GetPlayerID(name);
+
 	if(cache_num_rows() == 0) {
 		if(!level) {
 			query_string[0] = 0;
-			if(GetPlayerID(name) != INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = 0;
-			mysql_format(db, query_string, (41 + (-2+66)), "DELETE FROM `admin` WHERE `names` = '%e'", name);
-			mysql_tquery(db, query_string, "", "");
+
+			if(name_of_id != INVALID_PLAYER_ID) PlayerInfo[name_of_id][pAdmin] = 0;
+
+			mysql_format(db, query_string, (41 + (-2+MAX_PLAYER_NAME)), "DELETE FROM `admin` WHERE `names` = '%e' LIMIT N", name);
+			mysql_tquery(db, query_string);
+
 			query_string[0] = EOS;
-			mysql_format(db, query_string, (52 + (-2+4) + (-2+66)), "UPDATE `admin` SET `level` = 0 WHERE `names` = '%e'", name);
-			mysql_tquery(db, query_string, "", "");
+			mysql_format(db, query_string, (52 + (-2+MAX_PLAYER_NAME)), "UPDATE `admin` SET `level`=0 WHERE `names` = '%e' LIMIT N", name);
+			mysql_tquery(db, query_string);
+
 			fstring[0] = 0;
-			format(fstring, sizeof(fstring),"Администратор {0093ff}%s больше не имеет доступа к системе.", name);
-			Warning(playerid, fstring);
+			format(fstring, sizeof(fstring),"Администратор {0093ff}%s"Default" больше не имеет доступа к системе.", name);
+			SendMess(playerid, T_NOTIF, fstring);
 		}
 		else {
-			if(GetPlayerID(name) !=INVALID_PLAYER_ID) PlayerInfo[GetPlayerID(name)][pAdmin] = level;
+			if(name_of_id != INVALID_PLAYER_ID) pi[name_of_id][pAdmin] = level;
+
 			query_string[0] = 0;
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `admin` SET level = %d WHERE names '%e' LIMIT 1", level, name);
-			mysql_tquery(db, query_string, "", "");
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
-			mysql_tquery(db, query_string, "", "");
+			mysql_format(db, query_string, (55 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE `admin` SET `level` = '%d' WHERE `names` = '%e' LIMIT N", level, name);
+			mysql_tquery(db, query_string);
+			mysql_format(db, query_string, (58 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE `accounts` SET `admin` = '%d' WHERE `names` = '%e' LIMIT N", level, name);
+			mysql_tquery(db, query_string);
+
 			fstring[0] = 0;
-			format(fstring, sizeof(fstring), "Администратор {0093ff}%s получил повышение до %i уровня доступа.", name, level);
-			Info(playerid, fstring);
+			format(fstring, sizeof(fstring), "Администратор {0093ff}%s"Default" получил повышение до {0093ff}%i"Default" уровня доступа.", name, level);
+			SendMess(playerid, T_NOTIF, fstring);
 		}
 	}
 	else {
 		query_string[0] = 0;
-		if(!level) return Error(playerid, !"Указанный игрок не имеет доступа к системе!");
-		mysql_format(db, query_string, sizeof(query_string), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', %d, CURDATE())", name, level);
-		mysql_tquery(db, query_string, "", "");
-		mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin = %d WHERE names = '%e'", level, name);
-		mysql_tquery(db, query_string, "", "");
+
+		if(!level) return SendMess(playerid, T_NOTIF, "Указанный игрок не имеет доступа к системе!");
+
+		mysql_format(db, query_string, (77 + (-2+(MAX_PLAYER_NAME)) + (-2+6)), "INSERT INTO `admin` (name,level,last_connect) VALUES ('%e', '%d', CURDATE())", name, level);
+		mysql_tquery(db, query_string);
+		mysql_format(db, query_string, (54 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE `accounts` SET admin = '%d' WHERE names = '%e'", level, name);
+		mysql_tquery(db, query_string);
+		query_string[0] = EOS;
+
 		fstring[0] = 0;
-		format(fstring, sizeof(fstring),"[Информация ADM]:{0093ff}%s{FFFFFF} теперь имеет доступ к системе и занесён в базу данных. Указанный уровень доступа: %i", name, level);
-		Info(playerid, fstring);
-		if(GetPlayerID(name) != INVALID_PLAYER_ID) {
-			PlayerInfo[GetPlayerID(name)][pAdmin] = level;
-			query_string[0] = 0;
-			mysql_format(db, query_string, sizeof(query_string), "UPDATE `accounts` SET admin %d WHERE names = '%e'", PlayerInfo[playerid][pAdmin], name);
-			mysql_tquery(db, query_string, "", "");
+		format(fstring, sizeof(fstring),"{0093ff}%s"Default" теперь имеет доступ к системе и занесён в базу данных. Указанный уровень доступа: %i", name, level);
+		SendMess(playerid, T_ERROR, fstring);
+
+		if(name_of_id != INVALID_PLAYER_ID) {
+			pi[name_of_id][pAdmin] = level;
+
+			mysql_format(db, query_string, (52 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE `accounts` SET admin '%d' WHERE names = '%e'", PlayerInfo[playerid][pAdmin], name);
+			mysql_tquery(db, query_string);
 		}
 	}
 	return 1;
 }
+
 
 stock IsLoginInvalid(const text[]) {
 	new playername[24];
@@ -1304,7 +1564,7 @@ stock CheckExceptionName(const string[]) {
 		NAME_FULL_ACCESS_3,
 	 	NAME_FULL_ACCESS_4
 	};
-	for(new i = sizeof(NameList); i--; ) {
+	for(new i=sizeof(NameList); --i > 0;) {
 		if (!strcmp(string, NameList[i])) return 1;
 		// if(!GetString(string, NameList[i])) return 1;
 	}
@@ -1320,8 +1580,7 @@ stock GetPlayerID(const string[]) {
 	return INVALID_PLAYER_ID;
 }
 
-stock ConnectSQL()
-{
+stock ConnectSQL() {
 	#if MYSQL_IS_LOCAL == true 
 		db = mysql_connect(LOCAL_SQL_HOSTNAME, LOCAL_SQL_USERNAME, LOCAL_SQL_PASSWORD, LOCAL_SQL_DATABASE);
 		mysql_log(ERROR | WARNING); 

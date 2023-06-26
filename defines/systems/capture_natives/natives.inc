@@ -56,17 +56,17 @@ stock IsValidEmail(const email[])
  * Возвраты кода:
  *   без возвратов
  */
-stock debugger(const func[], iter_count_start = 1, iter_count_end = 1000, step = 1, {_,Float,bool}:...) {
+stock debugger(const func[], iter_start = 1, iter_end = 1000, step = 1, {_,Float,bool}:...) {
 	// func(...) ... - параметры
 
 	new	
 		_counter = GetTickCount(),
-		i = iter_count_start, // по умолч. = 1, указать своё любое другое значение
+		i = iter_start, // по умолч. = 1, указать своё любое другое значение
 		idx_start = 4, // начать поиск параметров после парам step
 		params = numargs();
 
-	for (;i<iter_count_end;i+=step) {
-		for (new idx = idx_start;++idx<params;) {
+	for (;i<iter_end;i+=step) {
+		for (new idx=idx_start;--idx<=params;) {
 			CallLocalFunction(func, "sfdc", getarg(idx, 0));
 		}
 	}
@@ -117,4 +117,43 @@ stock ProxDetector(Float:range, playerid, const string[], c1 = -1,c2 = -1,c3 = -
     	else SEND_CM(i, c1, string);
     } while(i > 0);
     return 1;
+}
+stock splitName(const name[]) {
+	static 
+		result,
+		first,
+		last;
+	result = sscanf(name, "p<_>s[16]s[16]", first, last);
+	printf("%s result", result);
+	return result;
+}
+stock random_ex(min, max, inter=1) return (0 < inter < (max-min)) ? (min+random((max-min)/inter+1)*inter) : 0;
+stock generateGivenName() {
+	new randomGivenNames[][14] = {
+		{"Андреевич"},
+		{"Викторович"},
+		{"Павлович"},
+		{"Сергеевич"},
+		{"Михайлович"},
+		{"Августинович"},
+		{"Данилович"},
+		{"Дмитриевич"}
+	};
+
+	static const 
+		len = (sizeof(randomGivenNames)-1);
+	new
+		rand = random_ex(1, len);
+
+		// res = randomGivenNames[rand];
+		// size = randomGivenNames[rand];
+
+	static test[14];
+	strcat(randomGivenNames[rand], test);
+	printf("size %d and len %d - a sam rezultat vot - %s %s", rand, len, randomGivenNames[rand], test);
+
+	// return randomGivenNames[RandomEx( 1, len )];
+	// return randomGivenNames[ rand ];
+
+	return test;
 }
