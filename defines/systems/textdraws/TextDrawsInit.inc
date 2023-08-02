@@ -7,8 +7,7 @@
 // #include "../../pawno/include/YSI_Coding/y_hooks" //! y_hooks для сокращения перехватов _als_ на более короткие и понятные
 
 //?=========================================[Variables]=================================================//
-new Text: 
-        buildVerTD;
+// new Text: buildVerTD;
 //?=====================================================================================================//
 
 //!=========================================[Captures _ALS_ code]=======================================//
@@ -67,19 +66,18 @@ new Text:
 //!=====================================================================================================//
 
 // load static TextDraws
-//! все статические
 
 
 // load player TextDraws
-//! все динамические (те, что изменяются)
-static LoadBuildVersionTD(player) {
-    buildVerTD = TextDrawCreate(24.000000, 320.000000, !"Development build #MODE_VERS");
-    TextDrawColor(buildVerTD, -1);
-    TextDrawBoxColor(buildVerTD, -1347440726);
-    TextDrawSetOutline(buildVerTD, 1);
-    TextDrawBackgroundColor(buildVerTD, 170);
-    TextDrawFont(buildVerTD, 2);
-    TextDrawSetProportional(buildVerTD, 1);
-    TextDrawShowForPlayer(player, buildVerTD);
-    return 1;
-}
+
+// static LoadBuildVersionTD(player) {
+//     buildVerTD = TextDrawCreate(24.000000, 320.000000, !"Development build #MODE_VERS");
+//     TextDrawColor(buildVerTD, -1);
+//     TextDrawBoxColor(buildVerTD, -1347440726);
+//     TextDrawSetOutline(buildVerTD, 1);
+//     TextDrawBackgroundColor(buildVerTD, 170);
+//     TextDrawFont(buildVerTD, 2);
+//     TextDrawSetProportional(buildVerTD, 1);
+//     TextDrawShowForPlayer(player, buildVerTD);
+//     return 1;
+// }

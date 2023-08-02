@@ -9,6 +9,7 @@
 #define DIALOG_L    					DIALOG_STYLE_LIST
 #define DIALOG_I          				DIALOG_STYLE_INPUT
 #define SHOW_PD							ShowPlayerDialog
+
 #define SEND_CM							SendClientMessage
 #define ADMNOTIF                        ADMMessage
 #define DIALOG_STH                      DIALOG_STYLE_TABLIST_HEADERS
