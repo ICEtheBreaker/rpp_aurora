@@ -47,8 +47,8 @@ CREATE TABLE `accounts` (
   `gugle_auth` int(2) DEFAULT NULL,
   `gugle_settings` varchar(50) DEFAULT NULL,
   `gugle_enabled` int(2) DEFAULT NULL,
-  `idPassportInRegister` int(11) DEFAULT NULL,
-  `fio` varchar(64) DEFAULT NULL,
+  `pass_id` int(11) DEFAULT NULL,
+  `full_name` varchar(64) DEFAULT NULL,
   `language` int(4) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 
@@ -56,7 +56,7 @@ CREATE TABLE `accounts` (
 -- Дамп данных таблицы `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`, `wanted_level`, `email_confirmed`, `licenses`, `gugle_auth`, `gugle_settings`, `gugle_enabled`, `idPassportInRegister`, `fio`, `language`) VALUES
+INSERT INTO `accounts` (`id`, `names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`, `sex`, `admin`, `currentskin`, `money`, `level`, `wanted_level`, `email_confirmed`, `licenses`, `gugle_auth`, `gugle_settings`, `gugle_enabled`, `pass_id`, `full_name`, `language`) VALUES
 (49, 'kilo_joiii', '8A37C7F03A5A083CAAD0B11F063C4416C6E5241183035D0AB63BE899AE926956', '\\^|t|X[PM<', '127.0.0.1', '20.04.2023', '	', 'gord.s@gmail.com', 1, 0, 102, 250, 16, 0, 0, '0,0,0,0,0', 0, NULL, NULL, 49, NULL, 1),
 (50, 'Jei_Kilo', '0A5BD12C6F3A590762A0C2DC8CD49533E5B793BEBD9562BA714414955D77D5FB', '/Rp:v2<fuP', '127.0.0.1', '15.05.2023', '	', 'gord.s@gmail.com', 1, 9, 102, 250, 16, 0, 0, '0,0,0,0,0', 0, NULL, NULL, 42, NULL, 1),
 (51, 'None', 'B1FAE78490BCF7A5CEC75A5D898FEE35B67C35C27D316450165F1FF5227A201A', 'E=Zm6fR4jF', '127.0.0.1', '13.06.2023', '	', 'gord.s@gmail.com', 1, 0, 102, 250, 16, 0, 0, '0,0,0,0,0', NULL, NULL, NULL, NULL, NULL, 1),
@@ -93,14 +93,14 @@ INSERT INTO `admin` (`id`, `name`, `securitycode`, `level`, `last_connect`) VALU
 CREATE TABLE `documents` (
   `id` tinyint(4) NOT NULL,
   `type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'PASSPORT,DRIVE',
-  `player_name` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT 'Nick_Name'
+  `playername` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT 'none'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `documents`
 --
 
-INSERT INTO `documents` (`id`, `type`, `player_name`) VALUES
+INSERT INTO `documents` (`id`, `type`, `playername`) VALUES
 (2, '2', 'Jei_Kilo'),
 (1, '1', 'Jei_Kilo');
 
@@ -111,44 +111,44 @@ INSERT INTO `documents` (`id`, `type`, `player_name`) VALUES
 --
 
 CREATE TABLE `passports` (
-  `idRegister` int(5) NOT NULL,
-  `player_id` int(4) DEFAULT NULL,
-  `p_nomer` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'YYYYYY',
+  `regid` int(5) NOT NULL, DEFAULT '000000'
+  `playerid` int(4) DEFAULT '0'
+  `p_number` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'YYYYYY',
   `p_serial` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'XX XX',
-  `p_fio` varchar(64) CHARACTER SET cp1251 NOT NULL DEFAULT 'Surname Name Given',
-  `p_propiska` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'viale None',
-  `p_sex` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `p_ifchangedsex` int(4) NOT NULL DEFAULT '0',
-  `p_issued` date DEFAULT NULL,
-  `p_issuedbywhom` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'MVD',
-  `p_dateofbirthday` date DEFAULT NULL
+  `p_full_name` varchar(64) CHARACTER SET cp1251 NOT NULL DEFAULT 'No name',
+  `p_address` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Homeless',
+  `p_sex` text COLLATE utf8mb4_unicode_ci NOT NULL, DEFAULT 'Transgender'
+  `p_sexchanged` int(4) NOT NULL DEFAULT '0', DEFAULT 'Why'
+  `p_issued` date DEFAULT NULL, DEFAULT 'Not yet'
+  `p_where` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'GU MVD',
+  `p_birth` date DEFAULT '01.01.1970'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `passports`
 --
 
-INSERT INTO `passports` (`idRegister`, `player_id`, `p_nomer`, `p_serial`, `p_fio`, `p_propiska`, `p_sex`, `p_ifchangedsex`, `p_issued`, `p_issuedbywhom`, `p_dateofbirthday`) VALUES
+INSERT INTO `passports` (`regid`, `playerid`, `p_number`, `p_serial`, `p_full_name`, `p_address`, `p_sex`, `p_sexchanged`, `p_issued`, `p_where`, `p_birth`) VALUES
 (49, 49, '492812', '22 33', 'Авдеев Виктор Авдiйович', 'улица Марабушты 43а', 'Муж', 0, '2021-06-23', 'МВД г. Донецк ДНР', '2000-06-23'),
 (42, 50, '492812', '22 33', 'Микропов Виктор Авдiйович', 'улица Марабушты 43а', 'Муж', 0, '2021-06-23', 'МВД г. Донецк ДНР', '2000-06-23');
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `types_documents`
+-- Структура таблицы `documents_type`
 --
 
-CREATE TABLE `types_documents` (
-  `id` int(11) NOT NULL,
-  `type_document` text COLLATE utf8mb4_unicode_ci,
-  `description` text COLLATE utf8mb4_unicode_ci
+CREATE TABLE `documents_type` (
+  `name` int(11) NOT NULL, DEFAULT 'Unknown'
+  `type` text COLLATE utf8mb4_unicode_ci, DEFAULT 'DocumentType'
+  `desc` text COLLATE utf8mb4_unicode_ci DEFAULT 'Description'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Дамп данных таблицы `types_documents`
+-- Дамп данных таблицы `documents_type`
 --
 
-INSERT INTO `types_documents` (`id`, `type_document`, `description`) VALUES
+INSERT INTO `documents_type` (`name`, `type`, `desc`) VALUES
 (1, 'PASSPORT', 'паспорт'),
 (2, 'DRIVING', 'водительское'),
 (3, 'PERMISSION', 'разрешение');
@@ -178,13 +178,13 @@ ALTER TABLE `documents`
 --
 -- Индексы таблицы `passports`
 --
-ALTER TABLE `passports`
-  ADD KEY `Столбец 1` (`idRegister`) USING BTREE;
+ALTER TABLE `passport`
+  ADD KEY `Столбец 1` (`pass_id`) USING BTREE;
 
 --
 -- Индексы таблицы `types_documents`
 --
-ALTER TABLE `types_documents`
+ALTER TABLE `documents_type`
   ADD KEY `id` (`id`);
 
 --
@@ -212,8 +212,8 @@ ALTER TABLE `documents`
 --
 -- AUTO_INCREMENT для таблицы `passports`
 --
-ALTER TABLE `passports`
-  MODIFY `idRegister` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+ALTER TABLE `passport`
+  MODIFY `pass_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT для таблицы `types_documents`

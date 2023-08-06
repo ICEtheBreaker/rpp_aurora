@@ -338,17 +338,17 @@ TODO						[Предупреждение]: Вы не знаете, как управлять этим транспортом.
 
 enum passport {
 	ID,
-	FIO[64],
-	ID_IN_REGISTER,
-	NOMER[8],
+	FN[64],
+	PASS_ID,
+	NUMBER[8],
 	SERIAL[6],
-	PROPISKA[64],
+	ADDRESS[64],
 	SEX[8],
-	IFCHANGEDSEX,
+	SEXCHANGED,
 	ISSUED,
-	WHOMISSUED,
-	DATEOFBIRTHDAY,
-	OTHER_DOCUMENTS[4] 
+	WHERE,
+	BIRTH,
+	OTHER[4] 
 }
 new 
 	passport_info[MAX_PLAYERS][passport];
@@ -690,10 +690,10 @@ stock SetLocalization(playerid, type) {
 }
 
 
-// CMD:testtesttest(player, params[]) {
-// 	if(sscanf(params, "s[24]", params[0])) return Msg(player, NOTIFICATION, "/testtesttest [text]");
+// CMD:testtesttest(playerid, params[]) {
+// 	if(sscanf(params, "s[24]", params[0])) return Msg(playerid, NOTIFICATION, "/testtesttest [text]");
 // 	// if(!(1 <= params[0] <= 24)) return false;
-// 	printf("(%s = это тип) : (%s = это текст)", (SetLocalization(player, WARN)), params[0]);
+// 	printf("(%s = это тип) : (%s = это текст)", (SetLocalization(playerid, WARN)), params[0]);
 // 	return 1;
 // }
 
@@ -1348,7 +1348,7 @@ stock ShowRegDialog(playerid)
 	SHOW_PD(playerid, dReg1, DIALOG_P, !"{FFFFFF}[1/4]{FFA500} Пароль", fstring, !"Далее",!"Отмена");	
 	return 1;
 }
-stock ShowUpdateSettings(playerid, vkontakte[] = " ", discord[] = " ", telegram[] = " ") {
+stock ShowUpdateSettings(playerid, vkontakte[] = " ", telegram[] = " ") {
 	fstring[0] = 0;
 
 	new 
@@ -1365,7 +1365,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ", discord[] = " ", telegram[
 		{AFAFAF}Google Authenticator\t{0093ff}Анти-взлом система\n\
 		{AFAFAF}Вход через почту:\t%s\n\
 		{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
-		{AFAFAF}Привязка ВКонтакте/Discord/TG:\t{0093ff} [ Перейти ]",
+		{AFAFAF}Привязка ВКонтакте/Telegram:\t{0093ff} [ Перейти ]",
 		pi[playerid][pShowName] ? ("{008000}[Вкл]") : ("{FF0000}[Выкл]"),
 		pi[playerid][pEmail],
 		pi[playerid][pHungryBar] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
@@ -1410,7 +1410,7 @@ stock ResetVariables(playerid) {
 	PlayerBadAttempt{playerid} 		= 0;
 	inadmcar{playerid}				= -1;
 
-	printf("(ID: %d) (NAME: %s) id освободил данные", playerid, GetName(playerid));
+	printf("ID: %d очистил свои переменные.", playerid, GetName(playerid));
 
 	for(new i = 5; --i > 0;) {
     	pi[playerid][pDrivingCategories][i] = 0;
@@ -1482,7 +1482,7 @@ stock CreateAccount(playerid)
 	format(fstring, (11 + (-2+32) + (-2+32)), "%s %s None", firstName, lastName);
 	
 	query_string[0] = 0;
-	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`fio`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFN]);
+	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`full_name`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFN]);
 	mysql_tquery(db, query_string);
 	query_string[0] = EOS;
 	fstring[0] = EOS;
@@ -1515,12 +1515,12 @@ function LoginPlayer(playerid) {
 
 	//! здесь я подгружаю данные в pi и выгружаю (поскольку запрос идёт именно на эту таблицу passports) 
 	//? загрузка системы документов
-	cache_get_value_name_int(0, "idPassportInRegister", pi[playerid][pPassportID]);
-	cache_get_value_name(0, "fio", pi[playerid][pFN]);
+	cache_get_value_name_int(0, "pass_id", pi[playerid][pPassportID]);
+	cache_get_value_name(0, "full_name", pi[playerid][pFN]);
 
 	query_string[0] = 0;
 	mysql_format(db, query_string, (47 + (-2+6)), "SELECT * FROM `passports` WHERE `player_id`=%d", pi[playerid][pID]);
-	mysql_tquery(db, query_string, "@LoadDocumentSystem", "d", playerid);
+	mysql_tquery(db, query_string, "@DocumentSystem", "d", playerid);
 	query_string[0] = EOS;
 	// --
 
@@ -1550,50 +1550,50 @@ function LoginPlayer(playerid) {
 /*
 enum passport {
 	ID,
-	FIO[64],
-	ID_IN_REGISTER,
-	NOMER[8],
+	FN[64],
+	PASS_ID,
+	NUMBER[8],
 	SERIAL[6],
-	PROPISKA[64],
+	ADDRESS[64],
 	SEX,
-	IFCHANGEDSEX,
+	SEXCHANGED,
 	ISSUED,
-	WHOMISSUED,
-	DATEOFBIRTHDAY,
-	OTHER_DOCUMENTS[4] //! здесь будет массив остальных документов
+	WHERE,
+	BIRTH,
+	OTHER[4] //! здесь будет массив остальных документов
 }
 new 
 	passport_info[MAX_PLAYERS][passport];*/
 
 // select * from `passports` WHERE id=%d
-@LoadDocumentSystem(player);
-@LoadDocumentSystem(player) {
+@DocumentSystem(playerid);
+@DocumentSystem(playerid) {
 	if(cache_num_rows() != 0) {
-		if (pi[player][pPassport]) return 1;
+		if (pi[playerid][pPassport]) return 1;
 		else {
-			passport_info[player][NOMER] = GenerateRandNomerOfDocument();
-			passport_info[player][SERIAL] = GenerateRandSerialOfDocument();
-			@LoadDocumentSystem(player);
+			passport_info[playerid][NUMBER] = GenerateRandNomerOfDocument();
+			passport_info[playerid][SERIAL] = GenerateRandSerialOfDocument();
+			@DocumentSystem(playerid);
 		}
 
 		//! запросы будут с применением JOIN sql (связка параллельных таблиц и сверка значений)
-		//! pi[playerid][pPassportID] == passport_info[player][ID_IN_REGISTER]
+		//! pi[playerid][pPassportID] == passport_info[playerid][PASS_ID]
 	
-		cache_get_value_name_int(0, "idRegister", passport_info[player][ID_IN_REGISTER]);
-		strcat(pi[player][pFN], passport_info[player][FIO]);
+		cache_get_value_name_int(0, "regid", passport_info[playerid][PASS_ID]);
+		strcat(pi[playerid][pFN], passport_info[playerid][FN]);
 
-		printf("%s fio", passport_info[player][FIO]);
+		printf("%s full_name", passport_info[playerid][FN]);
 
-		switch (pi[player][pSex]) {
-			case 0: passport_info[player][SEX] = "Мужчина";
-			case 1: passport_info[player][SEX] = "Женщина";
+		switch (pi[playerid][pSex]) {
+			case 0: passport_info[playerid][SEX] = "Мужчина";
+			case 1: passport_info[playerid][SEX] = "Женщина";
 		}
 
-		cache_get_value_name_int(0, "p_ifchangedsex", passport_info[player][IFCHANGEDSEX]); //! если была смена пола
-		cache_get_value_name(0, "p_issued", passport_info[player][ISSUED]); //! выдано дата
-		cache_get_value_name(0, "p_issuedbywhom", passport_info[player][WHOMISSUED]); //! кто выдал 
-		cache_get_value_name(0, "p_dateofbirthday", passport_info[player][DATEOFBIRTHDAY]); //! при регистрации паспорта
-	} else print("[LoadDocumentSystem]: failed!");
+		cache_get_value_name_int(0, "p_sexchanged", passport_info[playerid][SEXCHANGED]); //! если была смена пола
+		cache_get_value_name(0, "p_issued", passport_info[playerid][ISSUED]); //! выдано дата
+		cache_get_value_name(0, "p_where", passport_info[playerid][WHERE]); //! кто выдал 
+		cache_get_value_name(0, "p_birth", passport_info[playerid][BIRTH]); //! при регистрации паспорта
+	} else print("[DocumentSystem]: ХУЙ ТАМ ПЛАВАЛ!");
 
 	return 1;
 }
@@ -1626,7 +1626,7 @@ stock ShowStats(playerid) {
 		pi[playerid][pNames],
 		pi[playerid][pEmail],
 		pi[playerid][pWantedLevel],
-		pi[playerid][pPassport] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]"),
+		pi[playerid][pPassport] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]"),		//! если игрок нажмет на паспорт два раза откроется окно с паспортом
 		pi[playerid][pDrivingLic] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]")
 	);
 
