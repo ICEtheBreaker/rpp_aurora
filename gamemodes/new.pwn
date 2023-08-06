@@ -16,15 +16,6 @@
 	  |	|_			| |	   | |		   | |		     	   | |
 	  |_  |_ _ _ _ _| |    | |         | |                 | |				//! не удивляйтесь это логотип авроры
 		|_ _ _ _ _ _ _|	   |_|         |_|			       |_|
-
-		 _ _ _ _ _ _ _ 	    _ _ _ _ _ _ _ 
-		|  _ _ _ _ _ _|    |  _ _ _ _ _  |
-		| | 			   | |		   | | 	
-		| |_ _ _ _ _ _	   | |		   | |
-		|  _ _ _ _ _ _|	   | |_ _ _ _ _| |
-		| |				   |  _ _ _ _ _  |
-		| |_ _ _ _ _ _	   | |		   | |
-		|_ _ _ _ _ _ _|	   |_|		   |_|
 */
 
 //=================================[ANTIDEMAMX PROC]==================================//
@@ -160,11 +151,11 @@ AntiDeAMX() {
 #define CheckConnection(%0)				(!IsPlayerConnected(%0))				
 
 //! под вынос в инклуд
-//! vehicleSystem
+//! Vehicle System
 
 // #define FlipVeh(%0)						new Float:A;GetVehicleZAngle(%0,A);SetVehicleZAngle(%0,A);
-// new bool:nitroHype[MAX_PLAYERS];
-// new bool:autoRepairCar[MAX_PLAYERS];
+// new bool:Nitro[MAX_PLAYERS];
+// new bool:CarRepairing[MAX_PLAYERS];
 
 //! еще вынести команду к нему с перехватами _als_
 
@@ -234,6 +225,8 @@ new
 	//AuthSymbols[32][] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "2", "3", "4", "5", "6", "7"};
 
 enum pInfo {
+
+	//?=================================[PLAYER INFO]=================================//
 	pID,
 	pNames[MAX_PLAYER_NAME+1],
 	pPassword[65], 
@@ -250,73 +243,98 @@ enum pInfo {
 	pLevel,
 	pShowName,
 	pHungryBar,
-	pShowDocuments, //! соотнести к системе документов
+	pShowDocuments, 
 	sdTrade,
 	pEmailAuth,
 	pGugleAuth[17],
 	pGugleSettings,
 	pGugleEnabled,
 
-	//!======== [соц. сети] ======
+	//?=================================[SOCIAL SVARS]=================================//
 	pVkontakte,
 	pDiscord,
 	pTelegram,
-	//!===========================
+	//?================================================================================//
 
+	//?==================================[LANGS SVARS]=================================//
 	pLanguage,
-	pWantedLevel,
+	//?================================================================================//
 
+	//?=================================[POLICE SYSTEM]================================//
+	pWantedLevel,
+	//?================================================================================//
+
+	//?===========================[DOCUMENTS | LICENSES SVARS]=========================//
 	pPassport,
-	pFIO[64],
+	pFN[64], //! FN - FULL NAME (ПОЛНОЕ ИМЯ)
 	pPassportID,
 
-	 //! проверка есть ли паспорт?
-	// система лицензий
 	pDrivingCategories[5],
 	pDrivingQuery[20],
-	pDrivingLic, //! есть ли права?
-	//
-
+	pDrivingLic, 
+	//?================================================================================//
 }
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
 //! лучше юзать svar'ы, поскольку pvar'ы не указывают ошибку на введенный текст, а тут не так легко ошибиться используя имя переменной
-enum tTemporaryVars {
-	tFreezePlayerTime
+enum tTempVars {
+	tPlayerFreezeTime,
 }
-new tTemp[MAX_PLAYERS][tTemporaryVars];
+new tTemp[MAX_PLAYERS][tTempVars];
 
-//! вынести в инклуд define/systems/textureLoading
-
-#define freezePlayerOnSpawn(%0);		\
-	tTemp[%0][tFreezePlayerTime] = \
+#define FreezePlayer(%0);		\
+	tTemp[%0][tPlayerFreezeTime] = \
 		gettime() + (GetPlayerPing(%0) < 101) ? (1) : \
 		((GetPlayerPing(%0) > 100 && GetPlayerPing(%0) < 201)) ? (2) : (3)\
 	TogglePlayerControllable(%0, false)
+#include "../defines/systems/capture_natives/sql_custom"
 
-//! -- mysql удобства
-#include "../defines/systems/capture_natives/mysql_customs"
-//! --
 
+//? типы лицензий
 /*
-	//! что касаемо pDriveCategories:
-	1 - права на судоходства
-	2 - воздушные
-	3 - грузовые
-	4 - оружие
-	5 - бизнес
-
-	//? pDriveQuery хранит в себе массив 
+*	1 - водные
+*	2 - воздушные
+*	3 - грузовые
+*	4 - оружие
+*	5 - бизнес
+*	6 - охота
+*	7 - рыболовство
+*	8 - водительские  -->	! водительские права также делятся на категории: B - легковые, C - грузовые, D - автобусы, Tm, Tb - троллейбусы, M - мопеды, скутеры
+*							! после регистрации игрока, у него автоматом будет категория M. но на другие категории нужно будет отучиться 
+*							! если у каждой категории имеется приписка (e) - это дает право ездить с прицепом.
+*							! при попытке сесть в транспорт, на управление которого нет разрешения, напишет ошибку:
+TODO						[Предупреждение]: Вы не знаете, как управлять этим транспортом.
+*
+*	9 - локомотивные (необходимо на профессии машиниста, водителя трамвая)
+*		 подтипы локомотивных прав:
+*			0: трамвайные									|			
+*			1: тепловые 									|
+*			2: электрические								|
+*			3: паровые										|	-->		все это делится на категории (А, А0, А1, Б, Б1, А2Б, АБ1, АБ2)
+*			4: скоростные									|	 		если в правах машиниста нету категории А1, то он не может садиться в тепловой локомотив
+*			5: КА-электрические (это те которые в метро)	|			при попытке сесть в локомотив, на экране будет смс:
+*			6: электро-тепловые								|			
+!																		[Ошибка]: Вы не можете управлять этим локомотивом. Отсутствует необходимая категория прав.	
+*		категории локомотивных прав:
+*			A - трамвай
+*			А0 - электрические
+*			А1 - трамвай, тепловые
+*			А2Б - трамвай, паровые, скоростные			""
+*			Б - КА-электрические
+*			Б1 - КА-электрические, тепловые
+*			АБ1 - трамвай, КА-электрические, тепловые
+*			АБ2 - трамвай, КА-электрические, электрические
+*
+*	10 - реклама
+*	11 - маркетинг
 */
 
-//! TextDrawsInit к фиксу
-#include "../defines/systems/textdraws/TextDrawsInit"	//! здесь выносим все текстдравы в стоки и подгружаем, целью не засорять код
-#include "../defines/systems/chat/chatmsg"	//! система чата
+
+#include "../defines/systems/textdraws/textdrawinit"	//! здесь выносим все текстдравы в стоки и подгружаем, целью не засорять код
+#include "../defines/systems/chat/msg"	//! система чата
 
 //====================================================================================//
 
-//! система паспорта
-//! доработать принцип и вынести его в инклуд
 
 enum passport {
 	ID,
@@ -330,12 +348,10 @@ enum passport {
 	ISSUED,
 	WHOMISSUED,
 	DATEOFBIRTHDAY,
-	OTHER_DOCUMENTS[4] //! здесь будет массив остальных документов
+	OTHER_DOCUMENTS[4] 
 }
 new 
 	passport_info[MAX_PLAYERS][passport];
-
-//!
 
 enum  {
     ADM_NONE = 0,
@@ -353,8 +369,8 @@ enum  {
 new 
 	bool:playerLoggedStatus[MAX_PLAYERS char]; 
 
-//!	=============== [СИСТЕМА АВТО MAIN] =================
-#include "../defines/systems/vehicle/main.veh"
+//!	=============== [СИСТЕМА] =================
+#include "../defines/systems/vehicle/veh"
 //! =====================================================
 
 new inadmcar[MAX_PLAYERS char];
@@ -414,8 +430,10 @@ task OnSecond[1000]() {
 	// print("работает секундный таймер");
 	return 1;
 }
+
+
 ptask OnSecondTimer[1000](playerid) {
-	if(tTemp[playerid][tFreezePlayerTime] >= gettime()) {ClearAnimations(playerid),TogglePlayerControllable(playerid,true),tTemp[playerid][tFreezePlayerTime]=0;}
+	if(tTemp[playerid][tPlayerFreezeTime] >= gettime()) {ClearAnimations(playerid),TogglePlayerControllable(playerid,true),tTemp[playerid][tPlayerFreezeTime]=0;}
 }
 task OnMinute[1000*60]() {
 	// print("работает минутный таймер");
@@ -621,7 +639,7 @@ stock SetLocalization(playerid, type) {
 		{"Предупреждение", "Warning", "Папярэджанне"},
 		{"Ошибка", "Error", "Памылка"},
 		{"Информация", "Information", "Інфармацыя"},
-		{"Успешно", "Success", "Паспяхова"},
+		{"Успех", "Success", "Паспяхова"},
 		{"Уведомление", "Notification", "Паведамленне"}
 	};
 
@@ -770,11 +788,11 @@ CMD:plvh(playerid, params[]) {
 	if(sscanf(params, "dddd", params[0], params[1], params[2], params[3]))  return Msg(playerid, NOTIFICATION, "/plvh [playerid] [vehicleid] [1 color] [2 color]");
 	if(!playerLoggedStatus[params[0]]) return Msg(playerid, ERR, PLAYER_NOT_LOGGED);
 	if(GetPlayerInterior(params[0]) != 0) {
-		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(playerid)),Msg(playerid, ERR, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в интерьере (%d)", GetPlayerInterior(params[0])),Msg(playerid, ERR, fstring); 
 		fstring[0] = 0;
 	}
 	if(GetPlayerVirtualWorld(params[0]) != 0)  {
-		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(playerid)),Msg(playerid, ERR, fstring); 
+		format(fstring,sizeof(fstring), !"Игрок находится в виртуальном мире (%d)", GetPlayerVirtualWorld(params[0])),Msg(playerid, ERR, fstring); 
 		fstring[0] = 0;
 	}
 	if(!(400 <= params[1] <= 611)) return Msg(playerid, ERR, "Диапазон ID автомобилей: не меньше 400 не больше 611");
@@ -1047,7 +1065,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			SHA256_PassHash(inputtext, PlayerInfo[playerid][pSalt], checkpass, 65);
 			if(!strlen(inputtext)) return SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
 			if(!(6 <= strlen(inputtext) <= 22)) Msg(playerid, ERR, "Диапазон длины пароля: от 6 до 22-х символов"), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть"); 
-			if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) SHOW_PD(playerid, NEW_PASS, DIALOG_STYLE_INPUT, "Ввод нового пароля","\n\n{FFFFFF} Введите ваш новый пароль в поле ниже:", !"Далее", !"Закрыть"), Log(playerid, "password correct");
+			if(!strcmp(PlayerInfo[playerid][pPassword], checkpass)) SHOW_PD(playerid, NEW_PASS, DIALOG_STYLE_INPUT, "Ввод нового пароля","\n\n{FFFFFF} Введите ваш новый пароль в поле ниже:", !"Далее", !"Закрыть"), Logg(playerid, "password correct");
 			else Msg(playerid, NOTIFICATION, "Введён неверный пароль."), SHOW_PD(playerid, OLD_PASS, DIALOG_STYLE_INPUT, "Подтверждение пароля","\n\n{FFFFFF} Введите ваш текущий пароль в поле ниже:", !"Далее", !"Закрыть");
 		}
 		case NEW_PASS: {
@@ -1280,7 +1298,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 } 
 
 stock SetPlayerPosEx() {
-	здесь перехватить и сделать задание угла поворота как дополнение к функции
+	//здесь перехватить и сделать задание угла поворота как дополнение к функции
 	return 1;
 }
 
@@ -1288,10 +1306,12 @@ stock ShowLoginDialog(playerid)
 {
 	fstring[0] = 0;
 	PlayerBadAttempt{playerid}--;
-	format(fstring, (142 + (-2+4)),"\
-		{FFFFFF}Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
-		{FFFFFF}Введите свой пароль\n\
-		{FFFFFF}Попыток для ввода пароля:{0f4900} %d", PlayerBadAttempt{playerid});
+	format(fstring, (190 + (-2+4)),"\
+		{FFFFFF}Привет, %s. Добро пожаловать на {daa44a}"SERVER_NAME"\n\n\
+		{FFFFFF}Введите свой пароль, указанный при регистрации.\n\
+		{FFFFFF}Попыток для ввода пароля:{0f4900} %d\n\n\
+		\t\t{FFFFFF}Примечание:\n\
+		\t\t{FFFFFF}При многократном вводе неверного пароля, ваша сессия будет заблокирована на 15 минут.", pi[playerid][pNames], PlayerBadAttempt{playerid});
 	SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", fstring, "Войти", "Отмена");
 	
 	return 1;	
@@ -1318,10 +1338,10 @@ stock GetCurrentTime() //! написать систему определения часового пояса сервера и
 stock ShowRegDialog(playerid)
 {
 	fstring[0] = 0;
-	format(fstring, (420 + (-2+MAX_PLAYER_NAME)),"{FFFFFF}Здравствуйте, {0093ff}%s\n\n\
-		{FFFFFF}Данный аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
+	format(fstring, (420 + (-2+MAX_PLAYER_NAME)),"{FFFFFF}Доброго времени суток, уважаемый {0093ff}%s\n\n\
+		{FFFFFF}Ваш аккаунт {FFA500}отсутствует{FFFFFF} в базе данных.\n\
 		Для продолжения, введите пароль в поле ниже.\n\
-		Он будет необходим для дальнейшей авторизации на сервере.\n\n\
+		Он будет необходим для дальнейшей авторизации на проекте.\n\n\
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
 		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 22 символов.", pi[playerid][pNames]);
@@ -1351,7 +1371,7 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ", discord[] = " ", telegram[
 		pi[playerid][pHungryBar] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
 		pi[playerid][pShowDocuments] ? ("{9ACD32}[Вкл]") : ("{FF0000}[Выкл]"),
 		pi[playerid][pEmailAuth] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
-		((lang == 1) ? ("русский") : ((lang == 2) ? ("англ") : (lang == 3) ? ("беларусский") : ("нет")))
+		((lang == 1) ? ("русский") : ((lang == 2) ? ("англ") : (lang == 3) ? ("белорусский") : ("нет")))
 		// ((lang == 1) ? ("{9ACD32}русский") : (lang == 2)) ? ("{9ACD32}англ")) : (lang == 3) ? ("{9ACD32}беларусский") : 0)),
 		// strlen(vkontakte) > 2 ? vkontakte : ("{B83434}Не привязан")
 	);
@@ -1462,7 +1482,7 @@ stock CreateAccount(playerid)
 	format(fstring, (11 + (-2+32) + (-2+32)), "%s %s None", firstName, lastName);
 	
 	query_string[0] = 0;
-	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`fio`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFIO]);
+	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`fio`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFN]);
 	mysql_tquery(db, query_string);
 	query_string[0] = EOS;
 	fstring[0] = EOS;
@@ -1496,7 +1516,7 @@ function LoginPlayer(playerid) {
 	//! здесь я подгружаю данные в pi и выгружаю (поскольку запрос идёт именно на эту таблицу passports) 
 	//? загрузка системы документов
 	cache_get_value_name_int(0, "idPassportInRegister", pi[playerid][pPassportID]);
-	cache_get_value_name(0, "fio", pi[playerid][pFIO]);
+	cache_get_value_name(0, "fio", pi[playerid][pFN]);
 
 	query_string[0] = 0;
 	mysql_format(db, query_string, (47 + (-2+6)), "SELECT * FROM `passports` WHERE `player_id`=%d", pi[playerid][pID]);
@@ -1560,7 +1580,7 @@ new
 		//! pi[playerid][pPassportID] == passport_info[player][ID_IN_REGISTER]
 	
 		cache_get_value_name_int(0, "idRegister", passport_info[player][ID_IN_REGISTER]);
-		strcat(pi[player][pFIO], passport_info[player][FIO]);
+		strcat(pi[player][pFN], passport_info[player][FIO]);
 
 		printf("%s fio", passport_info[player][FIO]);
 
@@ -1622,7 +1642,7 @@ stock SavePlayer(playerid) {
 	// SaveDocuments();
 
 	query_string[0] = EOS;
-	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+66) + (-2+4)), "UPDATE "T_ACC" SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d, `fio` = '%e', `language`='%d' WHERE `id` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDrivingQuery], PlayerInfo[playerid][pEmailConfirmed], pi[playerid][pFIO], pi[playerid][pLanguage], playerid);
+	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+66) + (-2+4)), "UPDATE "T_ACC" SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d, `fio` = '%e', `language`='%d' WHERE `id` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDrivingQuery], PlayerInfo[playerid][pEmailConfirmed], pi[playerid][pFN], pi[playerid][pLanguage], playerid);
 	mysql_tquery(db, query_string);
 
 	return 1;
