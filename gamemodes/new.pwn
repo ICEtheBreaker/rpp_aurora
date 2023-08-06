@@ -141,12 +141,12 @@ AntiDeAMX() {
 
 //===================================[NATIVE CONFIG]==================================//
 #define function%0(%1)					forward%0(%1); public%0(%1)
-#define pi 								PlayerInfo
+#define PlayerInfo 								PlayerInfo
 
 // f:%0(									%0[0] = 0,format(%0,sizeof(%0),
 
 #define fADM(%0,%1) 					if(PlayerInfo[%0][pAdmin] < %1) return 1
-#define GetName(%0)						pi[%0][pNames]
+#define GetName(%0)						PlayerInfo[%0][pNames]
 #define RandomEx(%0,%1) 				(random(%1-%0)+%0)
 #define CheckConnection(%0)				(!IsPlayerConnected(%0))				
 
@@ -488,9 +488,9 @@ public OnPlayerDisconnect(playerid, reason) {
 public OnPlayerSpawn(playerid) {
 	if(!playerLoggedStatus{playerid}) return Msg(playerid, ERR, SERVER_CLOSED), Kick(playerid);
 
-	SetPlayerSkin(playerid, pi[playerid][pSkin]);
-	SetPlayerScore(playerid, pi[playerid][pLevel]);
-	SetPlayerWantedLevel(playerid, pi[playerid][pWantedLevel]);
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
+	SetPlayerWantedLevel(playerid, PlayerInfo[playerid][pWantedLevel]);
 
 	SetCameraBehindPlayer(playerid);
 	return 1;
@@ -1033,10 +1033,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SHOW_PD(playerid, Gugle, DIALOG_STYLE_LIST, !"{0093ff}Google Authenticator", fstring, !"Выбрать", "Назад");
 					}
 					case 8: return Msg(playerid, NOTIFICATION, "В разработке");
-					case 9: SetLanguage(playerid, pi[playerid][pLanguage]),ShowUpdateSettings(playerid);
+					case 9: SetLanguage(playerid, PlayerInfo[playerid][pLanguage]),ShowUpdateSettings(playerid);
 
 					case 10: { //! а здесь я думаю лучше диалог какой-нибудь показать чтоб видно было что привязано
-						if(!pi[playerid][pVkontakte] && !pi[playerid][pDiscord] && !pi[playerid][pTelegram]) return 0;
+						if(!PlayerInfo[playerid][pVkontakte] && !PlayerInfo[playerid][pDiscord] && !PlayerInfo[playerid][pTelegram]) return 0;
 
 						//! здесь уже процесс привязки (API)
 					}
@@ -1114,7 +1114,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case Gugle_Delete: {
 			if(response) {
-				new getcode = GoogleAuthenticatorCode(pi[playerid][pGugleAuth], gettime());
+				new getcode = GoogleAuthenticatorCode(PlayerInfo[playerid][pGugleAuth], gettime());
 				if(isempty(inputtext)) 
 					return false;
 				else if(strval(inputtext) == getcode) {
@@ -1311,7 +1311,7 @@ stock ShowLoginDialog(playerid)
 		{FFFFFF}Введите свой пароль, указанный при регистрации.\n\
 		{FFFFFF}Попыток для ввода пароля:{0f4900} %d\n\n\
 		\t\t{FFFFFF}Примечание:\n\
-		\t\t{FFFFFF}При многократном вводе неверного пароля, ваша сессия будет заблокирована на 15 минут.", pi[playerid][pNames], PlayerBadAttempt{playerid});
+		\t\t{FFFFFF}При многократном вводе неверного пароля, ваша сессия будет заблокирована на 15 минут.", PlayerInfo[playerid][pNames], PlayerBadAttempt{playerid});
 	SHOW_PD(playerid, d_Log, DIALOG_P, "{FFA500}Авторизация", fstring, "Войти", "Отмена");
 	
 	return 1;	
@@ -1344,7 +1344,7 @@ stock ShowRegDialog(playerid)
 		Он будет необходим для дальнейшей авторизации на проекте.\n\n\
 		\t\t{FFFFFF}Примечание для ввода пароля:\n\
 		\t\t- {FFA500}Пароль должен состоять из латиницы и не содержать цифры\n\
-		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 22 символов.", pi[playerid][pNames]);
+		\t\t- {FFA500}Пароль не должен быть меньше 6 и больше 22 символов.", PlayerInfo[playerid][pNames]);
 	SHOW_PD(playerid, dReg1, DIALOG_P, !"{FFFFFF}[1/4]{FFA500} Пароль", fstring, !"Далее",!"Отмена");	
 	return 1;
 }
@@ -1366,11 +1366,11 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ", telegram[] = " ") {
 		{AFAFAF}Вход через почту:\t%s\n\
 		{AFAFAF}Язык инвентаря / интерфейса:\t{0093ff} [ %s ]\n\
 		{AFAFAF}Привязка ВКонтакте/Telegram:\t{0093ff} [ Перейти ]",
-		pi[playerid][pShowName] ? ("{008000}[Вкл]") : ("{FF0000}[Выкл]"),
-		pi[playerid][pEmail],
-		pi[playerid][pHungryBar] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
-		pi[playerid][pShowDocuments] ? ("{9ACD32}[Вкл]") : ("{FF0000}[Выкл]"),
-		pi[playerid][pEmailAuth] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
+		PlayerInfo[playerid][pShowName] ? ("{008000}[Вкл]") : ("{FF0000}[Выкл]"),
+		PlayerInfo[playerid][pEmail],
+		PlayerInfo[playerid][pHungryBar] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
+		PlayerInfo[playerid][pShowDocuments] ? ("{9ACD32}[Вкл]") : ("{FF0000}[Выкл]"),
+		PlayerInfo[playerid][pEmailAuth] ? ("{9ACD32}[Вкл]") : ("{B83434}[Выкл]"),
 		((lang == 1) ? ("русский") : ((lang == 2) ? ("англ") : (lang == 3) ? ("белорусский") : ("нет")))
 		// ((lang == 1) ? ("{9ACD32}русский") : (lang == 2)) ? ("{9ACD32}англ")) : (lang == 3) ? ("{9ACD32}беларусский") : 0)),
 		// strlen(vkontakte) > 2 ? vkontakte : ("{B83434}Не привязан")
@@ -1388,21 +1388,21 @@ stock ShowUpdateSettings(playerid, vkontakte[] = " ", telegram[] = " ") {
 }
 stock ResetVariables(playerid) {
 	PlayerAFK[playerid] 			=
-	pi[playerid][pAdmin] 			= 
-	pi[playerid][pLevel] 			=
-	pi[playerid][pShowDocuments] 	=
-	pi[playerid][pPassport] 		=
-	pi[playerid][pSex] 				=
-	pi[playerid][pSkin]				=
-	pi[playerid][pMoney] 			=
-	pi[playerid][pHungryBar] 		=
-	pi[playerid][pWantedLevel]		=
-	pi[playerid][pEmailConfirmed] 	=
-	pi[playerid][pLanguage]			=
+	PlayerInfo[playerid][pAdmin] 			= 
+	PlayerInfo[playerid][pLevel] 			=
+	PlayerInfo[playerid][pShowDocuments] 	=
+	PlayerInfo[playerid][pPassport] 		=
+	PlayerInfo[playerid][pSex] 				=
+	PlayerInfo[playerid][pSkin]				=
+	PlayerInfo[playerid][pMoney] 			=
+	PlayerInfo[playerid][pHungryBar] 		=
+	PlayerInfo[playerid][pWantedLevel]		=
+	PlayerInfo[playerid][pEmailConfirmed] 	=
+	PlayerInfo[playerid][pLanguage]			=
 
-	pi[playerid][pVkontakte]		=
-	pi[playerid][pDiscord]			=
-	pi[playerid][pTelegram]			=
+	PlayerInfo[playerid][pVkontakte]		=
+	PlayerInfo[playerid][pDiscord]			=
+	PlayerInfo[playerid][pTelegram]			=
 
 	_:nitroHype[playerid]			=
 	_:autoRepairCar[playerid]       =
@@ -1413,14 +1413,14 @@ stock ResetVariables(playerid) {
 	printf("ID: %d очистил свои переменные.", playerid, GetName(playerid));
 
 	for(new i = 5; --i > 0;) {
-    	pi[playerid][pDrivingCategories][i] = 0;
+    	PlayerInfo[playerid][pDrivingCategories][i] = 0;
 	}
 
 	//! обдумать как будем делать сохранение сессий после выхода 
 
-	pi[playerid][pNames] = 0;
-	pi[playerid][pPassword] = 0;
-	pi[playerid][pEmail] = 0;
+	PlayerInfo[playerid][pNames] = 0;
+	PlayerInfo[playerid][pPassword] = 0;
+	PlayerInfo[playerid][pEmail] = 0;
 
 	return 1;
 }
@@ -1443,12 +1443,12 @@ stock LicType(id) {
 stock GiveLic(playerid, lic_id) {
 	if (IsLicenseValid(lic_id)) return 1;
 
-	pi[playerid][pDrivingCategories][lic_id] = 1;
+	PlayerInfo[playerid][pDrivingCategories][lic_id] = 1;
 
 	fstring[0] = 0;
 	query_string[0] = 0;
 	
-	format(fstring, (15 + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+6)),"%i,%i,%i,%i,%i", pi[playerid][pDrivingCategories][0], pi[playerid][pDrivingCategories][1], pi[playerid][pDrivingCategories][2], pi[playerid][pDrivingCategories][3], pi[playerid][pDrivingCategories][4]);
+	format(fstring, (15 + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+6)),"%i,%i,%i,%i,%i", PlayerInfo[playerid][pDrivingCategories][0], PlayerInfo[playerid][pDrivingCategories][1], PlayerInfo[playerid][pDrivingCategories][2], PlayerInfo[playerid][pDrivingCategories][3], PlayerInfo[playerid][pDrivingCategories][4]);
 	
 	mysql_format(db, query_string, (97 + (-2+38) + (-2+MAX_PLAYER_NAME)),"UPDATE "T_ACC" SET `licenses`='%s' WHERE `names`='%e'", fstring, GetName(playerid));
 	mysql_tquery(db, query_string);
@@ -1482,7 +1482,7 @@ stock CreateAccount(playerid)
 	format(fstring, (11 + (-2+32) + (-2+32)), "%s %s None", firstName, lastName);
 	
 	query_string[0] = 0;
-	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`full_name`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], pi[playerid][pWantedLevel], pi[playerid][pFN]);
+	mysql_format(db, query_string, (217 + (-2+MAX_PLAYER_NAME) + (-2+67) + (-2+13) + (-2+18) + (-2+15) + (-2+16) + (-2+32) + (-2+4) + (-2+4) + (-2+4) + (-2+6) + (-2+6) + (-2+6) + (-2+6) + (-2+66)), "INSERT INTO "T_ACC" (`names`, `password`, `salt`, `regIP`, `regData`, `lastIP`, `email`,`sex`,`admin`, `currentskin`, `money`, `level`, `wanted_level`,`full_name`) VALUES ('%e','%e','%e','%e','%e','%e','%e',%d,%d,%d,%d,%d,%d,'%e')", GetName(playerid), PlayerInfo[playerid][pPassword], PlayerInfo[playerid][pSalt], PlayerInfo[playerid][pIP], date, PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pFN]);
 	mysql_tquery(db, query_string);
 	query_string[0] = EOS;
 	fstring[0] = EOS;
@@ -1496,50 +1496,50 @@ stock CreateAccount(playerid)
 }
 
 function LoadAdmins() {
-	//! здесь написать загрузку админов с под системы и связать с pi[playerid][pID] на каждого авторизованого
+	//! здесь написать загрузку админов с под системы и связать с PlayerInfo[playerid][pID] на каждого авторизованого
 	return 1;
 }
 
 function LoginPlayer(playerid) {
 	new getIP[16];
 
-	cache_get_value_name(0, "email", pi[playerid][pEmail], 32);
-	cache_get_value_name_int(0, "sex", pi[playerid][pSex]);
-	cache_get_value_name_int(0, "admin", pi[playerid][pAdmin]);
-	cache_get_value_name_int(0, "currentskin", pi[playerid][pSkin]);
-	cache_get_value_name_int(0, "money", pi[playerid][pMoney]);
-	cache_get_value_name_int(0, "level", pi[playerid][pLevel]);
+	cache_get_value_name(0, "email", PlayerInfo[playerid][pEmail], 32);
+	cache_get_value_name_int(0, "sex", PlayerInfo[playerid][pSex]);
+	cache_get_value_name_int(0, "admin", PlayerInfo[playerid][pAdmin]);
+	cache_get_value_name_int(0, "currentskin", PlayerInfo[playerid][pSkin]);
+	cache_get_value_name_int(0, "money", PlayerInfo[playerid][pMoney]);
+	cache_get_value_name_int(0, "level", PlayerInfo[playerid][pLevel]);
 
-	cache_get_value_name_int(0, "language", pi[playerid][pLanguage]);
-	pi[playerid][pLanguage] ^= LANG_RU ^ ((pi[playerid][pLanguage] == 2) ? LANG_USA : LANG_BELARUS);
+	cache_get_value_name_int(0, "language", PlayerInfo[playerid][pLanguage]);
+	PlayerInfo[playerid][pLanguage] ^= LANG_RU ^ ((PlayerInfo[playerid][pLanguage] == 2) ? LANG_USA : LANG_BELARUS);
 
-	//! здесь я подгружаю данные в pi и выгружаю (поскольку запрос идёт именно на эту таблицу passports) 
+	//! здесь я подгружаю данные в PlayerInfo и выгружаю (поскольку запрос идёт именно на эту таблицу passports) 
 	//? загрузка системы документов
-	cache_get_value_name_int(0, "pass_id", pi[playerid][pPassportID]);
-	cache_get_value_name(0, "full_name", pi[playerid][pFN]);
+	cache_get_value_name_int(0, "pass_id", PlayerInfo[playerid][pPassportID]);
+	cache_get_value_name(0, "full_name", PlayerInfo[playerid][pFN]);
 
 	query_string[0] = 0;
-	mysql_format(db, query_string, (47 + (-2+6)), "SELECT * FROM `passports` WHERE `player_id`=%d", pi[playerid][pID]);
+	mysql_format(db, query_string, (47 + (-2+6)), "SELECT * FROM `passports` WHERE `player_id`=%d", PlayerInfo[playerid][pID]);
 	mysql_tquery(db, query_string, "@DocumentSystem", "d", playerid);
 	query_string[0] = EOS;
 	// --
 
 
-	cache_get_value_name(0, "licenses", pi[playerid][pDrivingQuery]); //! load licenses 1
-	sscanf(pi[playerid][pDrivingQuery], "p<,>a<i>[5]", pi[playerid][pDrivingQuery]); //! load licenses 2
-	printf("debug: pDriveQuery %s", pi[playerid][pDrivingQuery]); //! debug loading 3
+	cache_get_value_name(0, "licenses", PlayerInfo[playerid][pDrivingQuery]); //! load licenses 1
+	sscanf(PlayerInfo[playerid][pDrivingQuery], "p<,>a<i>[5]", PlayerInfo[playerid][pDrivingQuery]); //! load licenses 2
+	printf("debug: pDriveQuery %s", PlayerInfo[playerid][pDrivingQuery]); //! debug loading 3
 
 	// --
 
-	SetPlayerScore(playerid, pi[playerid][pLevel]);
-	GivePlayerMoney(playerid, pi[playerid][pMoney]);
-	SetPlayerSkin(playerid, pi[playerid][pSkin]);
+	SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
+	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 
-	pi[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
+	PlayerInfo[playerid][pLastIP] = GetPlayerIp(playerid, getIP, 16);
 
 	TogglePlayerSpectating(playerid, 0);
 
-	if(pi[playerid][pAdmin] > 0) Iter_Add(ADM_LIST, playerid);
+	if(PlayerInfo[playerid][pAdmin] > 0) Iter_Add(ADM_LIST, playerid);
 	// SavePlayer(playerid);
 
 	playerLoggedStatus{playerid} = true;
@@ -1569,30 +1569,27 @@ new
 @DocumentSystem(playerid);
 @DocumentSystem(playerid) {
 	if(cache_num_rows() != 0) {
-		if (pi[playerid][pPassport]) return 1;
+	print("[DocumentSystem]: ТЕПЕРЬ У ИГРОКОВ НЕ ОТБЕРУТ ПАСПОРТА!!!")
+		if (PlayerInfo[playerid][pPassport]) return 1;
 		else {
-			passport_info[playerid][NUMBER] = GenerateRandNomerOfDocument();
-			passport_info[playerid][SERIAL] = GenerateRandSerialOfDocument();
+			passport_info[playerid][NUMBER] = GenerateRandNumber();
+			passport_info[playerid][SERIAL] = '75' + random(100) ; // не зачем генерировать рандомную серию если мы в челябинской области, а там серия 75)
 			@DocumentSystem(playerid);
 		}
-
-		//! запросы будут с применением JOIN sql (связка параллельных таблиц и сверка значений)
-		//! pi[playerid][pPassportID] == passport_info[playerid][PASS_ID]
-	
 		cache_get_value_name_int(0, "regid", passport_info[playerid][PASS_ID]);
-		strcat(pi[playerid][pFN], passport_info[playerid][FN]);
+		strcat(PlayerInfo[playerid][pFN], passport_info[playerid][FN]);
 
 		printf("%s full_name", passport_info[playerid][FN]);
 
-		switch (pi[playerid][pSex]) {
+		switch (PlayerInfo[playerid][pSex]) {
 			case 0: passport_info[playerid][SEX] = "Мужчина";
 			case 1: passport_info[playerid][SEX] = "Женщина";
 		}
 
-		cache_get_value_name_int(0, "p_sexchanged", passport_info[playerid][SEXCHANGED]); //! если была смена пола
-		cache_get_value_name(0, "p_issued", passport_info[playerid][ISSUED]); //! выдано дата
-		cache_get_value_name(0, "p_where", passport_info[playerid][WHERE]); //! кто выдал 
-		cache_get_value_name(0, "p_birth", passport_info[playerid][BIRTH]); //! при регистрации паспорта
+		cache_get_value_name_int(0, "p_sexchanged", passport_info[playerid][SEXCHANGED]); 
+		cache_get_value_name(0, "p_issued", passport_info[playerid][ISSUED]); 
+		cache_get_value_name(0, "p_where", passport_info[playerid][WHERE]); 
+		cache_get_value_name(0, "p_birth", passport_info[playerid][BIRTH]); 
 	} else print("[DocumentSystem]: ХУЙ ТАМ ПЛАВАЛ!");
 
 	return 1;
@@ -1602,15 +1599,10 @@ stock SaveDocuments() {
 
 	return 1;
 }
-stock GenerateRandNomerOfDocument() {
-	
-	return 1;
+stock GenerateRandNumber() {
+	new number = 999 + random(9000);
+	return number;
 }
-stock GenerateRandSerialOfDocument() {
-
-	return 1;
-}
-
 
 stock ShowStats(playerid) {
 	fstring[0] = 0;
@@ -1622,12 +1614,12 @@ stock ShowStats(playerid) {
 		{AFAFAF}Уровень розыска:\t {0093ff} %d\n\
 		{AFAFAF}Паспорт:\t %s\n\
 		{AFAFAF}Удостоверение на транспорт:\t %s",
-		playerid, //! pi[playerid][pID] это ид ячейки в базе
-		pi[playerid][pNames],
-		pi[playerid][pEmail],
-		pi[playerid][pWantedLevel],
-		pi[playerid][pPassport] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]"),		//! если игрок нажмет на паспорт два раза откроется окно с паспортом
-		pi[playerid][pDrivingLic] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]")
+		playerid, //! PlayerInfo[playerid][pID] это ид ячейки в базе
+		PlayerInfo[playerid][pNames],
+		PlayerInfo[playerid][pEmail],
+		PlayerInfo[playerid][pWantedLevel],
+		PlayerInfo[playerid][pPassport] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]"),		//! если игрок нажмет на паспорт два раза откроется окно с паспортом
+		PlayerInfo[playerid][pDrivingLic] ? ("{9ACD32}[ЕСТЬ]") : ("{F04245}[НЕТ]")
 	);
 
 	return SHOW_PD(playerid, dNull, DIALOG_STH, !"Статистика игрока", fstring, !"Выбор", "Отмена");
@@ -1637,12 +1629,12 @@ stock SavePlayer(playerid) {
 	if(!playerLoggedStatus{playerid}) return 0;
 
 	//? обнуление и выгрузка данных для дальнейшего сохранения в бд (удостоверения)
-	pi[playerid][pDrivingQuery][0] = 0;
-	format(pi[playerid][pDrivingQuery], 20, "%i,%i,%i,%i,%i", pi[playerid][pDrivingCategories][0], pi[playerid][pDrivingCategories][1], pi[playerid][pDrivingCategories][2], pi[playerid][pDrivingCategories][3], pi[playerid][pDrivingCategories][4]);
+	PlayerInfo[playerid][pDrivingQuery][0] = 0;
+	format(PlayerInfo[playerid][pDrivingQuery], 20, "%i,%i,%i,%i,%i", PlayerInfo[playerid][pDrivingCategories][0], PlayerInfo[playerid][pDrivingCategories][1], PlayerInfo[playerid][pDrivingCategories][2], PlayerInfo[playerid][pDrivingCategories][3], PlayerInfo[playerid][pDrivingCategories][4]);
 	// SaveDocuments();
 
 	query_string[0] = EOS;
-	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+66) + (-2+4)), "UPDATE "T_ACC" SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d, `fio` = '%e', `language`='%d' WHERE `id` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDrivingQuery], PlayerInfo[playerid][pEmailConfirmed], pi[playerid][pFN], pi[playerid][pLanguage], playerid);
+	mysql_format(db, query_string, (192 + (-2+18) + (-2+34) + (-2+4) + (-2+6) + (-2+4) + (-2+6) + (-2+4) + (-2+66) + (-2+4)), "UPDATE "T_ACC" SET `lastIP` = '%e', `email` = '%e', `sex` = %d, `admin` = %d, `currentskin` = %d, `money` = %d, `level` = %d, `wanted_level` = %d, `licenses` = '%s', `email_confirmed` = %d, `fio` = '%e', `language`='%d' WHERE `id` = %d", PlayerInfo[playerid][pLastIP], PlayerInfo[playerid][pEmail], PlayerInfo[playerid][pSex], PlayerInfo[playerid][pAdmin], PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pMoney], PlayerInfo[playerid][pLevel], PlayerInfo[playerid][pWantedLevel], PlayerInfo[playerid][pDrivingQuery], PlayerInfo[playerid][pEmailConfirmed], PlayerInfo[playerid][pFN], PlayerInfo[playerid][pLanguage], playerid);
 	mysql_tquery(db, query_string);
 
 	return 1;
@@ -1650,20 +1642,20 @@ stock SavePlayer(playerid) {
 
 @MakeAdmin(playerid, const name[], level);
 @MakeAdmin(playerid, const name[], level) {
-	static name_of_id;
-	name_of_id = GetPlayerID(name);
+	static playerid_d;
+	playerid_d = GetPlayerID(name);
 
 	if(cache_num_rows() == 0) {
 		if(!level) {
 			query_string[0] = 0;
 
-			if(name_of_id != INVALID_PLAYER_ID) PlayerInfo[name_of_id][pAdmin] = 0;
+			if(playerid_d != INVALID_PLAYER_ID) PlayerInfo[playerid_d][pAdmin] = 0;
 
 			mysql_format(db, query_string, (41 + (-2+MAX_PLAYER_NAME)), "DELETE FROM `admin` WHERE `names` = '%e' LIMIT N", name);
 			mysql_tquery(db, query_string);
 
 			query_string[0] = EOS;
-			mysql_format(db, query_string, (52 + (-2+MAX_PLAYER_NAME)), "UPDATE `admin` SET `level`=0 WHERE `names` = '%e' LIMIT N", name);
+			mysql_format(db, query_string, (52 + (-2+MAX_PLAYER_NAME)), "UPDATE `admin` SET `level`= '0' WHERE `names` = '%e' LIMIT N", name);
 			mysql_tquery(db, query_string);
 
 			fstring[0] = 0;
@@ -1671,7 +1663,7 @@ stock SavePlayer(playerid) {
 			Msg(playerid, NOTIFICATION, fstring);
 		}
 		else {
-			if(name_of_id != INVALID_PLAYER_ID) pi[name_of_id][pAdmin] = level;
+			if(playerid_d != INVALID_PLAYER_ID) PlayerInfo[playerid_d][pAdmin] = level;
 
 			query_string[0] = 0;
 			mysql_format(db, query_string, (55 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE `admin` SET `level` = '%d' WHERE `names` = '%e' LIMIT N", level, name);
@@ -1699,8 +1691,8 @@ stock SavePlayer(playerid) {
 		format(fstring, sizeof(fstring),"{0093ff}%s"Default" теперь имеет доступ к системе и занесён в базу данных. Указанный уровень доступа: %i", name, level);
 		Msg(playerid, ERR, fstring);
 
-		if(name_of_id != INVALID_PLAYER_ID) {
-			pi[name_of_id][pAdmin] = level;
+		if(playerid_d != INVALID_PLAYER_ID) {
+			PlayerInfo[playerid_d][pAdmin] = level;
 
 			mysql_format(db, query_string, (52 + (-2+6) + (-2+MAX_PLAYER_NAME)), "UPDATE "T_ACC" SET admin '%d' WHERE names = '%e'", PlayerInfo[playerid][pAdmin], name);
 			mysql_tquery(db, query_string);
