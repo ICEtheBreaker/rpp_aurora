@@ -78,7 +78,8 @@ AntiDeAMX() {
 #define MAX_PLAYERS (6)
 #undef MAX_VEHICLES
 #define MAX_VEHICLES (1000)
-
+#undef MAX_ACTORS
+#define MAX_ACTORS (4)
 
 #pragma tabsize 0
 #define STREAMER_USAGE 
@@ -90,8 +91,20 @@ AntiDeAMX() {
 	#include "mailer"
 #endif
 
+#if !defined MAX_PLAYER_IP
+	#define MAX_PLAYER_IP (15)
+#endif
+
+#if !defined MAX_PLAYER_GPCI
+	#define MAX_PLAYER_GPCI (40)
+#endif
+
 #if !defined MAX_ADMINS
 	#define MAX_ADMINS 15 //! пока 15 будет потом увеличим
+#endif
+
+#if !defined GetPlayerGpci
+	native GetPlayerGpci(playerid, serial[], len) = gpci;
 #endif
 
 #define MALLOC_MEMORY (32768)
@@ -232,6 +245,7 @@ enum pInfo {
 	pPassword[65], 
 	pSalt[11],
 	pIP[16],
+	pGpci[MAX_PLAYER_GPCI + 1],
 	pRegData[13],
 	pLastIP[16],
 	pEmail[32],
@@ -461,6 +475,7 @@ public OnPlayerConnect(playerid)
 
 	GetPlayerName(playerid, PlayerInfo[playerid][pNames], MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
+	GetPlayerGpci(playerid, PlayerInfo[playerid][pGpci], MAX_PLAYER_GPCI);
 
 	if(IsLoginInvalid(GetName(playerid))) {
 		Msg(playerid, ERR, "Ваше имя содержит запрещенные символы или цифры. Используйте формат: [Имя_Фамилия]");
@@ -1244,6 +1259,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 	SetPlayerColor(playerid, 0xFF);
 
 	if(cache_num_rows() != 0) {
+		new ip[MAX_PLAYER_IP + 1], gpci[MAX_PLAYER_GPCI + 1];
 		PlayerBadAttempt{playerid} = 4;
 		cache_get_value_name(0, "password", PlayerInfo[playerid][pPassword], 65);
 		cache_get_value_name(0, "salt", PlayerInfo[playerid][pSalt], 11);
@@ -1251,7 +1267,10 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 		cache_get_value_name(0, "gugle_auth", PlayerInfo[playerid][pGugleAuth], 17);
 		cache_get_value_name_int(0, "gugle_settings", PlayerInfo[playerid][pGugleSettings]);
 		cache_get_value_name_int(0, "gugle_enabled", PlayerInfo[playerid][pGugleEnabled]);
-		ShowLoginDialog(playerid);
+		if(!strcmp(ip, PlayerInfo[playerid][pIP], false) && !strcmp(gpci, PlayerInfo[playerid][pGpci], false)) {
+			//! автоматический вход в аккаунт
+		}
+		else ShowLoginDialog(playerid);
 	}
 	else {
 		printf("isrpnick = %d ; nick = %s", IsRPNick(GetName(playerid)), GetName(playerid));
